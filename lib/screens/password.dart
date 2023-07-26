@@ -3,8 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../Components/appbar_text.dart';
 import '../Config/ApiHelper.dart';
+
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
@@ -73,113 +74,116 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: AppText(text:
           "Change Password",
-          style: TextStyle(color: Colors.teal[900]),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 10, right: 10, top: 20, bottom: 20),
-            child: TextFormField(
-              controller: passwordController,
-              obscureText: showpass,
-              obscuringCharacter: "*",
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (showpass) {
-                          showpass = false;
-                        } else {
-                          showpass = true;
-                        }
-                      });
-                    },
-                    icon: Icon(
-                      showpass == true
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    )),
-                labelText: "New Password",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(10),
-                        bottomLeft: Radius.circular(10))),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])
+        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("assets/logo_short.png",height: 100,),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 35, right: 35, top: 20, bottom: 20),
+              child: TextFormField(
+                controller: passwordController,
+                obscureText: showpass,
+                obscuringCharacter: "*",
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (showpass) {
+                            showpass = false;
+                          } else {
+                            showpass = true;
+                          }
+                        });
+                      },
+                      icon: Icon(
+                        showpass == true
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      )),
+                  labelText: "New Password",
+                ),
+                textInputAction: TextInputAction.next,
+                validator: (Password) {
+                  if (Password!.isEmpty || Password.length < 6) {
+                    return "Enter a valid Password, length should be greater than 6";
+                  } else {
+                    return null;
+                  }
+                },
               ),
-              textInputAction: TextInputAction.done,
-              validator: (Password) {
-                if (Password!.isEmpty || Password.length < 6) {
-                  return "Enter a valid Password, length should be greater than 6";
-                } else {
-                  return null;
-                }
-              },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-                left: 10, right: 10, top: 20, bottom: 20),
-            child: TextFormField(
-              controller: newPassController,
-              obscureText: showpass,
-              obscuringCharacter: "*",
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        if (showpass) {
-                          showpass = false;
-                        } else {
-                          showpass = true;
-                        }
-                      });
-                    },
-                    icon: Icon(
-                      showpass == true
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                    )),
-                labelText: "Confirm Password",
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(10),
-                        bottomLeft: Radius.circular(10))),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 35, right: 35, top: 20, bottom: 40),
+              child: TextFormField(
+                controller: newPassController,
+                obscureText: showpass,
+                obscuringCharacter: "*",
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                      onPressed: () {
+                        setState(() {
+                          if (showpass) {
+                            showpass = false;
+                          } else {
+                            showpass = true;
+                          }
+                        });
+                      },
+                      icon: Icon(
+                        showpass == true
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      )),
+                  labelText: "Confirm Password",
+                ),
+                textInputAction: TextInputAction.done,
+                validator: (Password) {
+                  if (Password!.isEmpty || Password.length < 6) {
+                    return "Enter the same Password, as above";
+                  } else {
+                    return null;
+                  }
+                },
               ),
-              textInputAction: TextInputAction.done,
-              validator: (Password) {
-                if (Password!.isEmpty || Password.length < 6) {
-                  return "Enter the same Password, as above";
-                } else {
-                  return null;
-                }
-              },
             ),
-          ),
-          SizedBox(
-            width: 350,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                ChangePassword();
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  shadowColor: Colors.teal[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(10),
-                        topRight: Radius.circular(10)),
-                  )),
-              child: Text("Change Password"),
+            SizedBox(
+              width: 300,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  ChangePassword();
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal[900],
+                    shadowColor: Colors.teal[300],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(10),
+                          topRight: Radius.circular(10)),
+                    )),
+                child: Text("Change Password"),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

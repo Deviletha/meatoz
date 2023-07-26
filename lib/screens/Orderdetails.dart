@@ -1,10 +1,11 @@
 import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../Components/appbar_text.dart';
 import '../Config/ApiHelper.dart';
+
 
 class OrderDetails extends StatefulWidget {
   final String id;
@@ -91,19 +92,29 @@ class _OrderDetailsState extends State<OrderDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: AppText(text:
           "ORDER HISTORY",
-          style: TextStyle(fontSize: 20, color: Colors.teal[900]),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
       ),
-      body: ListView.builder(
-        physics: ScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: orderList == null ? 0 : orderList?.length,
-        itemBuilder: (context, index) => getOrderList(index),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])
+        ),
+        child: ListView.builder(
+          physics: ScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: orderList == null ? 0 : orderList?.length,
+          itemBuilder: (context, index) => getOrderList(index),
+        ),
       ),
     );
   }
@@ -129,8 +140,16 @@ class _OrderDetailsState extends State<OrderDetails> {
                   borderRadius: BorderRadius.circular(20), // Image border
                   child: SizedBox.fromSize(
                     size: Size.fromRadius(40), // Image radius
-                    child: Image.network(
-                      image,
+                    child: CachedNetworkImage(
+                      imageUrl: image,
+                      placeholder: (context, url) => Container(
+                        color: Colors.grey[300],
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: AssetImage("assets/noItem.png"))),
+                      ),
                       fit: BoxFit.cover,
                     ),
                   ),

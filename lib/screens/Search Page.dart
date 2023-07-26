@@ -1,11 +1,11 @@
 import 'dart:convert';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import '../Components/appbar_text.dart';
 import '../Config/ApiHelper.dart';
-import 'Product_view.dart';
+import 'product_view/Product_view.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -101,49 +101,59 @@ class _SearchState extends State<Search> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: AppText(text:
             "Search Items",
-            style: TextStyle(color: Colors.teal[900]),
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
         ),
-        body: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.clear),
-                      onPressed: () => _searchController.clear(),
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                  colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ])
+          ),
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Type product name to search items',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: () => _searchController.clear(),
+                      ),
+                      prefixIcon: IconButton(
+                        icon: Icon(Icons.search),
+                        onPressed: _performSearch,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                      ),
                     ),
-                    prefixIcon: IconButton(
-                      icon: Icon(Icons.search),
-                      onPressed: _performSearch,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20.0),
-                    ),
+                    textInputAction: TextInputAction.done,
                   ),
-                  textInputAction: TextInputAction.done,
                 ),
               ),
-            ),
-            Container(
-              child: ListView.builder(
-                physics: ScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: searchlist == null ? 0 : searchlist?.length,
-                itemBuilder: (context, index) => getSearchList(index),
-              ),
-            )
-          ],
+              Container(
+                child: ListView.builder(
+                  physics: ScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: searchlist == null ? 0 : searchlist?.length,
+                  itemBuilder: (context, index) => getSearchList(index),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -151,7 +161,7 @@ class _SearchState extends State<Search> {
 
   Widget getSearchList(int index) {
     var image = base! + searchlist![index]["image"].toString();
-    var price = "₹" + searchlist![index]["price"].toString();
+    var price =  searchlist![index]["totalPrice"].toString();
     var PID =  searchlist![index]["id"].toString();
     return InkWell(
       onTap: () {
@@ -159,14 +169,14 @@ class _SearchState extends State<Search> {
           context,
           MaterialPageRoute(
             builder: (context) => ProductView(
+                recipe: searchlist![index]["hint"].toString(),
+              position: index,
                 id: searchlist![index]["id"].toString(),
                 productname: searchlist![index]["name"].toString(),
                 url: image,
                 description: searchlist![index]["description"].toString(),
                 amount: price,
                 combinationId: searchlist![index]["id"].toString(),
-                quantity: searchlist![index]["quantity"].toString(),
-                category: searchlist![index]["categories"].toString(),
                 psize: "0"),
           ),
         );
@@ -189,8 +199,16 @@ class _SearchState extends State<Search> {
                     borderRadius: BorderRadius.circular(20), // Image border
                     child: SizedBox.fromSize(
                       size: Size.fromRadius(40), // Image radius
-                      child: Image.network(
-                        image,
+                      child: CachedNetworkImage(
+                        imageUrl: image,
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey[300],
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/noItem.png"))),
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -214,7 +232,7 @@ class _SearchState extends State<Search> {
                         height: 10,
                       ),
                       Text(
-                        price,
+                        "₹$price",
                         style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -235,7 +253,7 @@ class _SearchState extends State<Search> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
+                              backgroundColor: Colors.teal[900],
                               shadowColor: Colors.teal[300],
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.only(

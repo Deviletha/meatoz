@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/screens/place_order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-
+import '../Components/appbar_text.dart';
+import '../Components/text_widget.dart';
 import '../Config/ApiHelper.dart';
+
 
 class SetectAddress extends StatefulWidget {
   const SetectAddress({Key? key}) : super(key: key);
@@ -55,61 +57,65 @@ class _SetectAddressState extends State<SetectAddress> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: AppText(text:
           "Select your Address",
-          style: TextStyle(
-            color: Colors.teal[900],
-            fontWeight: FontWeight.bold,
-          ),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
       ),
-      body: ListView(
-        children: [
-          Addresslist == null
-              ? Shimmer.fromColors(
-            baseColor: Colors.grey[300]!,
-            highlightColor: Colors.grey[100]!,
-            child: Column(
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])
+        ),
+        child: ListView(
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Addresslist == null
+                ? Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            )
+                : Column(
               children: [
-                SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  height: 100,
-                  color: Colors.white,
+                TextConst(text:
+                  "Your Order will be shipped to this address",
+
                 ),
-                SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  height: 100,
-                  color: Colors.white,
-                ),
-                SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  height: 100,
-                  color: Colors.white,
+                ListView.builder(
+                  physics: ScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: Addresslist == null ? 0 : Addresslist?.length,
+                  itemBuilder: (context, index) => getAddressRow(index),
                 ),
               ],
             ),
-          )
-              : Column(
-            children: [
-              Text(
-                "Your Order will be shipped to this address",
-                style: TextStyle(fontSize: 15),
-              ),
-              ListView.builder(
-                physics: ScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: Addresslist == null ? 0 : Addresslist?.length,
-                itemBuilder: (context, index) => getAddressRow(index),
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -143,9 +149,8 @@ class _SetectAddressState extends State<SetectAddress> {
                   color: Colors.white,
                 ),
               )
-                  : Text(
+                  :  TextConst(text:
                 Addresslist![index]["address"].toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5),
               Text(
@@ -156,24 +161,22 @@ class _SetectAddressState extends State<SetectAddress> {
                 ),
               ),
               SizedBox(height: 5),
-              Text(
+              TextConst(text:
                 Addresslist![index]["city"].toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5),
-              Text(
+              TextConst(text:
                 Addresslist![index]["pincode"].toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 5),
-              Text(
+              TextConst(text:
                 Addresslist![index]["state"].toString(),
-                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ],
           ),
         ),
       ),
     );
+    print(Addresslist![index]["id"].toString());
   }
 }

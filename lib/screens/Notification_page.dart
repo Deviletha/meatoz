@@ -14,14 +14,24 @@ class _NotificationsState extends State<Notifications> {
       appBar: AppBar(
         title: Text(
           "Notifications",
-          style: TextStyle(color: Colors.teal[900]),
         ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
       ),
-      body: Center(
-        child: Text("No Notification",style: TextStyle(color: Colors.grey),),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])
+        ),
+        child: Center(
+          child: Text("No Notification",style: TextStyle(color: Colors.grey),),
+        ),
       ),
     );
   }

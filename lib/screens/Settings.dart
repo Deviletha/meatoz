@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:meatoz/constants/appbar_text.dart';
 import 'package:meatoz/screens/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Components/appbar_text.dart';
 import 'EditProfile.dart';
 
 class Settings extends StatefulWidget {
@@ -60,85 +60,96 @@ class _SettingsState extends State<Settings> {
         title: AppText(text:
           "SETTINGS",
         ),
-        backgroundColor: Colors.teal[900],
-        elevation: 10,
-        centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-              onTap: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ChangeProfile();
-                  })),
-              child: Row(
-                children: const [
-                  Icon(
-                    Icons.person_outline_outlined,
-                    size: 25,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Edit Profile",
-                    style: TextStyle(fontSize: 20),
-                  )
-                ],
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () =>
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return ChangeProfile();
+                    })),
+                child: Row(
+                  children: const [
+                    Icon(
+                      Icons.person_outline_outlined,
+                      size: 25,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Edit Profile",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-              onTap: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return ChangePassword();
-                  })),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.keyboard_outlined,
-                    size: 25,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Change Password",
-                    style: TextStyle(fontSize: 20),
-                  )
-                ],
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () =>
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return ChangePassword();
+                    })),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.keyboard_outlined,
+                      size: 25,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Change Password",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-          const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: InkWell(
-              onTap: () => _showLogoutConfirmationDialog(),
-              child: Row(
-                children: const [
-                  Icon(
-                    Icons.logout_outlined,
-                    size: 25,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    "Logout",
-                    style: TextStyle(fontSize: 20),
-                  )
-                ],
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                onTap: () => _showLogoutConfirmationDialog(),
+                child: Row(
+                  children: const [
+                    Icon(
+                      Icons.logout_outlined,
+                      size: 25,
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Text(
+                      "Logout",
+                      style: TextStyle(fontSize: 20),
+                    )
+                  ],
+                ),
               ),
             ),
-          ),
-          const Divider(),
-        ],
+            const Divider(),
+          ],
+        ),
       ),
     );
   }

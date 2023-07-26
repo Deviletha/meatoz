@@ -1,15 +1,12 @@
 import 'dart:convert';
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-
+import '../Components/appbar_text.dart';
 import '../Config/ApiHelper.dart';
-import '../Utils/imagepicker.dart';
-import '../constants/appbar_text.dart';
+
+
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -19,7 +16,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-
   String? UID;
   String? datas;
   Map? responseData;
@@ -57,15 +53,12 @@ class _ProfileState extends State<Profile> {
           responseData = jsonDecode(response);
           dataList = responseData?["data"];
           print(responseData.toString());
-
         });
       } else {
         debugPrint('api failed:');
-
       }
     } catch (err) {
       debugPrint('An error occurred: $err');
-
     }
   }
 
@@ -78,114 +71,124 @@ class _ProfileState extends State<Profile> {
         debugPrint('get address api successful:');
         address = jsonDecode(response);
         Addresslist = address!["status"];
-
       });
     } else {
       debugPrint('api failed:');
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var image = base! + (dataList![index]["image"] ?? "").toString();
+    var image = base! + (dataList?[index]["image"] ?? "").toString();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: AppText(text:
-          "Profile",
+        title: AppText(
+          text: "Profile",
         ),
-        backgroundColor: Colors.teal[900],
-        elevation: 10,
-        centerTitle: true,
       ),
-      body: Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-                 Padding(
-                   padding: const EdgeInsets.only(top: 10,bottom: 10),
-                   child: CircleAvatar(
-                    radius: 45,
-                     child: CachedNetworkImage(
-                       imageUrl: image,
-                       placeholder: (context, url) => Container(
-                         color: Colors.grey[300],
-                       ),
-                       errorWidget: (context, url, error) => Container(
-                         decoration: BoxDecoration(
-                           image: DecorationImage(
-                             image: AssetImage("assets/user_avatar.png"),
-                           ),
-                         ),
-                       ),
-                       fit: BoxFit.cover,
-                     ),
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])
+        ),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: CircleAvatar(
+                  radius: 45,
+                  backgroundImage: NetworkImage(image),
+                  // child: CachedNetworkImage(
+                  //   imageUrl: image,
+                  //   placeholder: (context, url) => CircleAvatar(
+                  //     backgroundColor: Colors.grey[900],
+                  //   ),
+                  //   errorWidget: (context, url, error) => Container(
+                  //     decoration: BoxDecoration(
+                  //       image: DecorationImage(
+                  //         image: AssetImage("assets/contactavatar.png"),
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   fit: BoxFit.cover,
+                  // ),
                 ),
-                 ),
-            dataList == null
-                ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Column(
+              ),
+              dataList == null
+                  ? Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: Column(
+                  children: [
+                    SizedBox(height: 20),
+                    Container(
+                      width: 120,
+                      height: 30,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: 80,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: 120,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: 80,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 10),
+                    Container(
+                      width: 100,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              )
+                  : Column(
                 children: [
-                  SizedBox(height: 20),
-                  Container(
-                    width: 120,
-                    height: 30,
-                    color: Colors.white,
+                  Text(
+                    dataList![index]["first_name"].toString(),
+                    style: TextStyle(fontSize: 35),
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: 80,
-                    height: 20,
-                    color: Colors.white,
+                  Text(
+                    dataList![index]["phone"].toString(),
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: 120,
-                    height: 20,
-                    color: Colors.white,
+                  Text(
+                    dataList![index]["email"].toString(),
                   ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: 80,
-                    height: 20,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: 100,
-                    height: 20,
-                    color: Colors.white,
+                  ListView.builder(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: Addresslist == null ? 0 : Addresslist!.length,
+                    itemBuilder: (context, index) =>
+                        getAddressRow(index),
                   ),
                 ],
               ),
-            )
-                : Column(
-              children: [
-                Text(
-                  dataList![index]["first_name"].toString(),
-                  style: TextStyle(fontSize: 35),
-                ),
-                Text(
-                  dataList![index]["phone"].toString(),
-                ),
-                Text(
-                  dataList![index]["email"].toString(),
-                ),
-                ListView.builder(
-                  physics: ScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: Addresslist == null ? 0 : Addresslist!.length,
-                  itemBuilder: (context, index) => getAddressRow(index),
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-
     );
   }
 
@@ -194,61 +197,55 @@ class _ProfileState extends State<Profile> {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Addresslist == null
-                        ? Center(
-                      child: CircularProgressIndicator(),
-                    )
-                        : Text(
-                      Addresslist![index]["address"]
-                          .toString(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      Addresslist![index]["phone"]
-                          .toString(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,color: Colors.red),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      Addresslist![index]["city"]
-                          .toString(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      Addresslist![index]["pincode"]
-                          .toString(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      Addresslist![index]["state"]
-                          .toString(),
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold),
-                    ),
-
-              ],
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Addresslist == null
+                ? Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: Container(
+                width: double.infinity,
+                height: 20,
+                color: Colors.white,
+              ),
+            )
+                : Text(
+              Addresslist![index]["address"].toString(),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              Addresslist![index]["phone"].toString(),
+              style:
+              const TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              Addresslist![index]["city"].toString(),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              Addresslist![index]["pincode"].toString(),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              Addresslist![index]["state"].toString(),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
         ),
       ),
     );
   }
-
-
 }

@@ -1,8 +1,9 @@
+import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:meatoz/screens/wishlist_page.dart';
-import 'Cart_page.dart';
+import 'package:meatoz/screens/wishlist/wishlist_page.dart';
+import 'cartpage/Cart_page.dart';
 import 'Account_page.dart';
-import 'homepage.dart';
+import 'homepage/homepage.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({Key? key}) : super(key: key);
@@ -25,36 +26,18 @@ class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: Container(
-        child: BottomNavigationBar(
-          selectedFontSize: 15,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.teal[900],
-          unselectedItemColor: Colors.teal[100],
-          selectedItemColor: Colors.white,
-          elevation: 0,
-          iconSize: 25,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              label: "MEATOZ",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.favorite_border_sharp),
-              label: "WISHLIST",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_outline),
-              label: "PROFILE",
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag_outlined),
-              label: "MY CART",
-            ),
-          ],
-          currentIndex: selectindex,
-          onTap: onitemtapped,
-        ),
+      extendBody: true,
+      bottomNavigationBar: FloatingNavbar(
+        onTap: onitemtapped,
+        currentIndex: selectindex,
+        backgroundColor: Colors.teal[900],
+        elevation: 0,
+        items: [
+          FloatingNavbarItem(icon: Icons.home_outlined, title: "MEATOZ"),
+          FloatingNavbarItem(icon: Icons.favorite_border_sharp, title: "WISHLIST"),
+          FloatingNavbarItem(icon: Icons.person_outline, title: "PROFILE"),
+          FloatingNavbarItem(icon: Icons.shopping_bag_outlined, title: "MY CART"),
+        ],
       ),
       body: body.elementAt(selectindex),
     );
