@@ -94,7 +94,7 @@ class _Category_ViewState extends State<Category_View> {
       "price": PrPrice,
       "quantity": "1",
       "psize": Psize,
-      "combination_id": Psize
+      "combination_id": CombID
     }).catchError((err) {});
     if (response != null) {
       setState(() {
@@ -201,7 +201,8 @@ class _Category_ViewState extends State<Category_View> {
           PRODUCTNAME = FinalClist![index]["name"].toString();
           PRICE = FinalClist![index]["offerPrice"].toString();
           COMBINATIONID = FinalClist![index]["combinationId"].toString();
-          addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, "1", COMBINATIONID!);
+          PSIZE = FinalClist![index]["size_attribute_name"].toString();
+          addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
         },
         OfferPrice: FinalClist![index]["offerPrice"].toString(),
         Description: FinalClist![index]["description"].toString(),

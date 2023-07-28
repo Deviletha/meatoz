@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:meatoz/screens/wishlist/wishListCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../Login_page.dart';
+import '../product_view/Product_view.dart';
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -73,17 +75,15 @@ class _WishlistState extends State<Wishlist> {
         prlist = jsonDecode(response);
         prlist1 = prlist!["pagination"];
         Prlist = prlist1!["pageData"];
-
       });
     } else {
       debugPrint('api failed:');
-
     }
   }
 
   Future<void> removeFromWishtist(String id) async {
     var response = await ApiHelper().post(endpoint: "wishList/remove", body: {
-      "id" : id
+      "id": id
     }).catchError((err) {});
     if (response != null) {
       setState(() {
@@ -101,10 +101,8 @@ class _WishlistState extends State<Wishlist> {
           fontSize: 16.0,
         );
       });
-
     } else {
       debugPrint('api failed:');
-
     }
   }
 
@@ -162,14 +160,14 @@ class _WishlistState extends State<Wishlist> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Image.asset("assets/logo1.png",height: 80,),
+              Image.asset("assets/logo1.png", height: 80,),
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => LoginPage())
                   );
-                },style: ElevatedButton.styleFrom(
+                }, style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal[900],
                   shadowColor: Colors.teal[300],
                   shape: RoundedRectangleBorder(
@@ -191,88 +189,35 @@ class _WishlistState extends State<Wishlist> {
   Widget getWishlist(int index) {
     var image = base! + Prlist![index]["image"].toString();
     var price = "₹ " + Prlist![index]["offerPrice"].toString();
-    return Card(
-      child: ListTile(
-          title: Column(
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ClipRRect(
-                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                      borderRadius: BorderRadius.circular(20), // Image border
-                      child: SizedBox.fromSize(
-                        size: Size.fromRadius(60), // Image radius
-                        child: CachedNetworkImage(
-                          imageUrl: image,
-                          placeholder: (context, url) => Container(
-                            color: Colors.grey[300],
-                          ),
-                          errorWidget: (context, url, error) => Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage("assets/noItem.png"))),
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [SizedBox(
-                        height: 10,
-                      ),
-                        Prlist == null
-                            ? Text("null data")
-                            : TextConst(text:
-                          Prlist![index]["name"].toString(),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        TextConst(text:
-                          Prlist![index]["description"].toString(),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          price,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          trailing: TextButton(
-            onPressed: () {
+    var PID = (Prlist![index]["id"] ?? "").toString();
+    var CombID = (Prlist![index]["combinationId"] ?? "").toString();
+    return WishlistTile(
+        ItemName: Prlist![index]["name"].toString(),
+        ImagePath: image,
+        onPressed: () {
               removeFromWishtist(Prlist![index]["wishlistId"].toString());
               print(Prlist![index]["wishlistId"].toString(),);
             },
-            child: Text(
-              "Remove",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductView(
+                recipe: "Recipe not available for this item",
+                position: index,
+                id: PID,
+                productname:
+                Prlist![index]["name"].toString(),
+                url: image,
+                description: Prlist![index]["description"].toString(),
+                amount: Prlist![index]["offerPrice"].toString(),
+                combinationId: CombID,
+                psize: "0",
+              ),
             ),
-          )),
-    );
+          );
+        },
+        TotalPrice: price,
+        Description: Prlist![index]["description"].toString());
   }
 }

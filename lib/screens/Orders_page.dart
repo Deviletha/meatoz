@@ -91,7 +91,7 @@ class _MyOrdersState extends State<MyOrders> {
 
   Widget getOrderList(int index) {
     var image = base! + orderList![index]["image"].toString();
-    var price = "₹" + orderList![index]["total"].toString();
+    var price = "₹ " + orderList![index]["total"].toString();
     return Card(
         color: Colors.grey.shade50,
         child: InkWell(
@@ -123,7 +123,7 @@ class _MyOrdersState extends State<MyOrders> {
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         borderRadius: BorderRadius.circular(20), // Image border
                         child: SizedBox.fromSize(
-                          size: Size.fromRadius(40), // Image radius
+                          size: Size.fromRadius(45), // Image radius
                           child: CachedNetworkImage(
                             imageUrl: image,
                             placeholder: (context, url) => Container(
@@ -150,7 +150,7 @@ class _MyOrdersState extends State<MyOrders> {
                       decoration: BoxDecoration(color: Colors.green,borderRadius: BorderRadius.circular(10)),
                       child: Center(
                         child: Text(
-                          "Order Placed"
+                          orderList![index]["status_note"].toString(),
                         ),
                       ),
                     )
@@ -171,6 +171,13 @@ class _MyOrdersState extends State<MyOrders> {
                     ),
                     Text(
                       price,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: Colors.green),
+                    ),
+                    Text(
+                      "Amount Paid: ₹ "+orderList![index]["amount_paid"].toString(),
                       style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,

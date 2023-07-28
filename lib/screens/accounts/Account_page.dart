@@ -1,19 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:meatoz/screens/profile_pages.dart';
+import 'package:meatoz/screens/accounts/AccountsCustomCard.dart';
+import 'package:meatoz/screens/accounts/profile_pages.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../Components/appbar_text.dart';
-import '../Config/ApiHelper.dart';
+import '../../Components/Alertbox_text.dart';
+import '../../Components/appbar_text.dart';
+import '../../Config/ApiHelper.dart';
 import 'Add_address.dart';
 import 'FAQ_page.dart';
-import 'Login_page.dart';
-import 'Orders_page.dart';
-import 'Settings.dart';
+import '../Login_page.dart';
+import '../Orders_page.dart';
 import 'Subscription_plans.dart';
+import 'Settings.dart';
 
 class Accounts extends StatefulWidget {
   const Accounts({Key? key}) : super(key: key);
@@ -101,17 +103,20 @@ class _AccountsState extends State<Accounts> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
+            shape: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),gapPadding: 20
+            ),
             title: Text("Open Gmail"),
             content: Text("Are you sure"),
             actions: [
               TextButton(
-                child: Text("No"),
+                child:  AlertText(text: 'No',),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child: Text("Yes"),
+                child:  AlertText(text: 'Yes',),
                 onPressed: () {
                   launch(
                       "mailto:meatozhelp&support@gmail.com?subject=  &body=  ");
@@ -209,130 +214,67 @@ class _AccountsState extends State<Accounts> {
                       ),
                     ),
                     SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return AddAddress();
-                          }),
-                        ),
-                        child: Container(
-                          child: Row(
-                            children: [
-                              Icon(Icons.add_home_outlined, size: 25),
-                              SizedBox(width: 10),
-                              Text("Add Address",
-                                  style: TextStyle(fontSize: 20)),
-                            ],
-                          ),
-                        ),
+                    AccountCustomTile(
+                      title: "Add Address",
+                      icon: Icons.add_home_outlined,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return AddAddress();
+                        }),
                       ),
                     ),
                     Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return Wishlist();
-                          }),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.favorite_border_sharp, size: 25),
-                            SizedBox(width: 10),
-                            Text("My Wishlist", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
+                    AccountCustomTile(
+                      title: "My Wishlist",
+                      icon: Icons.favorite_border_sharp,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return Wishlist();
+                        }),
                       ),
                     ),
                     Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return MyOrders();
-                          }),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.shopping_bag_outlined, size: 25),
-                            SizedBox(width: 10),
-                            Text("My Orders", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
+                    AccountCustomTile(
+                      title: "My Orders",
+                      icon: Icons.shopping_bag_outlined,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return MyOrders();
+                        }),
                       ),
                     ),
                     Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return Subscription();
-                          }),
-                        ),
-                        child: Container(
-                          child: Row(
-                            children: [
-                              Icon(Icons.local_offer_outlined, size: 25),
-                              SizedBox(width: 10),
-                              Text("Subscription",
-                                  style: TextStyle(fontSize: 20)),
-                            ],
-                          ),
-                        ),
+                    AccountCustomTile(
+                      title: "Subscription",
+                      icon: Icons.local_offer_outlined,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return Subscription();
+                        }),
                       ),
                     ),
                     Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return Settings();
-                          }),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.settings_outlined, size: 25),
-                            SizedBox(width: 10),
-                            Text("Settings", style: TextStyle(fontSize: 20)),
-                          ],
-                        ),
+                    AccountCustomTile(
+                      title: "Settings",
+                      icon: Icons.settings_outlined,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return Settings();
+                        }),
                       ),
                     ),
                     Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () {
-                          openGmail();
-                          // launch("mailto:aryaashelp&support@gmail.com?subject=  &body=  ");
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.help_outline_rounded,
-                              size: 25,
-                            ),
-                            SizedBox(width: 10),
-                            Text(
-                              "Help & Support",
-                              style: TextStyle(
-                                fontSize: 20,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                    AccountCustomTile(
+                      title: "Help & Support",
+                      icon: Icons.help_outline_rounded,
+                      onTap: () {
+                        openGmail();
+                      },
                     ),
                     Divider(),
                     Padding(

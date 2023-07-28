@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Components/appbar_text.dart';
+import '../../Components/appbar_text.dart';
 
 
 class FAQ extends StatefulWidget {

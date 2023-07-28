@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:meatoz/screens/place_order.dart';
+import 'package:meatoz/screens/placeOrder/place_order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../Components/appbar_text.dart';
-import '../Components/text_widget.dart';
-import '../Config/ApiHelper.dart';
+import '../../Components/appbar_text.dart';
+import '../../Components/text_widget.dart';
+import '../../Config/ApiHelper.dart';
 
 
 class SetectAddress extends StatefulWidget {

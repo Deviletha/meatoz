@@ -3,9 +3,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../Components/appbar_text.dart';
-import '../Components/text_widget.dart';
-import '../Config/ApiHelper.dart';
+import '../../Components/Alertbox_text.dart';
+import '../../Components/appbar_text.dart';
+import '../../Components/text_widget.dart';
+import '../../Config/ApiHelper.dart';
 
 
 class Subscription extends StatefulWidget {
@@ -93,16 +94,18 @@ class _SubscriptionState extends State<Subscription> {
     }
   }
 
-  chooseSubscriptionPlan(String id) async {
+  chooseSubscriptionPlan(String planId, String paymentType) async {
     setState(() {
       isLoading = true;
     });
-
-    // Check if SubscriptionList is not null and index is within its range
     if (SubscriptionList != null ) {
       var response = await ApiHelper().post(
           endpoint: "subscriptionPlan/subcription",
-          body: {"userid": UID, "plan_id": id}
+          body: {
+            "userid": UID,
+            "plan_id": planId,
+            "type": paymentType,
+          }
       ).catchError((err) {});
 
       setState(() {
@@ -122,11 +125,43 @@ class _SubscriptionState extends State<Subscription> {
         debugPrint('api failed:');
       }
     } else {
-      // Handle the case when SubscriptionList is null or index is invalid
       print("Invalid index or SubscriptionList is null.");
     }
   }
-
+  void _showPlanConfirmationDialog(BuildContext context, String planId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),gapPadding: 20
+          ),
+          title: Text("Choose Plan"),
+          content: Text(
+            "If you choose unpaid, the amount will add to your next order's bill.",
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                // Perform the action for Paid option
+                chooseSubscriptionPlan(planId, "Paid");
+                Navigator.pop(context); // Close the dialog
+              },
+              child:  AlertText(text: 'Paid')
+            ),
+            TextButton(
+              onPressed: () {
+                // Perform the action for Unpaid option
+                chooseSubscriptionPlan(planId, "Unpaid");
+                Navigator.pop(context); // Close the dialog
+              },
+              child:  AlertText(text: 'Unpaid')
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 
   @override
@@ -387,7 +422,7 @@ class _SubscriptionState extends State<Subscription> {
                       bottomRight: Radius.circular(20))),
               child: TextButton(
                 onPressed: () {
-                  chooseSubscriptionPlan(SubscriptionList![index1]["id"].toString());
+                  _showPlanConfirmationDialog(context, SubscriptionList![index1]["id"].toString());
                 },
                 child: Text(
                   "Choose Plan",

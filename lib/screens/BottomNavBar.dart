@@ -2,7 +2,7 @@ import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import 'cartpage/Cart_page.dart';
-import 'Account_page.dart';
+import 'accounts/Account_page.dart';
 import 'homepage/homepage.dart';
 
 class BottomNav extends StatefulWidget {

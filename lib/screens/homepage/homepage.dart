@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meatoz/screens/homepage/AllProducts/Product_tile.dart';
@@ -13,7 +12,6 @@ import 'package:meatoz/screens/homepage/TopPicks/TopPicks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/Title_widget.dart';
-import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../Notification_page.dart';
 import '../Orderdetails.dart';
@@ -458,37 +456,46 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 child: isLoading
                     ? Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: ListView.builder(
-                          physics: ScrollPhysics(),
-                          shrinkWrap: true,
-                          itemCount: 1, // Set a fixed count for shimmer effect
-                          itemBuilder: (context, index) {
-                            return Container(
-                              margin: EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              height: 100, // Adjust the height as needed
-                            );
-                          },
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: ListView.builder(
+                    physics: ScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: 1, // Set a fixed count for the shimmer effect
+                    itemBuilder: (context, index) {
+                      return Container(
+                        margin: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                      )
+                        height: 100, // Adjust the height as needed
+                      );
+                    },
+                  ),
+                )
                     : Column(
+                  children: [
+                    Visibility(
+                      visible: orderList != null && orderList!.isNotEmpty,
+                      child: Column(
                         children: [
                           Heading(text: "Recent Orders"),
-                          if (orderList != null && orderList!.isNotEmpty)
-                            ListView.builder(
-                              physics: ScrollPhysics(),
-                              shrinkWrap: true,
-                              itemCount: orderList!.length,
-                              itemBuilder: (context, index) =>
-                                  getOrderList(index),
-                            ),
+                          ListView.builder(
+                            physics: ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount: orderList?.length ?? 0,
+                            itemBuilder: (context, index) => getOrderList(index),
+                          ),
                         ],
                       ),
+                    ),
+                    Visibility(
+                      visible: UID == null,
+                      child: SizedBox(),
+                    ),
+                  ],
+                ),
               ),
             ),
             Heading(text: "Category"),
@@ -813,7 +820,7 @@ class _HomePageState extends State<HomePage> {
                 amount: Finalpopularlist![index]["combinationPrice"].toString(),
                 combinationId:
                     Finalpopularlist![index]["combinationId"].toString(),
-                psize: Finalpopularlist![index]["combinationSize"].toString(),
+                psize: Finalpopularlist![index]["size_attribute_name"].toString(),
               ),
             ),
           );
@@ -924,7 +931,7 @@ class _HomePageState extends State<HomePage> {
               description: Finalproductlist![index]["description"].toString(),
               amount: Finalproductlist![index]["offerPrice"].toString(),
               combinationId: CombID,
-              psize: Finalproductlist![index]["combinationSize"].toString(),
+              psize: Finalproductlist![index]["size_attribute_name"].toString(),
             ),
           ),
         );
@@ -968,7 +975,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
-                recipe: "hint",
+                recipe: "Recipe not available for this product",
                 position: index,
                 id: PID,
                 productname: dealOfTheDayList![index]["name"].toString(),
@@ -976,7 +983,7 @@ class _HomePageState extends State<HomePage> {
                 description: dealOfTheDayList![index]["description"].toString(),
                 amount: dealOfTheDayList![index]["offerPrice"].toString(),
                 combinationId: CombID,
-                psize: "0",
+                psize: dealOfTheDayList![index]["size_attribute_name"].toString(),
               ),
             ),
           );
@@ -1007,7 +1014,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
-                  recipe: "hint",
+                  recipe: "Recipe not available for this item",
                   position: index,
                   id: PID,
                   productname: ourProductList![index]["name"].toString(),
@@ -1015,7 +1022,8 @@ class _HomePageState extends State<HomePage> {
                   description: ourProductList![index]["description"].toString(),
                   amount: ourProductList![index]["offerPrice"].toString(),
                   combinationId: CombID,
-                  psize: "0"),
+                  psize: ourProductList![index]["size_attribute_name"].toString(),
+              ),
             ),
           );
         },

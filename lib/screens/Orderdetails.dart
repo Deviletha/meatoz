@@ -121,7 +121,7 @@ class _OrderDetailsState extends State<OrderDetails> {
 
   Widget getOrderList(int index) {
     var image = base! + orderList![index]["image"].toString();
-    var price = "₹" + orderList![index]["price"].toString();
+    var price = "₹ " + orderList![index]["price"].toString();
     return Card(
         color: Colors.grey.shade50,
         child: Padding(
@@ -140,7 +140,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                   borderRadius: BorderRadius.circular(20), // Image border
                   child: SizedBox.fromSize(
                     size: Size.fromRadius(40), // Image radius
-                    child: CachedNetworkImage(
+                    child:
+                    CachedNetworkImage(
                       imageUrl: image,
                       placeholder: (context, url) => Container(
                         color: Colors.grey[300],
@@ -189,7 +190,7 @@ class _OrderDetailsState extends State<OrderDetails> {
                 RetunItemApi();
               },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
+                      backgroundColor: Colors.teal[900],
                       shadowColor: Colors.teal[300],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(

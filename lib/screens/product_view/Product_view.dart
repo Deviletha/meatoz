@@ -8,6 +8,7 @@ import 'package:meatoz/screens/product_view/productCard.dart';
 import 'package:meatoz/screens/product_view/relatedItemsCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../Components/Alertbox_text.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
@@ -87,7 +88,7 @@ class _ProductViewState extends State<ProductView> {
       "price": PrPrice,
       "quantity": "1",
       "psize": Psize,
-      "combination_id": Psize
+      "combination_id": CombID
     }).catchError((err) {});
     if (response != null) {
       setState(() {
@@ -135,7 +136,9 @@ class _ProductViewState extends State<ProductView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey.shade100,
+          shape: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),gapPadding: 20
+          ),
           elevation: 0,
           title: Text('Recipe'),
           content: Text(widget.recipe),
@@ -144,7 +147,7 @@ class _ProductViewState extends State<ProductView> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: AlertText(text:'Close'),
             ),
           ],
         );
@@ -292,7 +295,7 @@ class _ProductViewState extends State<ProductView> {
                 PRODUCTID = RelatedPrdctList![index]["productID"].toString();
                 PRODUCTNAME = RelatedPrdctList![index]["name"].toString();
                 PRICE = RelatedPrdctList![index]["offerPrice"].toString();
-                PSIZE = RelatedPrdctList![index]["size"].toString();
+                PSIZE = RelatedPrdctList![index]["size_attribute_name"].toString();
                 COMBINATIONID =
                     RelatedPrdctList![index]["combinationid"].toString();
                 addToCart(
