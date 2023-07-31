@@ -8,7 +8,7 @@ import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
-import '../Login_page.dart';
+import '../registration/Login_page.dart';
 import '../product_view/Product_view.dart';
 
 class Wishlist extends StatefulWidget {

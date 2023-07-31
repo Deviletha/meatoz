@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:meatoz/screens/SplashScreen.dart';
+import 'package:meatoz/screens/splash_bottomNav/SplashScreen.dart';
 
 void main() {
   runApp(MyApp());

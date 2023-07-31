@@ -12,8 +12,8 @@ import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
 import 'Add_address.dart';
 import 'FAQ_page.dart';
-import '../Login_page.dart';
-import '../Orders_page.dart';
+import '../registration/Login_page.dart';
+import '../orders/Orders_page.dart';
 import 'Subscription_plans.dart';
 import 'Settings.dart';
 

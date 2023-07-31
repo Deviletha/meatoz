@@ -13,10 +13,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/Title_widget.dart';
 import '../../Config/ApiHelper.dart';
-import '../Notification_page.dart';
-import '../Orderdetails.dart';
+import 'Notification_page.dart';
+import '../orders/Orderdetails.dart';
 import '../product_view/Product_view.dart';
-import '../Search Page.dart';
+import 'Search Page.dart';
 import '../category_view/category_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -153,7 +153,6 @@ class _HomePageState extends State<HomePage> {
         productlist1 = productlist!["pagination"];
         Finalproductlist = productlist1!["pageData"];
         RelatedPrdctList = Finalproductlist![0]["relatedProduct"];
-        print(RelatedPrdctList);
       });
     } else {
       debugPrint('api failed:');

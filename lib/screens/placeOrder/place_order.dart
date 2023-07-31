@@ -8,7 +8,7 @@ import '../../Components/CustomRow.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
-import '../Orders_page.dart';
+import '../orders/Orders_page.dart';
 import '../accounts/Subscription_plans.dart';
 
 class PlaceOrder extends StatefulWidget {
@@ -42,6 +42,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   String? PACKINGCHARGE;
   String? SUBTOTAL;
   String? GRANDTOTAL;
+   int GRNDAMNT = 0;
   String? WALLET_AMOUNT_VALUE;
 
   double WALLET_AMOUNT = 0;
@@ -74,6 +75,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   bool isTodaySlotsVisible = true;
   bool isTomorrowSlotsVisible = true;
   bool isLoading = false;
+  bool isLoadOrder = false;
 
   @override
   void initState() {
@@ -253,7 +255,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   PlaceOrderApi() async {
     setState(() {
-      isLoading = true;
+      isLoadOrder = true;
     });
 
     var response = await ApiHelper().post(endpoint: "cart/addCODOrder", body: {
@@ -270,6 +272,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
       "tip": tipController.text,
       "paid": "1",
       "subscriptionPlanAmount": subscriptionPlanAmount.toString(),
+      "walletAppliedAmounts": WALLET_AMOUNT.toString()
     }).catchError((err) {});
     if (response != null) {
       setState(() {
@@ -298,7 +301,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
     }
 
     setState(() {
-      isLoading = false;
+      isLoadOrder = false;
     });
   }
 
@@ -464,7 +467,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                         borderRadius:
                                             BorderRadius.circular(12)),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(10.0),
+                                      padding:  EdgeInsets.all(10.0),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -488,7 +491,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                               setState(() {
                                                 WALLET_AMOUNT = WALLET_AMOUNT_L - value;
                                                 double AMOUNT = subtotal + double.parse(PACKINGCHARGE!) + double.parse(SHIPPINGCHARGE!) - WALLET_AMOUNT;
-                                                GRANDTOTAL = AMOUNT.toString();
+                                                GRNDAMNT = AMOUNT.toInt();
+                                                GRANDTOTAL = GRNDAMNT.toString();
+                                                print(WALLET_AMOUNT_L);
+                                                print("CHECK AMOUNT = " + WALLET_AMOUNT.toInt().toString());
+                                                print("GRAND TOTAL = " + GRANDTOTAL.toString());
                                               });
                                             },
                                           ),
@@ -610,6 +617,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                         CustomRow(text: "Grand Total", subtext: "Rs.${GRANDTOTAL!}"),
                                         Divider(thickness: 2),
                                         AmountRow(text: "Net Payable", subtext: "Rs.${GRANDTOTAL!}")
+
                                       ],
                                     ),
                                   ),
@@ -714,6 +722,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
       onTap: () {
         SLOTID = todaySlotList![index]["id"].toString();
         selectedTodaySlotIndex = index;
+        print("SLOTID" + todaySlotList![index]["id"].toString());
       },
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -730,11 +739,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   Widget getTomorrowSlot(int index) {
-    // final bool isSelected = selectedTomorrowSlotIndex == index;
+    final bool isSelected = selectedTomorrowSlotIndex == index;
 
     return InkWell(
       child: Card(
-        // color: isSelected ? Colors.red.shade100 : Colors.green.shade100,
+        color: isSelected ? Colors.red.shade100 : Colors.green.shade100,
         child: Center(
           child: InkWell(
             onTap: () {

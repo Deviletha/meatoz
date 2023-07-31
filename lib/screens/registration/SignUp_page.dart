@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Components/appbar_text.dart';
-import '../Config/ApiHelper.dart';
+import '../../Components/appbar_text.dart';
+import '../../Config/ApiHelper.dart';
 import 'Login_page.dart';
 
 class SignupPage extends StatefulWidget {

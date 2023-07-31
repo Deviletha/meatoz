@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../Components/appbar_text.dart';
-import '../Config/ApiHelper.dart';
+import '../../Components/appbar_text.dart';
+import '../../Config/ApiHelper.dart';
 import 'Orderdetails.dart';
 
 class MyOrders extends StatefulWidget {

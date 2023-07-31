@@ -1,9 +1,9 @@
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
-import 'cartpage/Cart_page.dart';
-import 'accounts/Account_page.dart';
-import 'homepage/homepage.dart';
+import '../cartpage/Cart_page.dart';
+import '../accounts/Account_page.dart';
+import '../homepage/homepage.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({Key? key}) : super(key: key);
