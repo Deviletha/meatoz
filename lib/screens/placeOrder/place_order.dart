@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:meatoz/screens/placeOrder/subscription_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/Amount_Row.dart';
@@ -531,71 +532,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     ),
                                   ),
                                   Heading(text: "SUBSCRIPTION"),
-                                  InkWell(
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) {
-                                        return Subscription();
-                                      }),
-                                    ),
-                                    child: Container(
-                                      height: 85,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(15),
-                                          gradient: LinearGradient(
-                                              begin: Alignment.bottomLeft,
-                                              end: Alignment.topRight,
-                                              colors: [
-                                                Colors.blue.shade200,
-                                                Colors.blue.shade100,
-                                                Colors.green.shade50,
-                                              ])),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Image.asset(
-                                              "assets/logo_short.png",
-                                              height: 50,
-                                              alignment: Alignment.centerLeft,
-                                              color: Colors.white,
-                                            ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: const [
-                                                  Text(
-                                                    "Meatoz Subscription Plan",
-                                                    style: TextStyle(
-                                                        fontSize: 18,
-                                                        fontWeight:
-                                                            FontWeight.bold),
-                                                  ),
-                                                  Text(
-                                                    "Subscription plan details",
-                                                    style: TextStyle(
-                                                      fontSize: 15,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            TextConst(
-                                              text: "Know More",
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  MeatosPlan(),
                                   Heading(text: "BILL SUMMARY"),
                                   Container(
                                     decoration: BoxDecoration(
