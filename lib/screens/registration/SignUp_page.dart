@@ -318,8 +318,8 @@ class _SignupPageState extends State<SignupPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         apiForSignup();
-                        // Navigator.pushReplacement(context,
-                        //     MaterialPageRoute(builder: (context) => LoginPage()));
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) => LoginPage()));
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal[900],

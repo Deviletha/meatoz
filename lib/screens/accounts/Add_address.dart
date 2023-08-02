@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Config/ApiHelper.dart';
+import 'FAQ_page.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key}) : super(key: key);
@@ -79,6 +80,16 @@ class _AddAddressState extends State<AddAddress> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(onPressed: () => Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) {
+        return FAQ(
+          section: "edit_address",
+        );
+      }),
+    ),icon: Icon(Icons.help_outline_rounded))
+        ],
       ),
       backgroundColor: Colors.white,
       body: Container(

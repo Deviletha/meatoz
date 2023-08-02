@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:meatoz/screens/accounts/AccountsCustomCard.dart';
+import 'package:meatoz/screens/accounts/wallet.dart';
+import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import 'package:share_plus/share_plus.dart';
@@ -62,7 +63,6 @@ class _AccountsState extends State<Accounts> {
           datas = response.toString();
           responseData = jsonDecode(response);
           dataList = responseData?["data"];
-          print(responseData.toString());
         });
       } else {
         debugPrint('api failed:');
@@ -84,7 +84,6 @@ class _AccountsState extends State<Accounts> {
           datas = response.toString();
           referal = jsonDecode(response);
           referalList = referal?["reffercode"];
-          print(responseData.toString());
         });
       } else {
         debugPrint('api failed:');
@@ -248,6 +247,16 @@ class _AccountsState extends State<Accounts> {
                     ),
                     Divider(),
                     AccountCustomTile(
+                        title: "Wallet",
+                        icon: Icons.wallet_rounded,
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return WalletPage();
+                          }),
+                        ),),
+                    Divider(),
+                    AccountCustomTile(
                       title: "Subscription",
                       icon: Icons.local_offer_outlined,
                       onTap: () => Navigator.push(
@@ -305,7 +314,9 @@ class _AccountsState extends State<Accounts> {
                               onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) {
-                                  return FAQ();
+                                  return FAQ(
+                                    section: "reffer_friend",
+                                  );
                                 }),
                               ),
                               icon: Icon(
@@ -316,6 +327,7 @@ class _AccountsState extends State<Accounts> {
                         ),
                       ),
                     ),
+                    Divider(),
                   ],
                 ),
               )

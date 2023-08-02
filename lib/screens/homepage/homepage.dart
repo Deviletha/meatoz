@@ -326,7 +326,6 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Image.asset(
           "assets/logo1.png", height: 36, color: Colors.white,
-          // fit: BoxFit.fill,
         ),
         actions: [
           IconButton(
@@ -816,7 +815,7 @@ class _HomePageState extends State<HomePage> {
                     Finalpopularlist![index]["combinationName"].toString(),
                 url: image,
                 description: Finalpopularlist![index]["description"].toString(),
-                amount: Finalpopularlist![index]["combinationPrice"].toString(),
+                amount: Finalpopularlist![index]["offerPrice"].toString(),
                 combinationId:
                     Finalpopularlist![index]["combinationId"].toString(),
                 psize: Finalpopularlist![index]["size_attribute_name"].toString(),
@@ -835,7 +834,7 @@ class _HomePageState extends State<HomePage> {
         child: Container(),
       );
     }
-    var image = base! + categorylist![index]["image"];
+    var image = base! + (categorylist![index]["image"] ?? "").toString();
 
     return TopPicksCard(
       ImagePath: image,
@@ -876,7 +875,7 @@ class _HomePageState extends State<HomePage> {
     if (categorylist == null) {
       return Container(); // Handle the case when categorylist is null
     }
-    var image = base! + categorylist![index]["image"];
+    var image = base! + (categorylist![index]["image"] ?? "").toString();
     var itemName = categorylist![index]["name"].toString();
 
     return CategoryCard(

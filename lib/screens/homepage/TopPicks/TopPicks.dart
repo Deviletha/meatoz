@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../../Components/text_widget.dart';
 
@@ -17,12 +18,28 @@ class TopPicksCard extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
+        clipBehavior: Clip.antiAlias,
         height: 200,
         width: 330,
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image:
-            DecorationImage(image: NetworkImage(ImagePath), fit: BoxFit.cover)),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        // Image border// Image radius
+        child: CachedNetworkImage(
+          imageUrl: ImagePath,
+          placeholder: (context, url) =>
+              Container(
+                color: Colors.grey[300],
+              ),
+          errorWidget: (context, url, error) =>
+              Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage("assets/noItem.png"))),
+              ),
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

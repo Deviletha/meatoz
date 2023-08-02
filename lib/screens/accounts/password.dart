@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import 'FAQ_page.dart';
 
 
 class ChangePassword extends StatefulWidget {
@@ -77,6 +78,16 @@ class _ChangePasswordState extends State<ChangePassword> {
         title: AppText(text:
           "Change Password",
         ),
+        actions: [
+          IconButton(onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) {
+              return FAQ(
+                section: "change_password",
+              );
+            }),
+          ), icon: Icon(Icons.help_outline_rounded))
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

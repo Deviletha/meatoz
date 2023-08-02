@@ -92,6 +92,8 @@ class _WishlistState extends State<Wishlist> {
         wslist = prlist!["pagination"];
         WsList = wslist!["pageData"];
 
+        refreshPage();
+
         Fluttertoast.showToast(
           msg: "Removed product",
           toastLength: Toast.LENGTH_SHORT,

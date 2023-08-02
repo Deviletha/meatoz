@@ -7,6 +7,7 @@ import '../../Components/Alertbox_text.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
+import 'FAQ_page.dart';
 
 
 class Subscription extends StatefulWidget {
@@ -178,6 +179,16 @@ class _SubscriptionState extends State<Subscription> {
         title: AppText(
           text: "SUBCRIPTION",
         ),
+        actions: [
+          IconButton(onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return FAQ(
+                        section: "subcription_plans",
+                      );
+                    }),
+                  ), icon: Icon(Icons.help_outline_rounded))
+        ],
       ),
       body: Container(
         decoration: BoxDecoration(

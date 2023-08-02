@@ -167,8 +167,8 @@ class _Cart_pageState extends State<Cart_page> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Lottie.network(
-                                "https://lottie.host/32c20b57-b386-4604-bdcb-5bc24906185d/0a3h1oSkk5.json",
+                            Lottie.asset(
+                                "assets/Emptycart.json",
                                 height: 300,
                                 repeat: false),
                             Heading(text: "Empty Cart")

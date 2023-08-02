@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:meatoz/screens/placeOrder/subscription_card.dart';
+import 'package:meatoz/screens/placeOrder/widget/offer_card.dart';
+import 'package:meatoz/screens/placeOrder/widget/subscription_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/Amount_Row.dart';
@@ -10,7 +11,6 @@ import '../../Components/Title_widget.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../orders/Orders_page.dart';
-import '../accounts/Subscription_plans.dart';
 
 class PlaceOrder extends StatefulWidget {
   final String id;
@@ -25,6 +25,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
   bool isContactless = false;
   String? UID;
   int index = 0;
+
+  final couponController = TextEditingController();
 
   ///OrderList
   Map? order;
@@ -43,9 +45,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
   String? PACKINGCHARGE;
   String? SUBTOTAL;
   String? GRANDTOTAL;
-   int GRNDAMNT = 0;
   String? WALLET_AMOUNT_VALUE;
+  String? DISCOUNTID;
+  String? PRODUCTID;
 
+  int GRNDAMNT = 0;
+  int DSCOUNTAMOUNT = 0;
+  int NETPAYABLEAFTERDISCOUNT = 0;
   double WALLET_AMOUNT = 0;
   double WALLET_AMOUNT_L = 0;
 
@@ -55,6 +61,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
   ///CartList
   Map? clist;
   List? CartList;
+  List? cartDiscountList;
+
+  ///DiscountList
+  Map? discount;
+  Map? discountList;
 
   ///WalletAmountList
   Map? wallet;
@@ -76,18 +87,31 @@ class _PlaceOrderState extends State<PlaceOrder> {
   bool isTodaySlotsVisible = true;
   bool isTomorrowSlotsVisible = true;
   bool isLoading = false;
-  bool isLoadOrder = false;
+
+  @override
+  void dispose() {
+    couponController.dispose();
+    tipController.dispose();
+    noteController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     checkUser();
-    deliverySlotApi();
     setVisibilityFlags();
-    apiForCart();
-    generalDetailsApi();
-    apiForWalletAmount();
-    apiForCheckplan();
     super.initState();
+  }
+
+  bool _isApplied = false;
+
+  void _onApplyButtonPressed() {
+    // Call the apiForDiscounts() function here or perform any other actions
+    apiForDiscounts();
+    // Update the state to toggle the button text
+    setState(() {
+      _isApplied = true;
+    });
   }
 
   void setVisibilityFlags() {
@@ -104,39 +128,87 @@ class _PlaceOrderState extends State<PlaceOrder> {
       print(UID);
     });
     apiForCart();
+    deliverySlotApi();
+    setVisibilityFlags();
+    generalDetailsApi();
+    apiForWalletAmount();
+    apiForCheckplan();
   }
 
   apiForCart() async {
     setState(() {
       isLoading = true;
     });
+    if (UID != null) {
+      var response = await ApiHelper().post(endpoint: "cart/get", body: {
+        "userid": UID,
+      }).catchError((err) {});
 
-    var response = await ApiHelper().post(endpoint: "cart/get", body: {
-      "userid": UID,
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response != null) {
+        setState(() {
+          debugPrint('cartpage successful:');
+          clist = jsonDecode(response);
+          CartList = clist!["cart"];
+          cartDiscountList = clist!["cartDiscountForAllProduct"];
+
+          if (CartList != null && CartList!.isNotEmpty) {
+            // Add a check for the cartDiscountList size before accessing it
+            if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
+              DISCOUNTID = cartDiscountList![0]["id"].toString();
+            } else {
+              DISCOUNTID = "0";
+            }
+            PRODUCTID = CartList![0]["product_id"].toString();
+          }
+          if (CartList != null && CartList!.isNotEmpty) {
+            for (int i = 0; i < CartList!.length; i++) {
+              int price = CartList![i]["price"];
+              subtotal1 = subtotal1 + price;
+            }
+          }
+
+          subtotal = subtotal1 - WALLET_AMOUNT;
+          SUBTOTAL = subtotal.toString();
+        });
+      } else {
+        debugPrint('api failed:');
+      }
+    }
+  }
+
+  apiForDiscounts() async {
+    setState(() {
+      isLoading = true;
+    });
+    var responseDiscount =
+    await ApiHelper().post(endpoint: "discount/applyDiscountAtCart", body: {
+      "user_id": UID,
+      "discount_id": DISCOUNTID,
+      "product_id": PRODUCTID
     }).catchError((err) {});
 
     setState(() {
       isLoading = false;
     });
-
-    if (response != null) {
+    if (responseDiscount != null) {
       setState(() {
-        debugPrint('cartpage successful:');
-        clist = jsonDecode(response);
-        CartList = clist!["cart"];
+        debugPrint('Apply discount api successful:');
+        discount = jsonDecode(responseDiscount);
+        discountList = discount!["discountAmount"];
 
-        if (CartList != null && CartList!.isNotEmpty) {
-          for (int i = 0; i < CartList!.length; i++) {
-            int price = CartList![i]["price"];
-            subtotal1 = subtotal1 + price;
-          }
-        }
+        DSCOUNTAMOUNT = discountList!["discountAmount"].toInt();
+        print("dscnt amt" + DSCOUNTAMOUNT.toString());
 
-        subtotal = subtotal1 - WALLET_AMOUNT;
-        SUBTOTAL = subtotal.toString();
+        NETPAYABLEAFTERDISCOUNT = GRNDAMNT - DSCOUNTAMOUNT;
+        print("netpayable after discount" + NETPAYABLEAFTERDISCOUNT.toString());
+        GRANDTOTAL = NETPAYABLEAFTERDISCOUNT.toString();
       });
     } else {
-      debugPrint('api failed:');
+      debugPrint('discount api failed:');
     }
   }
 
@@ -156,14 +228,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
         debugPrint('Wallet successful:');
         wallet = jsonDecode(responseWallet);
         walletList = wallet!["walletAmount"];
-        WALLET_AMOUNT_L = walletList![index]["wallet_amount"].toDouble();
-        // Initialize the WALLET_AMOUNT to the maximum available value initially
-        WALLET_AMOUNT = WALLET_AMOUNT_L;
+
+        if (walletList != null && walletList!.isNotEmpty) {
+          WALLET_AMOUNT_L = walletList![index]["wallet_amount"].toDouble();
+          WALLET_AMOUNT = WALLET_AMOUNT_L;
+        }
+        print("API Response: $responseWallet");
       });
     } else {
       debugPrint('wallet api failed:');
     }
   }
+
 
   apiForCheckplan() async {
     setState(() {
@@ -171,7 +247,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
     });
 
     var response =
-        await ApiHelper().post(endpoint: "subscriptionPlan/PaidOrNot", body: {
+    await ApiHelper().post(endpoint: "subscriptionPlan/PaidOrNot", body: {
       "userid": UID,
     }).catchError((err) {});
 
@@ -209,19 +285,24 @@ class _PlaceOrderState extends State<PlaceOrder> {
     var response = await ApiHelper()
         .post(endpoint: "deliverySlot/get", body: {}).catchError((err) {});
     if (response != null) {
-      apiForWalletAmount();
       setState(() {
         debugPrint('slot api successful:');
         slot = jsonDecode(response);
         slotlist = slot!["slots"];
-        todaySlotList = slotlist!["today"];
-        tomorrowSlotList = slotlist!["tomorrow"];
+        todaySlotList = slotlist?["today"]; // Add null check
+        tomorrowSlotList = slotlist?["tomorrow"];
+
+        todaySlotList = slotlist?["today"] ?? [];
+        tomorrowSlotList = slotlist?["tomorrow"] ?? [];
+
+        // Add null check
         print("slotid" + SLOTID!);
       });
     } else {
       apiForWalletAmount();
       debugPrint('api failed:');
     }
+
     setState(() {
       isLoading = false;
     });
@@ -232,7 +313,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
       isLoading = true;
     });
 
-    var response = await ApiHelper().post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
+    var response = await ApiHelper()
+        .post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('general detailsapi successful:');
@@ -240,9 +322,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
         genralList = list!["general_info"];
         SHIPPINGCHARGE = genralList![index]["delivery_charge"].toString();
         PACKINGCHARGE = genralList![index]["packing_charge"].toString();
-        double AMOUNT = int.parse(PACKINGCHARGE!) +int.parse(SHIPPINGCHARGE!)+ subtotal;
+        double AMOUNT =
+            int.parse(PACKINGCHARGE!) + int.parse(SHIPPINGCHARGE!) + subtotal;
         GRANDTOTAL = AMOUNT.toString();
-        print("AMOUNT = "+AMOUNT.toString());
+        print("AMOUNT = " + AMOUNT.toString());
         // generalDetailsApi();
       });
     } else {
@@ -253,10 +336,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
     });
   }
 
-
   PlaceOrderApi() async {
     setState(() {
-      isLoadOrder = true;
+      isLoading = true;
     });
 
     var response = await ApiHelper().post(endpoint: "cart/addCODOrder", body: {
@@ -280,29 +362,17 @@ class _PlaceOrderState extends State<PlaceOrder> {
         debugPrint('place order api successful:');
         order = jsonDecode(response);
         orderlist = order!["data"];
-        FinalOrderlist = orderlist!["pageData"];
+        if (orderlist != null) {
+          FinalOrderlist = orderlist!["pageData"];
 
-        Fluttertoast.showToast(
-          msg: "Order Placed",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.SNACKBAR,
-          timeInSecForIosWeb: 1,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      });
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MyOrders(),
-        ),
-      );
+        }
+      } );
     } else {
       debugPrint('place order api failed:');
     }
 
     setState(() {
-      isLoadOrder = false;
+      isLoading = false;
     });
   }
 
@@ -333,321 +403,373 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Image.asset(
+            "assets/logo1.png",
+            height: 25,
+            color: Colors.white,
+          ),
+        ),
         backgroundColor: Colors.grey.shade200,
         body: isLoading
             ? ShimmerLoading() // Replace CircularProgressIndicator with ShimmerLoading
             : Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomLeft,
-                    end: Alignment.topRight,
-                    colors: [
-                      Colors.grey.shade400,
-                      Colors.grey.shade200,
-                      Colors.grey.shade50,
-                      Colors.grey.shade200,
-                      Colors.grey.shade400,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.bottomLeft,
+              end: Alignment.topRight,
+              colors: [
+                Colors.grey.shade400,
+                Colors.grey.shade200,
+                Colors.grey.shade50,
+                Colors.grey.shade200,
+                Colors.grey.shade400,
+              ],
+            ),
+          ),
+          child: isLoading
+              ? ShimmerLoading()
+              : ListView(
+            children: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(9.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Heading(text: "DELIVERY TIME SLOT"),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                            BorderRadius.circular(12)),
+                        child: Column(
+                          children: [
+                            Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                                  children: [
+                                    Text("Today"),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          isTodaySlotsVisible =
+                                          !isTodaySlotsVisible;
+                                        });
+                                      },
+                                      icon: Icon(isTodaySlotsVisible
+                                          ? Icons.minimize
+                                          : Icons.add),
+                                    ),
+                                  ],
+                                ),
+                                Visibility(
+                                  visible: isTodaySlotsVisible,
+                                  child: GridView.builder(
+                                    physics: ScrollPhysics(),
+                                    shrinkWrap: true,
+                                    gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 3.4,
+                                    ),
+                                    itemCount: todaySlotList == null
+                                        ? 0
+                                        : todaySlotList?.length,
+                                    itemBuilder: (context, index) =>
+                                        getTodaySlot(index),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Divider(),
+                            Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Tomorrow",
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          isTomorrowSlotsVisible =
+                                          !isTomorrowSlotsVisible;
+                                        });
+                                      },
+                                      icon: Icon(
+                                          isTomorrowSlotsVisible
+                                              ? Icons.minimize
+                                              : Icons.add),
+                                    ),
+                                  ],
+                                ),
+                                Visibility(
+                                  visible: isTomorrowSlotsVisible,
+                                  child: GridView.builder(
+                                    physics: ScrollPhysics(),
+                                    shrinkWrap: true,
+                                    gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 3,
+                                      childAspectRatio: 4,
+                                    ),
+                                    itemCount: tomorrowSlotList ==
+                                        null
+                                        ? 0
+                                        : tomorrowSlotList?.length,
+                                    itemBuilder: (context, index) =>
+                                        getTomorrowSlot(index),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Heading(text: "WALLET BALANCE"),
+                      Container(
+                        height: 170,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                            BorderRadius.circular(12)),
+                        child: Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: [
+                              walletList == null
+                                  ? Text("0")
+                                  : Text(
+                                "Wallet Amount Rs." +
+                                    WALLET_AMOUNT_L
+                                        .toString(),
+                                textAlign: TextAlign.start,
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                "Applied Amount:" +
+                                    WALLET_AMOUNT
+                                        .toInt()
+                                        .toString(),
+                                textAlign: TextAlign.start,
+                              ),
+                              Slider(
+                                mouseCursor: MouseCursor.uncontrolled,
+                                activeColor: Colors.teal[900],
+                                inactiveColor: Colors.teal[500],
+                                value: WALLET_AMOUNT,
+                                min: 0,
+                                max: WALLET_AMOUNT_L,
+                                onChanged: (double value) {
+                                  setState(() {
+                                    // Ensure that WALLET_AMOUNT does not exceed WALLET_AMOUNT_L
+                                    WALLET_AMOUNT = value.clamp(0, WALLET_AMOUNT_L);
+                                    // Calculate the new GRANDTOTAL and update other values accordingly
+                                    double AMOUNT = subtotal + double.parse(PACKINGCHARGE!) + double.parse(SHIPPINGCHARGE!) - WALLET_AMOUNT;
+                                    GRNDAMNT = AMOUNT.toInt();
+                                    GRANDTOTAL = GRNDAMNT.toString();
+                                    print("CHECK AMOUNT = " + WALLET_AMOUNT.toInt().toString());
+                                    print("GRAND TOTAL = " + GRANDTOTAL.toString());
+                                  });
+                                },
+                              ),
+
+                              // ElevatedButton(
+                              //   onPressed: () {
+                              //     CartList?.clear();
+                              //     apiForCart();
+                              //     generalDetailsApi();
+                              //     Fluttertoast.showToast(
+                              //       msg: "Selected Wallet Amount:",
+                              //       toastLength: Toast.LENGTH_SHORT,
+                              //       gravity: ToastGravity.SNACKBAR,
+                              //       timeInSecForIosWeb: 1,
+                              //       textColor: Colors.white,
+                              //       fontSize: 16.0,
+                              //     );
+                              //   },
+                              //   style: ElevatedButton.styleFrom(
+                              //     backgroundColor: Colors.teal[900],
+                              //     shadowColor: Colors.teal[300],
+                              //     shape: RoundedRectangleBorder(
+                              //       borderRadius: BorderRadius.only(
+                              //         bottomRight:
+                              //             Radius.circular(10),
+                              //         topLeft: Radius.circular(10),
+                              //       ),
+                              //     ),
+                              //   ),
+                              //   child: Text("Apply"),
+                              // ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Heading(text: "SUBSCRIPTION"),
+                      MeatosPlan(),
+                      Heading(text: "BILL SUMMARY"),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                            BorderRadius.circular(12)),
+                        child: Column(
+                          children: [
+                            AmountRow(
+                              text: "Subtotal",
+                              subtext: "Rs.${SUBTOTAL!}",
+                            ),
+                            CustomRow(
+                                text: "Delivery Charges",
+                                subtext: "Rs.0"),
+                            CustomRow(
+                                text: "Packing Charges",
+                                subtext: "Rs.${PACKINGCHARGE!}"),
+                            CustomRow(
+                                text: "Shipping Charges",
+                                subtext: "Rs.${SHIPPINGCHARGE!}"),
+                            CustomRow(
+                                text: "Grand Total",
+                                subtext: "Rs.${GRANDTOTAL!}"),
+                            Divider(thickness: 2),
+                            AmountRow(
+                                text: "Net Payable",
+                                subtext: "Rs.${GRANDTOTAL!}")
+                          ],
+                        ),
+                      ),
+                      Heading(text: "SAVINGS CORNER"),
+                      SizedBox(
+                        height: 10,
+                      ),
+
+                      OfferCard(
+                        title: cartDiscountList![index]["title"]
+                            .toString(),
+                        description: cartDiscountList![index]
+                        ["description"]
+                            .toString(),
+                        image: "assets/offer.png",
+                        onPressed: _isApplied ? null : _onApplyButtonPressed,
+                        isApplied: _isApplied, // Pass the isApplied value to OfferCard
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                            BorderRadius.circular(12)),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextConst(
+                                    text: "Contactless Delivery"),
+                                Checkbox(
+                                  activeColor: Colors.teal[900],
+                                  focusColor: Colors.red,
+                                  shape: CircleBorder(
+                                      eccentricity: .8),
+                                  // checkColor: Colors.teal[100],
+                                  value: isContactless,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isContactless = value!;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 35, right: 35, top: 20),
+                              child: TextFormField(
+                                controller: tipController,
+                                keyboardType: TextInputType.number,
+                                decoration: InputDecoration(
+                                  labelText: "Tip (if any)",
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'tip';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                textInputAction:
+                                TextInputAction.done,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 35, right: 35, top: 20),
+                              child: TextFormField(
+                                controller: noteController,
+                                decoration: InputDecoration(
+                                  labelText: "Enter Delivery Note",
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Enter delivery note';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                textInputAction:
+                                TextInputAction.done,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await PlaceOrderApi();
+                                // Wait for 3 seconds before navigating to MyOrders
+                                await Future.delayed(Duration(seconds: 1));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyOrders(),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.teal[900],
+                                shadowColor: Colors.teal[300],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                    bottomRight: Radius.circular(10),
+                                    topLeft: Radius.circular(10),
+                                  ),
+                                ),
+                              ),
+                              child: Text("Place Order"),
+                            ),
+                          ],
+                        ),
+                      )
                     ],
                   ),
                 ),
-                child: isLoading
-                    ? ShimmerLoading()
-                    : ListView(
-                        children: [
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(9.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Heading(text: "DELIVERY TIME SLOT"),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
-                                    child: Column(
-                                      children: [
-                                        Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text("Today"),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      isTodaySlotsVisible =
-                                                          !isTodaySlotsVisible;
-                                                    });
-                                                  },
-                                                  icon: Icon(isTodaySlotsVisible
-                                                      ? Icons.minimize
-                                                      : Icons.add),
-                                                ),
-                                              ],
-                                            ),
-                                            Visibility(
-                                              visible: isTodaySlotsVisible,
-                                              child: GridView.builder(
-                                                physics: ScrollPhysics(),
-                                                shrinkWrap: true,
-                                                gridDelegate:
-                                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 2,
-                                                  childAspectRatio: 3.4,
-                                                ),
-                                                itemCount: todaySlotList == null
-                                                    ? 0
-                                                    : todaySlotList?.length,
-                                                itemBuilder: (context, index) =>
-                                                    getTodaySlot(index),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Divider(),
-                                        Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Text(
-                                                  "Tomorrow",
-                                                ),
-                                                IconButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      isTomorrowSlotsVisible =
-                                                          !isTomorrowSlotsVisible;
-                                                    });
-                                                  },
-                                                  icon: Icon(
-                                                      isTomorrowSlotsVisible
-                                                          ? Icons.minimize
-                                                          : Icons.add),
-                                                ),
-                                              ],
-                                            ),
-                                            Visibility(
-                                              visible: isTomorrowSlotsVisible,
-                                              child: GridView.builder(
-                                                physics: ScrollPhysics(),
-                                                shrinkWrap: true,
-                                                gridDelegate:
-                                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                                  crossAxisCount: 3,
-                                                  childAspectRatio: 4,
-                                                ),
-                                                itemCount: tomorrowSlotList ==
-                                                        null
-                                                    ? 0
-                                                    : tomorrowSlotList?.length,
-                                                itemBuilder: (context, index) =>
-                                                    getTomorrowSlot(index),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Heading(text: "WALLET BALANCE"),
-                                  Container(
-                                    height: 170,
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
-                                    child: Padding(
-                                      padding:  EdgeInsets.all(10.0),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          walletList == null
-                                              ? Text("0")
-                                              : Text(
-                                                  "Wallet Amount Rs."+WALLET_AMOUNT_L.toString(),
-                                                  textAlign: TextAlign.start,
-                                                ),
-                                          SizedBox(height: 20),
-                                          Text(
-                                            "Adjust Wallet Amount:"+WALLET_AMOUNT.toInt().toString(),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                          Slider(
-                                            value: WALLET_AMOUNT,
-                                            min: 0,
-                                            max: WALLET_AMOUNT_L,
-                                            onChanged: (double value) {
-                                              setState(() {
-                                                WALLET_AMOUNT = WALLET_AMOUNT_L - value;
-                                                double AMOUNT = subtotal + double.parse(PACKINGCHARGE!) + double.parse(SHIPPINGCHARGE!) - WALLET_AMOUNT;
-                                                GRNDAMNT = AMOUNT.toInt();
-                                                GRANDTOTAL = GRNDAMNT.toString();
-                                                print(WALLET_AMOUNT_L);
-                                                print("CHECK AMOUNT = " + WALLET_AMOUNT.toInt().toString());
-                                                print("GRAND TOTAL = " + GRANDTOTAL.toString());
-                                              });
-                                            },
-                                          ),
-                                          // ElevatedButton(
-                                          //   onPressed: () {
-                                          //     CartList?.clear();
-                                          //     apiForCart();
-                                          //     generalDetailsApi();
-                                          //     Fluttertoast.showToast(
-                                          //       msg: "Selected Wallet Amount:",
-                                          //       toastLength: Toast.LENGTH_SHORT,
-                                          //       gravity: ToastGravity.SNACKBAR,
-                                          //       timeInSecForIosWeb: 1,
-                                          //       textColor: Colors.white,
-                                          //       fontSize: 16.0,
-                                          //     );
-                                          //   },
-                                          //   style: ElevatedButton.styleFrom(
-                                          //     backgroundColor: Colors.teal[900],
-                                          //     shadowColor: Colors.teal[300],
-                                          //     shape: RoundedRectangleBorder(
-                                          //       borderRadius: BorderRadius.only(
-                                          //         bottomRight:
-                                          //             Radius.circular(10),
-                                          //         topLeft: Radius.circular(10),
-                                          //       ),
-                                          //     ),
-                                          //   ),
-                                          //   child: Text("Apply"),
-                                          // ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  Heading(text: "SUBSCRIPTION"),
-                                  MeatosPlan(),
-                                  Heading(text: "BILL SUMMARY"),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
-                                    child: Column(
-                                      children: [
-                                         AmountRow(text: "Subtotal", subtext: "Rs.${SUBTOTAL!}",),
-                                        CustomRow(
-                                            text: "Delivery Charges",
-                                            subtext: "Rs.0"),
-                                        CustomRow(
-                                            text: "Packing Charges",
-                                            subtext: "Rs.${PACKINGCHARGE!}"),
-                                        CustomRow(
-                                            text: "Shipping Charges",
-                                            subtext: "Rs.${SHIPPINGCHARGE!}"),
-                                        CustomRow(text: "Grand Total", subtext: "Rs.${GRANDTOTAL!}"),
-                                        Divider(thickness: 2),
-                                        AmountRow(text: "Net Payable", subtext: "Rs.${GRANDTOTAL!}")
-
-                                      ],
-                                    ),
-                                  ),
-                                  Heading(text: "SAVINGS CORNER"),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
-                                    child: Column(
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            TextConst(
-                                                text: "Contactless Delivery"),
-                                            Checkbox(
-                                              value: isContactless,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  isContactless = value!;
-                                                });
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 35, right: 35, top: 20),
-                                          child: TextFormField(
-                                            controller: tipController,
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              labelText: "Tip (if any)",
-                                            ),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'tip';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textInputAction:
-                                                TextInputAction.done,
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 35, right: 35, top: 20),
-                                          child: TextFormField(
-                                            controller: noteController,
-                                            decoration: InputDecoration(
-                                              labelText: "Enter Delivery Note",
-                                            ),
-                                            validator: (value) {
-                                              if (value!.isEmpty) {
-                                                return 'Enter delivery note';
-                                              } else {
-                                                return null;
-                                              }
-                                            },
-                                            textInputAction:
-                                                TextInputAction.done,
-                                          ),
-                                        ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            PlaceOrderApi();
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.teal[900],
-                                            shadowColor: Colors.teal[300],
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                bottomRight:
-                                                    Radius.circular(10),
-                                                topLeft: Radius.circular(10),
-                                              ),
-                                            ),
-                                          ),
-                                          child: Text("Place Order"),
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
               ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -657,9 +779,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
     return InkWell(
       onTap: () {
-        SLOTID = todaySlotList![index]["id"].toString();
-        selectedTodaySlotIndex = index;
-        print("SLOTID" + todaySlotList![index]["id"].toString());
+        setState(() {
+          SLOTID = todaySlotList![index]["id"].toString();
+          selectedTodaySlotIndex = index;
+          print("SLOTID" + todaySlotList![index]["id"].toString());
+        });
       },
       child: Padding(
         padding: const EdgeInsets.all(15),
@@ -675,29 +799,30 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
+
   Widget getTomorrowSlot(int index) {
     final bool isSelected = selectedTomorrowSlotIndex == index;
 
     return InkWell(
+      onTap: () {
+        setState(() {
+          SLOTID = tomorrowSlotList![index]["id"].toString();
+          selectedTomorrowSlotIndex = index;
+          print("SLOTID" + tomorrowSlotList![index]["id"].toString());
+        });
+      },
       child: Card(
         color: isSelected ? Colors.red.shade100 : Colors.green.shade100,
         child: Center(
-          child: InkWell(
-            onTap: () {
-              SLOTID = tomorrowSlotList![index]["id"].toString();
-              print("SLOTID" + tomorrowSlotList![index]["id"].toString());
-            },
-            child: Text(
-              tomorrowSlotList![index]["slot"].toString(),
-            ),
+          child: Text(
+            tomorrowSlotList![index]["slot"].toString(),
           ),
         ),
       ),
     );
   }
 }
-
-class ShimmerLoading extends StatelessWidget {
+  class ShimmerLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(

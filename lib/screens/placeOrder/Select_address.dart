@@ -21,6 +21,9 @@ class _SetectAddressState extends State<SetectAddress> {
   Map? address;
   List? Addresslist;
 
+  Map? pincode;
+  List? pincodeList;
+
   @override
   void initState() {
     checkUser();
@@ -36,6 +39,73 @@ class _SetectAddressState extends State<SetectAddress> {
     getUserAddress();
   }
 
+  checkPincode(String pin) async {
+    var response = await ApiHelper().post(
+      endpoint: "postal/checkAvailabilityAtCheckout",
+      body: {
+        "userid": UID,
+        "pincode": pin,
+      },
+    ).catchError((err) {});
+    if (response != null) {
+      setState(() {
+        debugPrint('check pin code api successful:');
+        pincode = jsonDecode(response);
+        pincodeList = pincode!["orderData"];
+        int pincodeAvailability = pincodeList![index]["pincode_availability"];
+        if (pincodeAvailability == 0) {
+          showCustomSnackBar(context);
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  PlaceOrder(
+                    id: Addresslist![index]["id"].toString(),
+                  ),
+            ),
+          );
+        }
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  void showCustomSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red[400],
+        duration: Duration(seconds: 5),
+        content: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Delivery is not available in this pincode.",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                "Please use another address.",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
   getUserAddress() async {
     var response = await ApiHelper().post(endpoint: "user/getAddress", body: {
       "userid": UID,
@@ -45,11 +115,9 @@ class _SetectAddressState extends State<SetectAddress> {
         debugPrint('get address api successful:');
         address = jsonDecode(response);
         Addresslist = address!["status"];
-
       });
     } else {
       debugPrint('api failed:');
-
     }
   }
 
@@ -58,7 +126,7 @@ class _SetectAddressState extends State<SetectAddress> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(text:
-          "Select your Address",
+        "Select your Address",
         ),
       ),
       body: Container(
@@ -103,8 +171,7 @@ class _SetectAddressState extends State<SetectAddress> {
                 : Column(
               children: [
                 TextConst(text:
-                  "Your Order will be shipped to this address",
-
+                "Your Order will be shipped to this address",
                 ),
                 ListView.builder(
                   physics: ScrollPhysics(),
@@ -121,16 +188,13 @@ class _SetectAddressState extends State<SetectAddress> {
   }
 
   Widget getAddressRow(int index) {
+    if (Addresslist == null || Addresslist!.isEmpty) {
+      return Container(); // Return an empty container or another widget when Addresslist is null or empty.
+    }
+
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PlaceOrder(
-              id: Addresslist![index]["id"].toString(),
-            ),
-          ),
-        );
+        checkPincode(Addresslist![index]["pincode"].toString());
       },
       child: Card(
         child: Padding(
@@ -139,19 +203,7 @@ class _SetectAddressState extends State<SetectAddress> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Addresslist == null
-                  ? Shimmer.fromColors(
-                baseColor: Colors.grey[300]!,
-                highlightColor: Colors.grey[100]!,
-                child: Container(
-                  width: double.infinity,
-                  height: 20,
-                  color: Colors.white,
-                ),
-              )
-                  :  TextConst(text:
-                Addresslist![index]["address"].toString(),
-              ),
+              TextConst(text: Addresslist![index]["address"].toString()),
               SizedBox(height: 5),
               Text(
                 Addresslist![index]["phone"].toString(),
@@ -161,22 +213,15 @@ class _SetectAddressState extends State<SetectAddress> {
                 ),
               ),
               SizedBox(height: 5),
-              TextConst(text:
-                Addresslist![index]["city"].toString(),
-              ),
+              TextConst(text: Addresslist![index]["city"].toString()),
               SizedBox(height: 5),
-              TextConst(text:
-                Addresslist![index]["pincode"].toString(),
-              ),
+              TextConst(text: Addresslist![index]["pincode"].toString()),
               SizedBox(height: 5),
-              TextConst(text:
-                Addresslist![index]["state"].toString(),
-              ),
+              TextConst(text: Addresslist![index]["state"].toString()),
             ],
           ),
         ),
       ),
     );
-    print(Addresslist![index]["id"].toString());
   }
 }

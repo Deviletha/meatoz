@@ -24,8 +24,6 @@ class _OrderDetailsState extends State<OrderDetails> {
   Map? order1;
   List? orderList;
 
-  Map? Orderreturn;
-  Map? returnlist;
 
   @override
   void initState() {
@@ -40,31 +38,6 @@ class _OrderDetailsState extends State<OrderDetails> {
       print(UID);
     });
     getMyOrders();
-  }
-
-  RetunItemApi() async {
-    var response =
-        await ApiHelper().post(endpoint: "common/orderReturn", body: {
-      "orderid": widget.id,
-      "reason": reasonController.text,
-    }).catchError((err) {});
-    if (response != null) {
-      setState(() {
-        debugPrint('return api successful:');
-        Orderreturn = jsonDecode(response);
-        returnlist = Orderreturn!["data"];
-        Fluttertoast.showToast(
-          msg: "order returned successfully",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.SNACKBAR,
-          timeInSecForIosWeb: 1,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      });
-    } else {
-      debugPrint('api failed:');
-    }
   }
 
   getMyOrders() async {
@@ -128,49 +101,41 @@ class _OrderDetailsState extends State<OrderDetails> {
           padding: const EdgeInsets.all(10),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
+                clipBehavior: Clip.antiAlias,
+                width:150,
+                height: 100,
                 decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                child: ClipRRect(
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  borderRadius: BorderRadius.circular(20), // Image border
-                  child: SizedBox.fromSize(
-                    size: Size.fromRadius(40), // Image radius
-                    child:
-                    CachedNetworkImage(
-                      imageUrl: image,
-                      placeholder: (context, url) => Container(
+                // Image border// Image radius
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) =>
+                      Container(
                         color: Colors.grey[300],
                       ),
-                      errorWidget: (context, url, error) => Container(
+                  errorWidget: (context, url, error) =>
+                      Container(
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: AssetImage("assets/noItem.png"))),
                       ),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
+                  fit: BoxFit.cover,
                 ),
               ),
               SizedBox(
                 width: 10,
               ),
               Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   orderList == null
                       ? Text("null data")
                       : Text(
-                    orderList![index]["product"].toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
                     price,
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
@@ -181,23 +146,18 @@ class _OrderDetailsState extends State<OrderDetails> {
                     height: 10,
                   ),
                   Text(
+                    orderList![index]["product"].toString(),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
                     orderList![index]["address"].toString(),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-              ElevatedButton(onPressed: (){
-                RetunItemApi();
-              },
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal[900],
-                      shadowColor: Colors.teal[300],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(10),
-                            topLeft: Radius.circular(10)),
-                      )),
-                  child: Text("Return"))
             ],
           ),
         ));

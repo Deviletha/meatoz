@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meatoz/Components/Alertbox_text.dart';
-import 'package:meatoz/screens/accounts/AccountsCustomCard.dart';
+import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
