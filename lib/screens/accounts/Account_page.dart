@@ -32,7 +32,8 @@ class _AccountsState extends State<Accounts> {
   Map? responseData;
   List? dataList;
   int index = 0;
-  bool isLoggedIn = false;
+  bool isLoggedIn = true;
+  bool isLoading = true;
 
   Map? referal;
   List? referalList;
@@ -43,19 +44,29 @@ class _AccountsState extends State<Accounts> {
     super.initState();
   }
 
-  Future<void> checkUser() async {
+  checkUser() async {
     final prefs = await SharedPreferences.getInstance();
+    UID = prefs.getString("UID");
     setState(() {
-      UID = prefs.getString("UID");
       isLoggedIn = UID != null;
+      print(UID);
     });
-    Apicall();
+    if (isLoggedIn) {
+      Apicall();
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> Apicall() async {
     try {
       var response = await ApiHelper().post(endpoint: "common/profile", body: {
         "id": UID,
+      });
+      setState(() {
+        isLoading = false;
       });
       if (response != null) {
         setState(() {
@@ -150,7 +161,11 @@ class _AccountsState extends State<Accounts> {
               Colors.grey.shade400,
             ])),
         child: isLoggedIn
-            ? Padding(
+            ? isLoading
+            ? Center(
+          child: CircularProgressIndicator(color: Colors.teal[900]),
+        )
+       : Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
                   children: [

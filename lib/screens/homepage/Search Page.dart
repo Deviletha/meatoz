@@ -169,6 +169,7 @@ class _SearchState extends State<Search> {
           context,
           MaterialPageRoute(
             builder: (context) => ProductView(
+              stock: searchlist![index]["stock"].toString(),
                 recipe: searchlist![index]["hint"].toString(),
               position: index,
                 id: searchlist![index]["id"].toString(),

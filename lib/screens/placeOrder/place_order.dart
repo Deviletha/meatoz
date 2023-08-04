@@ -14,8 +14,9 @@ import '../orders/Orders_page.dart';
 
 class PlaceOrder extends StatefulWidget {
   final String id;
+  final String picode;
 
-  const PlaceOrder({Key? key, required this.id}) : super(key: key);
+  const PlaceOrder({Key? key, required this.id, required this.picode}) : super(key: key);
 
   @override
   State<PlaceOrder> createState() => _PlaceOrderState();
@@ -23,6 +24,7 @@ class PlaceOrder extends StatefulWidget {
 
 class _PlaceOrderState extends State<PlaceOrder> {
   bool isContactless = false;
+  String? CONTACTLESS;
   String? UID;
   int index = 0;
 
@@ -41,6 +43,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   ///General data's list
   String? SLOTID;
+  String? SLOTDATE;
   String? SHIPPINGCHARGE;
   String? PACKINGCHARGE;
   String? SUBTOTAL;
@@ -71,6 +74,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
   Map? wallet;
   List? walletList;
 
+  ///Pin codeList
+  Map? pincode;
+  List? pincodeList;
+
   double subtotal = 0;
   double subtotal1 = 0;
 
@@ -86,7 +93,69 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   bool isTodaySlotsVisible = true;
   bool isTomorrowSlotsVisible = true;
-  bool isLoading = false;
+  bool isLoading = true;
+
+  checkPincode() async {
+    var response = await ApiHelper().post(
+      endpoint: "postal/checkAvailabilityAtCheckout",
+      body: {
+        "userid": UID,
+        "pincode": widget.picode,
+      },
+    ).catchError((err) {});
+    if (response != null) {
+      setState(() {
+        debugPrint('check pin code api successful:');
+        pincode = jsonDecode(response);
+        pincodeList = pincode!["orderData"];
+        print("checkpincode"+ response);
+        print("checkpincode"+ widget.picode);
+        int pincodeAvailability = pincodeList![0]["pincode_availability"];
+        if (pincodeAvailability == 0) {
+          showCustomSnackBar(context);
+        }
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  void showCustomSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.red[400],
+        duration: Duration(seconds: 3),
+        content: Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Delivery is not available in this pincode.",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                "Please use another address.",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ).closed.then((reason) {
+
+      Navigator.of(context).pop();
+    });
+  }
+
 
   @override
   void dispose() {
@@ -116,7 +185,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   void setVisibilityFlags() {
     if (todaySlotList == null || todaySlotList!.isEmpty) {
-      isTodaySlotsVisible = false;
+      isTodaySlotsVisible = true;
       isTomorrowSlotsVisible = true;
     }
   }
@@ -133,12 +202,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
     generalDetailsApi();
     apiForWalletAmount();
     apiForCheckplan();
+    checkPincode();
   }
 
   apiForCart() async {
-    setState(() {
-      isLoading = true;
-    });
+
     if (UID != null) {
       var response = await ApiHelper().post(endpoint: "cart/get", body: {
         "userid": UID,
@@ -181,9 +249,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   apiForDiscounts() async {
-    setState(() {
-      isLoading = true;
-    });
+
     var responseDiscount =
     await ApiHelper().post(endpoint: "discount/applyDiscountAtCart", body: {
       "user_id": UID,
@@ -213,9 +279,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   apiForWalletAmount() async {
-    setState(() {
-      isLoading = true;
-    });
+
     var responseWallet = await ApiHelper().post(endpoint: "wallet", body: {
       "userid": UID,
     }).catchError((err) {});
@@ -242,10 +306,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
 
   apiForCheckplan() async {
-    setState(() {
-      isLoading = true;
-    });
-
     var response =
     await ApiHelper().post(endpoint: "subscriptionPlan/PaidOrNot", body: {
       "userid": UID,
@@ -278,9 +338,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   deliverySlotApi() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper()
         .post(endpoint: "deliverySlot/get", body: {}).catchError((err) {});
@@ -297,6 +354,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
         // Add null check
         print("slotid" + SLOTID!);
+        print("slotdate" + SLOTDATE!);
       });
     } else {
       apiForWalletAmount();
@@ -309,9 +367,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   generalDetailsApi() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper()
         .post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
@@ -337,20 +392,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   PlaceOrderApi() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper().post(endpoint: "cart/addCODOrder", body: {
       "id": UID,
       "address": widget.id,
       "delivery_time": SLOTID,
+      "delivery_date": SLOTDATE,
       "totalAmount": SUBTOTAL,
       "amount": GRANDTOTAL,
       "discountAmount": "0",
       "shippingCharge": SHIPPINGCHARGE,
       "paymentType": "COD",
-      "contactless": isContactless.toString(),
+      "contactless": CONTACTLESS.toString(),
       "delivery_note": noteController.text,
       "tip": tipController.text,
       "paid": "1",
@@ -586,34 +639,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   });
                                 },
                               ),
-
-                              // ElevatedButton(
-                              //   onPressed: () {
-                              //     CartList?.clear();
-                              //     apiForCart();
-                              //     generalDetailsApi();
-                              //     Fluttertoast.showToast(
-                              //       msg: "Selected Wallet Amount:",
-                              //       toastLength: Toast.LENGTH_SHORT,
-                              //       gravity: ToastGravity.SNACKBAR,
-                              //       timeInSecForIosWeb: 1,
-                              //       textColor: Colors.white,
-                              //       fontSize: 16.0,
-                              //     );
-                              //   },
-                              //   style: ElevatedButton.styleFrom(
-                              //     backgroundColor: Colors.teal[900],
-                              //     shadowColor: Colors.teal[300],
-                              //     shape: RoundedRectangleBorder(
-                              //       borderRadius: BorderRadius.only(
-                              //         bottomRight:
-                              //             Radius.circular(10),
-                              //         topLeft: Radius.circular(10),
-                              //       ),
-                              //     ),
-                              //   ),
-                              //   child: Text("Apply"),
-                              // ),
                             ],
                           ),
                         ),
@@ -687,11 +712,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   focusColor: Colors.red,
                                   shape: CircleBorder(
                                       eccentricity: .8),
-                                  // checkColor: Colors.teal[100],
                                   value: isContactless,
                                   onChanged: (value) {
                                     setState(() {
                                       isContactless = value!;
+                                      CONTACTLESS = value ? "Contactless_Delivery" : "";
                                     });
                                   },
                                 ),
@@ -781,8 +806,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
       onTap: () {
         setState(() {
           SLOTID = todaySlotList![index]["id"].toString();
+          SLOTDATE = todaySlotList![index]["today"].toString();
           selectedTodaySlotIndex = index;
           print("SLOTID" + todaySlotList![index]["id"].toString());
+          print("SLOTDate" + todaySlotList![index]["today"].toString());
         });
       },
       child: Padding(
@@ -807,8 +834,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
       onTap: () {
         setState(() {
           SLOTID = tomorrowSlotList![index]["id"].toString();
+          SLOTDATE = tomorrowSlotList![index]["tomorrow"].toString();
           selectedTomorrowSlotIndex = index;
           print("SLOTID" + tomorrowSlotList![index]["id"].toString());
+          print("SLOTDate" + tomorrowSlotList![index]["tomorrow"].toString());
         });
       },
       child: Card(

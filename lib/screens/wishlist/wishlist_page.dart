@@ -21,7 +21,7 @@ class Wishlist extends StatefulWidget {
 class _WishlistState extends State<Wishlist> {
   String? UID;
   bool isLoading = true;
-  bool isLoggedIn = false;
+  bool isLoggedIn = true;
   GlobalKey<RefreshIndicatorState> refreshKey =
   GlobalKey<RefreshIndicatorState>();
 
@@ -57,9 +57,6 @@ class _WishlistState extends State<Wishlist> {
   int index = 0;
 
   Future<void> APIcall() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper().post(endpoint: "wishList/get", body: {
       "userid": UID,
@@ -92,7 +89,6 @@ class _WishlistState extends State<Wishlist> {
         wslist = prlist!["pagination"];
         WsList = wslist!["pageData"];
 
-        refreshPage();
 
         Fluttertoast.showToast(
           msg: "Removed product",
@@ -205,6 +201,7 @@ class _WishlistState extends State<Wishlist> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
+                stock: Prlist![index]["stock"].toString(),
                 recipe: "Recipe not available for this item",
                 position: index,
                 id: PID,

@@ -15,7 +15,7 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPageState extends State<WalletPage> {
-  bool isLoading = false;
+  bool isLoading = true;
   String? UID;
   int index = 0;
 
@@ -36,9 +36,7 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   apiForWalletAmount() async {
-    setState(() {
-      isLoading = true;
-    });
+
     var responseWallet = await ApiHelper().post(endpoint: "wallet", body: {
       "userid": UID,
     }).catchError((err) {});

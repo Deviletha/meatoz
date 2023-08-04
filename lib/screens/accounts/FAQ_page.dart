@@ -1,7 +1,5 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
 
@@ -18,7 +16,7 @@ class _FAQState extends State<FAQ> {
   Map? faq;
   List? faqList;
   int index = 0;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -27,9 +25,6 @@ class _FAQState extends State<FAQ> {
   }
 
   getFAQ() async {
-    setState(() {
-      isLoading = true; // Set isLoading to true when API call starts
-    });
 
     var response = await ApiHelper().post(
       endpoint: "faq/get",

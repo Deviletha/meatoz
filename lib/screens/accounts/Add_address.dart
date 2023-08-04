@@ -40,13 +40,13 @@ class _AddAddressState extends State<AddAddress> {
   Future<void> AddAddress() async {
     try {
       var response = await ApiHelper().post(endpoint: "user/saveAddress", body: {
-        "name": nameController.text,
-        "contact": contactController.text,
-        "locality": localityController.text,
-        "postal" : postalController.text,
-        "address" : addressController.text,
-        "location" : locationController.text,
-        "state" : stateController.text,
+        "name": nameController.text.toString(),
+        "contact": contactController.text.toString(),
+        "locality": localityController.text.toString(),
+        "postal" : postalController.text.toString(),
+        "address" : addressController.text.toString(),
+        "location" : locationController.text.toString(),
+        "state" : stateController.text.toString(),
         "latitude": "123",
         "longitude": "1234",
         "userid" : UID
@@ -68,7 +68,6 @@ class _AddAddressState extends State<AddAddress> {
 
       else {
         debugPrint('api failed:');
-
       }
     } catch (err) {
       debugPrint('An error occurred: $err');
@@ -253,7 +252,7 @@ class _AddAddressState extends State<AddAddress> {
                           bottomLeft: Radius.circular(15),
                           topRight: Radius.circular(15)),
                     )),
-                child: Text("Change Address"),
+                child: Text("Add Address"),
               ),
             ),
           ],

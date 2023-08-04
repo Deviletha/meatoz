@@ -11,7 +11,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../Components/Alertbox_text.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
-import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../registration/Login_page.dart';
 
@@ -25,6 +24,7 @@ class ProductView extends StatefulWidget {
   final String psize;
   final int position;
   final String recipe;
+  final String stock;
 
   ProductView(
       {Key? key,
@@ -36,6 +36,7 @@ class ProductView extends StatefulWidget {
       required this.combinationId,
       required this.psize,
       required this.position,
+      required this.stock,
       required this.recipe})
       : super(key: key);
 
@@ -137,8 +138,7 @@ class _ProductViewState extends State<ProductView> {
       builder: (BuildContext context) {
         return AlertDialog(
           shape: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),gapPadding: 20
-          ),
+              borderRadius: BorderRadius.circular(20), gapPadding: 20),
           elevation: 0,
           title: Text('Recipe'),
           content: Text(widget.recipe),
@@ -147,7 +147,7 @@ class _ProductViewState extends State<ProductView> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: AlertText(text:'Close'),
+              child: AlertText(text: 'Close'),
             ),
           ],
         );
@@ -195,30 +195,28 @@ class _ProductViewState extends State<ProductView> {
         actions: [
           IconButton(
             onPressed: _showAlertDialog,
-            icon: Icon(Icons.dining_outlined
-            ),
+            icon: Icon(Icons.dining_outlined),
           ),
         ],
       ),
       body: Container(
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              colors: [
-                Colors.grey.shade400,
-                Colors.grey.shade200,
-                Colors.grey.shade50,
-                Colors.grey.shade200,
-                Colors.grey.shade400,
-              ])
-      ),
+            gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
         child: ListView(
           children: [
             ProductViewTile(
                 ItemName: widget.productname.toString(),
                 ImagePath: widget.url,
-                onPressed:  () {
+                onPressed: () {
                   checkLoggedIn(context);
                 },
                 Price: widget.amount,
@@ -231,8 +229,9 @@ class _ProductViewState extends State<ProductView> {
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
                     child: CarouselSlider.builder(
-                      itemCount:
-                          RelatedPrdctList == null ? 0 : RelatedPrdctList?.length,
+                      itemCount: RelatedPrdctList == null
+                          ? 0
+                          : RelatedPrdctList?.length,
                       itemBuilder: (context, index, realIndex) {
                         return getProducts(index);
                       },
@@ -292,15 +291,13 @@ class _ProductViewState extends State<ProductView> {
         ItemName: RelatedPrdctList![index]["name"].toString(),
         ImagePath: image,
         onPressed: () {
-                PRODUCTID = RelatedPrdctList![index]["productID"].toString();
-                PRODUCTNAME = RelatedPrdctList![index]["name"].toString();
-                PRICE = RelatedPrdctList![index]["offerPrice"].toString();
-                PSIZE = RelatedPrdctList![index]["size_attribute_name"].toString();
-                COMBINATIONID =
-                    RelatedPrdctList![index]["combinationid"].toString();
-                addToCart(
-                    PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
-              },
+          PRODUCTID = RelatedPrdctList![index]["productID"].toString();
+          PRODUCTNAME = RelatedPrdctList![index]["name"].toString();
+          PRICE = RelatedPrdctList![index]["offerPrice"].toString();
+          PSIZE = RelatedPrdctList![index]["size_attribute_name"].toString();
+          COMBINATIONID = RelatedPrdctList![index]["combinationid"].toString();
+          addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
+        },
         Price: price);
   }
 }

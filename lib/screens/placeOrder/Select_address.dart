@@ -17,7 +17,6 @@ class SetectAddress extends StatefulWidget {
 
 class _SetectAddressState extends State<SetectAddress> {
   String? UID;
-  int index = 0;
   Map? address;
   List? Addresslist;
 
@@ -39,7 +38,7 @@ class _SetectAddressState extends State<SetectAddress> {
     getUserAddress();
   }
 
-  checkPincode(String pin) async {
+  checkPincode(String pin, int position) async {
     var response = await ApiHelper().post(
       endpoint: "postal/checkAvailabilityAtCheckout",
       body: {
@@ -52,19 +51,9 @@ class _SetectAddressState extends State<SetectAddress> {
         debugPrint('check pin code api successful:');
         pincode = jsonDecode(response);
         pincodeList = pincode!["orderData"];
-        int pincodeAvailability = pincodeList![index]["pincode_availability"];
+        int pincodeAvailability = pincodeList![position]["pincode_availability"];
         if (pincodeAvailability == 0) {
           showCustomSnackBar(context);
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  PlaceOrder(
-                    id: Addresslist![index]["id"].toString(),
-                  ),
-            ),
-          );
         }
       });
     } else {
@@ -165,6 +154,18 @@ class _SetectAddressState extends State<SetectAddress> {
                     height: 100,
                     color: Colors.white,
                   ),
+                  SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    color: Colors.white,
+                  ),
+                  SizedBox(height: 10),
+                  Container(
+                    width: double.infinity,
+                    height: 100,
+                    color: Colors.white,
+                  ),
                 ],
               ),
             )
@@ -194,7 +195,16 @@ class _SetectAddressState extends State<SetectAddress> {
 
     return InkWell(
       onTap: () {
-        checkPincode(Addresslist![index]["pincode"].toString());
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                PlaceOrder(
+                  id: Addresslist![index]["id"].toString(),
+                  picode: Addresslist![index]["pincode"].toString(),
+                ),
+          ),
+        );
       },
       child: Card(
         child: Padding(

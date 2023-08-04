@@ -30,7 +30,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String? UID;
 
-  bool isLoading = false;
+  bool isLoading = true;
   bool isLoadingProducts = true;
   bool isLoadingCategories = true;
 
@@ -81,9 +81,7 @@ class _HomePageState extends State<HomePage> {
   int index = 0;
 
   getMyOrders() async {
-    setState(() {
-      isLoading = true;
-    });
+
     var response =
         await ApiHelper().post(endpoint: "common/getMyOrders", body: {
       "userid": UID,
@@ -108,9 +106,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   ApiForCategory() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper()
         .post(endpoint: "categories", body: {}).catchError((err) {});
@@ -131,9 +126,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   ApiforAllProducts() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response =
         await ApiHelper().post(endpoint: "products/ByCombination", body: {
@@ -160,9 +152,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   ApiforBanner() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper()
         .post(endpoint: "banner/getOfferBanner", body: {}).catchError((err) {});
@@ -184,9 +173,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   apiForOurProducts() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper().post(
         endpoint: "product/ourProductLimit",
@@ -213,9 +199,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   apiForDealofTheDAy() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper().post(
         endpoint: "product/dealOfTheDayLimit",
@@ -242,9 +225,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   ApiforPopularProducts() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response =
         await ApiHelper().post(endpoint: "products/ByCombination", body: {
@@ -808,6 +788,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
+                stock: Finalpopularlist![index]["stock"].toString(),
                 recipe: Finalpopularlist![index]["hint"].toString(),
                 position: index,
                 id: Finalpopularlist![index]["id"].toString(),
@@ -920,6 +901,7 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => ProductView(
+              stock: Finalproductlist![index]["stock"].toString(),
               recipe: Finalproductlist![index]["hint"].toString(),
               position: index,
               id: PID,
@@ -973,6 +955,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
+                stock: dealOfTheDayList![index]["stock"].toString(),
                 recipe: "Recipe not available for this product",
                 position: index,
                 id: PID,
@@ -1012,6 +995,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
+                stock: ourProductList![index]["stock"].toString(),
                   recipe: "Recipe not available for this item",
                   position: index,
                   id: PID,

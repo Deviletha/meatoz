@@ -29,7 +29,7 @@ class _Cart_pageState extends State<Cart_page> {
   var CID;
   String? UID;
   bool isLoading = true;
-  bool isLoggedIn = false;
+  bool isLoggedIn = true;
 
   @override
   void initState() {
@@ -54,9 +54,6 @@ class _Cart_pageState extends State<Cart_page> {
   }
 
   APIforCart() async {
-    setState(() {
-      isLoading = true;
-    });
 
     var response = await ApiHelper().post(endpoint: "cart/get", body: {
       "userid": UID,

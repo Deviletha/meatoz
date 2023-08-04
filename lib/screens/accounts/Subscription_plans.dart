@@ -40,7 +40,7 @@ class _SubscriptionState extends State<Subscription> {
   List? SubdetailList;
   String? base = "https://meatoz.in/basicapi/public/";
 
-  bool isLoading = false;
+  bool isLoading = true;
 
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -52,9 +52,7 @@ class _SubscriptionState extends State<Subscription> {
   }
 
   apiforSubscription() async {
-    setState(() {
-      isLoading = true;
-    });
+
     var response = await ApiHelper()
         .post(endpoint: "subscriptionPlan/get", body: {}).catchError((err) {});
 
@@ -74,9 +72,7 @@ class _SubscriptionState extends State<Subscription> {
   }
 
   getSubscriptionplan() async {
-    setState(() {
-      isLoading = true;
-    });
+
     var response = await ApiHelper().post(
         endpoint: "subscriptionPlan/getUserPlan",
         body: {"userid": UID}).catchError((err) {});
@@ -96,9 +92,7 @@ class _SubscriptionState extends State<Subscription> {
   }
 
   chooseSubscriptionPlan(String planId, String paymentType) async {
-    setState(() {
-      isLoading = true;
-    });
+
     if (SubscriptionList != null ) {
       var response = await ApiHelper().post(
           endpoint: "subscriptionPlan/subcription",
