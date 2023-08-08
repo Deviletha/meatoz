@@ -207,7 +207,7 @@ class _Cart_pageState extends State<Cart_page> {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              childAspectRatio: .65,
+                              childAspectRatio: .54,
                             ),
                             itemCount: CartList?.length ?? 0,
                             itemBuilder: (context, index) => getCartList(index),

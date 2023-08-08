@@ -29,10 +29,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? UID;
+  String? WSID;
 
   bool isLoading = true;
   bool isLoadingProducts = true;
-  bool isLoadingCategories = true;
 
   // Track API loading state
 
@@ -40,6 +40,7 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
+      WSID = prefs.getString("WSID");
       print(UID);
     });
     getMyOrders();
@@ -80,6 +81,44 @@ class _HomePageState extends State<HomePage> {
   List? Finalpopularlist;
   int index = 0;
 
+  Map? prlist;
+  Map? prlist1;
+  List? Prlist;
+
+
+
+  Future<void> APIcall() async {
+    var response = await ApiHelper().post(endpoint: "wishList/get", body: {
+      "userid": UID,
+    }).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response != null) {
+      setState(() {
+        debugPrint('wishlist api successful:');
+        prlist = jsonDecode(response);
+        prlist1 = prlist!["pagination"];
+        Prlist = prlist1!["pageData"];
+
+        // Check if WSID is present in any product's combination
+        bool wsidFound = Prlist!.any((product) => product["combination"] == WSID);
+
+        if (wsidFound) {
+          // WSID is present in at least one product
+          debugPrint('WSID is present in some products.');
+        } else {
+          // WSID is not present in any product
+          debugPrint('WSID is not present in any product.');
+        }
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
   getMyOrders() async {
 
     var response =
@@ -95,7 +134,7 @@ class _HomePageState extends State<HomePage> {
 
     if (response != null) {
       setState(() {
-        debugPrint('get address api successful:');
+        debugPrint('get Orders api successful:');
         order = jsonDecode(response);
         order1 = order!["data"];
         orderList = order1!["pageData"];
@@ -249,7 +288,27 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  addTowishtist(String id, String combination) async {
+  Future<void> addTowishtist(String id, String combination) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? savedWSID = prefs.getString("WSID");
+
+    setState(() {
+      checkUser();
+    });
+
+    if (savedWSID != null && savedWSID == combination) {
+
+      Fluttertoast.showToast(
+        msg: "Product is already in Wishlist",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.SNACKBAR,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+      return; // Exit the function if the product is already in the wishlist
+    }
+
     var response = await ApiHelper().post(endpoint: "wishList/add", body: {
       "userid": UID,
       "productid": id,
@@ -257,12 +316,21 @@ class _HomePageState extends State<HomePage> {
     }).catchError((err) {});
 
     if (response != null) {
+      await prefs.setString("WSID", combination); // Store the added item's ID
+
       setState(() {
-        debugPrint('addwishlist api successful:');
+        checkUser();
+        debugPrint('add-wishlist api successful:');
         data = response.toString();
         productlist = jsonDecode(response);
-        productlist1 = productlist!["pagination"];
-        Finalproductlist = productlist1!["pageData"];
+        if (productlist != null) {
+          productlist1 = productlist!["pagination"];
+          if (productlist1 != null) {
+            Finalproductlist = productlist1!["pageData"];
+          }
+        }
+
+        print("whid $combination"); // Use string interpolation for better readability
 
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
@@ -280,21 +348,17 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    ApiForCategory().then((_) {
-      setState(() {
-        isLoadingCategories = false;
-      });
-    });
     ApiforPopularProducts().then((_) {
       setState(() {
         isLoadingProducts = false;
       });
     });
+    APIcall();
+    ApiForCategory();
     ApiforBanner();
     ApiforAllProducts();
     apiForDealofTheDAy();
     apiForOurProducts();
-    getMyOrders();
     checkUser();
     super.initState();
   }
@@ -380,33 +444,34 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
                 child: isLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: CarouselSlider.builder(
-                          itemCount:
-                              BannerList == null ? 0 : BannerList?.length,
-                          itemBuilder: (context, index, realIndex) {
-                            return getBanner(index);
-                          },
-                          options: CarouselOptions(
-                            height: 125,
-                            aspectRatio: 15 / 6,
-                            viewportFraction: .8,
-                            initialPage: 0,
-                            enableInfiniteScroll: true,
-                            reverse: false,
-                            autoPlay: false,
-                            enlargeCenterPage: true,
-                            autoPlayInterval: Duration(seconds: 3),
-                            autoPlayAnimationDuration:
-                                Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            onPageChanged: (index, reason) {},
-                            scrollDirection: Axis.horizontal,
-                          ),
-                        ),
-                      )
+                    ? Center(child: CircularProgressIndicator(color: Colors.teal[900],))
+                // Shimmer.fromColors(
+                //         baseColor: Colors.grey[300]!,
+                //         highlightColor: Colors.grey[100]!,
+                //         child: CarouselSlider.builder(
+                //           itemCount:
+                //               BannerList == null ? 0 : BannerList?.length,
+                //           itemBuilder: (context, index, realIndex) {
+                //             return getBanner(index);
+                //           },
+                //           options: CarouselOptions(
+                //             height: 125,
+                //             aspectRatio: 15 / 6,
+                //             viewportFraction: .8,
+                //             initialPage: 0,
+                //             enableInfiniteScroll: true,
+                //             reverse: false,
+                //             autoPlay: false,
+                //             enlargeCenterPage: true,
+                //             autoPlayInterval: Duration(seconds: 3),
+                //             autoPlayAnimationDuration:
+                //                 Duration(milliseconds: 800),
+                //             autoPlayCurve: Curves.fastOutSlowIn,
+                //             onPageChanged: (index, reason) {},
+                //             scrollDirection: Axis.horizontal,
+                //           ),
+                //         ),
+                //       )
                     : CarouselSlider.builder(
                         itemCount: BannerList == null ? 0 : BannerList?.length,
                         itemBuilder: (context, index, realIndex) {
@@ -415,7 +480,7 @@ class _HomePageState extends State<HomePage> {
                         options: CarouselOptions(
                           height: 125,
                           aspectRatio: 15 / 6,
-                          viewportFraction: .8,
+                          viewportFraction: 1,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -518,7 +583,7 @@ class _HomePageState extends State<HomePage> {
             ),
             Heading(text: "Top Picks For You"),
             Container(
-                child: isLoadingCategories
+                child: isLoading
                     ? Shimmer.fromColors(
                         baseColor: Colors.grey[300]!,
                         highlightColor: Colors.grey[100]!,
@@ -526,12 +591,12 @@ class _HomePageState extends State<HomePage> {
                           itemCount:
                               categorylist == null ? 0 : categorylist?.length,
                           itemBuilder: (context, index, realIndex) {
-                            return getCategoryRow(index);
+                            return getCategoryImage(index);
                           },
                           options: CarouselOptions(
-                            height: 200,
+                            height: 180,
                             aspectRatio: 15 / 6,
-                            viewportFraction: .8,
+                            viewportFraction: 1,
                             initialPage: 0,
                             enableInfiniteScroll: true,
                             reverse: false,
@@ -553,9 +618,9 @@ class _HomePageState extends State<HomePage> {
                           return getCategoryImage(index);
                         },
                         options: CarouselOptions(
-                          height: 200,
+                          height: 180,
                           aspectRatio: 15 / 6,
-                          viewportFraction: .8,
+                          viewportFraction: 1,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -581,9 +646,9 @@ class _HomePageState extends State<HomePage> {
                           return getDealOfTheDay(index);
                         },
                         options: CarouselOptions(
-                          height: 260,
+                          height: 300,
                           aspectRatio: 15 / 6,
-                          viewportFraction: .6,
+                          viewportFraction: .50,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -606,9 +671,9 @@ class _HomePageState extends State<HomePage> {
                         return getDealOfTheDay(index);
                       },
                       options: CarouselOptions(
-                        height: 260,
+                        height: 300,
                         aspectRatio: 15 / 6,
-                        viewportFraction: .58,
+                        viewportFraction: .50,
                         initialPage: 0,
                         enableInfiniteScroll: true,
                         reverse: false,
@@ -634,7 +699,7 @@ class _HomePageState extends State<HomePage> {
                           return getOurProducts(index);
                         },
                         options: CarouselOptions(
-                          height: 240,
+                          height: 300,
                           aspectRatio: 15 / 6,
                           viewportFraction: .50,
                           initialPage: 0,
@@ -658,7 +723,7 @@ class _HomePageState extends State<HomePage> {
                         return getOurProducts(index);
                       },
                       options: CarouselOptions(
-                        height: 240,
+                        height: 300,
                         aspectRatio: 15 / 6,
                         viewportFraction: .50,
                         initialPage: 0,
@@ -688,7 +753,7 @@ class _HomePageState extends State<HomePage> {
                         options: CarouselOptions(
                           height: 300,
                           aspectRatio: 15 / 6,
-                          viewportFraction: .6,
+                          viewportFraction: .58,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -713,7 +778,7 @@ class _HomePageState extends State<HomePage> {
                       options: CarouselOptions(
                         height: 300,
                         aspectRatio: 15 / 6,
-                        viewportFraction: .58,
+                        viewportFraction: .7,
                         initialPage: 0,
                         enableInfiniteScroll: true,
                         reverse: false,
@@ -739,7 +804,7 @@ class _HomePageState extends State<HomePage> {
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          childAspectRatio: .77,
+                          childAspectRatio: .65,
                         ),
                         itemCount: 8,
                         // Set a fixed count for shimmer effect
@@ -760,7 +825,7 @@ class _HomePageState extends State<HomePage> {
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
-                        childAspectRatio: .77,
+                        childAspectRatio: .65,
                       ),
                       itemCount: Finalproductlist == null
                           ? 0
@@ -838,7 +903,11 @@ class _HomePageState extends State<HomePage> {
 
   Widget getBanner(int index) {
     if (BannerList == null) {
-      return Container();
+      return Container(
+        child: Center(
+          child: CircularProgressIndicator(color: Colors.teal[900],),
+        ),
+      );
     }
     var image = base! + BannerList![index]["image"];
 
@@ -892,7 +961,10 @@ class _HomePageState extends State<HomePage> {
     return ProductTile(
       ItemName: Finalproductlist![index]["combinationName"].toString(),
       ImagePath: image,
-      onPressed: () => addTowishtist(PID, CombID),
+      onPressed: () {
+        checkUser();
+        addTowishtist(PID, CombID);
+        } ,
       TotalPrice: price,
       OfferPrice: offerPrice,
       Description: Finalproductlist![index]["description"].toString(),
@@ -970,6 +1042,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
+          checkUser();
           addTowishtist(PID, CombID);
         },
         TotalPrice: price,
@@ -1010,6 +1083,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
+          checkUser();
           addTowishtist(PID, CombID);
         },
         TotalPrice: price,

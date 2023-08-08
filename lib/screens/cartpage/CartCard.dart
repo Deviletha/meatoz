@@ -83,7 +83,6 @@ class CartTile extends StatelessWidget {
               ),
               Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
-
                 children: [
                   IconButton(
                       onPressed: onPressedLess,
@@ -99,18 +98,12 @@ class CartTile extends StatelessWidget {
                       icon: Icon(Icons.add_circle_outline_rounded)),
                 ],
               ),
-              ElevatedButton(
+              TextButton(
                   onPressed: onPressed,
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red[900],
-                      shadowColor: Colors.teal[300],
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(10),
-                            topLeft: Radius.circular(10)),
-                      )),
                   child: Text(
-                    "Remove Item",
+                    "Remove Item", style: TextStyle(
+                    color: Colors.red[600], fontWeight: FontWeight.bold
+                  ),
                   ))
             ],
           ),

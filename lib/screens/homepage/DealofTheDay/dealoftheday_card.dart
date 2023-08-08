@@ -38,8 +38,6 @@ class DealOfTheDayCard extends StatelessWidget {
           onTap: onTap,
           child: Column(
             children: [
-              Stack(
-                children: [
                   Container(
                     clipBehavior: Clip.antiAlias,
                     width: double.infinity,
@@ -66,27 +64,12 @@ class DealOfTheDayCard extends StatelessWidget {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  Positioned(
-                    top: 10,
-                    left: 160,
-                    child: ElevatedButton(
-                      onPressed: onPressed,
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white, shape: CircleBorder()),
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.teal[900],
-                        size: 25,
-                      ),
-                    ),
-                  )
-                ],
-              ),
+
               SizedBox(
                 width: 15,
               ),
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -116,6 +99,17 @@ class DealOfTheDayCard extends StatelessWidget {
                             color: Colors.green,
                           ),
                         ),
+                        SizedBox(
+                          width: 15,
+                        ),
+                        IconButton(
+                          onPressed: onPressed,
+                          icon: Icon(
+                            Icons.favorite,
+                            color: Colors.grey,
+                            size: 25,
+                          ),
+                        )
                       ],
                     ),
                     SizedBox(

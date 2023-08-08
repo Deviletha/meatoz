@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:meatoz/screens/product_view/widget/productCard.dart';
 import 'package:meatoz/screens/product_view/widget/relatedItemsCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,6 +64,7 @@ class _ProductViewState extends State<ProductView> {
   String? PRICE;
   String? PSIZE;
   String? COMBINATIONID;
+  String? STOCK;
 
   @override
   void initState() {
@@ -117,18 +116,49 @@ class _ProductViewState extends State<ProductView> {
 
     if (loginId != null && loginId.isNotEmpty) {
       // User is logged in, proceed with adding to cart
-      addToCart(
-          widget.id.toString(),
-          widget.productname.toString(),
-          widget.amount.toString(),
-          widget.psize.toString(),
-          widget.combinationId.toString());
+      var response = await ApiHelper().post(endpoint: "cart/add", body: {
+        "userid": UID,
+        "productid": widget.id.toString(),
+        "product": widget.productname.toString(),
+        "price": widget.amount.toString(),
+        "quantity": "1",
+        "psize": widget.psize.toString(),
+        "combination_id": widget.combinationId.toString()
+      }).catchError((err) {});
+      if (response != null) {
+        setState(() {
+          debugPrint('cartpage successful:');
+          clist = jsonDecode(response);
+          CartList = clist!["cart"];
+
+          var stock = widget.stock.toString();
+          bool isStockAvailable = int.parse(stock) > 0;
+
+          if (isStockAvailable) {
+            Fluttertoast.showToast(
+                msg: "Item added to Cart",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.SNACKBAR,
+                timeInSecForIosWeb: 1,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          } else {
+            Fluttertoast.showToast(
+                msg: "Product is out of stock!",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.SNACKBAR,
+                timeInSecForIosWeb: 1,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          }
+        });
+      } else {
+        debugPrint('api failed:');
+      }
     } else {
       // User is not logged in, navigate to LoginPage
       Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
 
@@ -187,6 +217,9 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
+
+    var stock = widget.stock.toString();
+    bool isStockAvailable = int.parse(stock) > 0;
     return Scaffold(
       appBar: AppBar(
         title: AppText(
@@ -214,6 +247,7 @@ class _ProductViewState extends State<ProductView> {
         child: ListView(
           children: [
             ProductViewTile(
+
                 ItemName: widget.productname.toString(),
                 ImagePath: widget.url,
                 onPressed: () {
@@ -287,17 +321,31 @@ class _ProductViewState extends State<ProductView> {
     var image = base! + (RelatedPrdctList![index]["image"] ?? "").toString();
     var price = "₹${RelatedPrdctList![index]["offerPrice"] ?? ""}";
 
+    var stock = RelatedPrdctList![index]["stock"].toString();
+    bool isStockAvailable = int.parse(stock) > 0;
+
     return RelatedItemTile(
         ItemName: RelatedPrdctList![index]["name"].toString(),
         ImagePath: image,
         onPressed: () {
-          PRODUCTID = RelatedPrdctList![index]["productID"].toString();
-          PRODUCTNAME = RelatedPrdctList![index]["name"].toString();
-          PRICE = RelatedPrdctList![index]["offerPrice"].toString();
-          PSIZE = RelatedPrdctList![index]["size_attribute_name"].toString();
-          COMBINATIONID = RelatedPrdctList![index]["combinationid"].toString();
-          addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
+          if (isStockAvailable) {
+            PRODUCTID = RelatedPrdctList![index]["productID"].toString();
+            PRODUCTNAME = RelatedPrdctList![index]["name"].toString();
+            PRICE = RelatedPrdctList![index]["offerPrice"].toString();
+            PSIZE = RelatedPrdctList![index]["size_attribute_name"].toString();
+            COMBINATIONID = RelatedPrdctList![index]["combinationid"].toString();
+            addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
+          } else {
+            Fluttertoast.showToast(
+                msg: "Product is out of stock!",
+                toastLength: Toast.LENGTH_SHORT,
+                gravity: ToastGravity.SNACKBAR,
+                timeInSecForIosWeb: 1,
+                textColor: Colors.white,
+                fontSize: 16.0);
+          }
         },
-        Price: price);
+        Price: price,
+        );
   }
 }
