@@ -29,7 +29,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? UID;
-  String? WSID;
+  List<String> WISHLISTIDs = [];
 
   bool isLoading = true;
   bool isLoadingProducts = true;
@@ -40,7 +40,6 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      WSID = prefs.getString("WSID");
       print(UID);
     });
     getMyOrders();
@@ -88,6 +87,7 @@ class _HomePageState extends State<HomePage> {
 
 
   Future<void> APIcall() async {
+
     var response = await ApiHelper().post(endpoint: "wishList/get", body: {
       "userid": UID,
     }).catchError((err) {});
@@ -102,17 +102,6 @@ class _HomePageState extends State<HomePage> {
         prlist = jsonDecode(response);
         prlist1 = prlist!["pagination"];
         Prlist = prlist1!["pageData"];
-
-        // Check if WSID is present in any product's combination
-        bool wsidFound = Prlist!.any((product) => product["combination"] == WSID);
-
-        if (wsidFound) {
-          // WSID is present in at least one product
-          debugPrint('WSID is present in some products.');
-        } else {
-          // WSID is not present in any product
-          debugPrint('WSID is not present in any product.');
-        }
       });
     } else {
       debugPrint('api failed:');
@@ -134,7 +123,7 @@ class _HomePageState extends State<HomePage> {
 
     if (response != null) {
       setState(() {
-        debugPrint('get Orders api successful:');
+        debugPrint('get address api successful:');
         order = jsonDecode(response);
         order1 = order!["data"];
         orderList = order1!["pageData"];
@@ -288,16 +277,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
   Future<void> addTowishtist(String id, String combination) async {
     final prefs = await SharedPreferences.getInstance();
-    String? savedWSID = prefs.getString("WSID");
 
-    setState(() {
-      checkUser();
-    });
-
-    if (savedWSID != null && savedWSID == combination) {
-
+    // Check if the combination is already in the wishlist
+    if (WISHLISTIDs.contains(combination)) {
       Fluttertoast.showToast(
         msg: "Product is already in Wishlist",
         toastLength: Toast.LENGTH_SHORT,
@@ -306,20 +291,17 @@ class _HomePageState extends State<HomePage> {
         textColor: Colors.white,
         fontSize: 16.0,
       );
-      return; // Exit the function if the product is already in the wishlist
+      return; // Exit the function if the combination is already in the wishlist
     }
 
     var response = await ApiHelper().post(endpoint: "wishList/add", body: {
       "userid": UID,
       "productid": id,
-      "combination": combination
+      "combination": combination,
     }).catchError((err) {});
 
     if (response != null) {
-      await prefs.setString("WSID", combination); // Store the added item's ID
-
       setState(() {
-        checkUser();
         debugPrint('add-wishlist api successful:');
         data = response.toString();
         productlist = jsonDecode(response);
@@ -330,7 +312,8 @@ class _HomePageState extends State<HomePage> {
           }
         }
 
-        print("whid $combination"); // Use string interpolation for better readability
+        // Add the combination to the wishlist list
+        WISHLISTIDs.add(combination);
 
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
@@ -346,6 +329,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
+
+
+
+
   @override
   void initState() {
     ApiforPopularProducts().then((_) {
@@ -353,7 +341,6 @@ class _HomePageState extends State<HomePage> {
         isLoadingProducts = false;
       });
     });
-    APIcall();
     ApiForCategory();
     ApiforBanner();
     ApiforAllProducts();
@@ -962,7 +949,6 @@ class _HomePageState extends State<HomePage> {
       ItemName: Finalproductlist![index]["combinationName"].toString(),
       ImagePath: image,
       onPressed: () {
-        checkUser();
         addTowishtist(PID, CombID);
         } ,
       TotalPrice: price,
@@ -1042,7 +1028,6 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
-          checkUser();
           addTowishtist(PID, CombID);
         },
         TotalPrice: price,
@@ -1083,7 +1068,6 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
-          checkUser();
           addTowishtist(PID, CombID);
         },
         TotalPrice: price,
