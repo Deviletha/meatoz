@@ -6,7 +6,6 @@ import 'package:meatoz/screens/wishlist/wishListCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
-import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../registration/Login_page.dart';
 import '../product_view/Product_view.dart';
@@ -89,7 +88,10 @@ class _WishlistState extends State<Wishlist> {
         wslist = prlist!["pagination"];
         WsList = wslist!["pageData"];
 
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Wishlist()),
+        );
         Fluttertoast.showToast(
           msg: "Removed product",
           toastLength: Toast.LENGTH_SHORT,
@@ -98,6 +100,7 @@ class _WishlistState extends State<Wishlist> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
+
       });
     } else {
       debugPrint('api failed:');

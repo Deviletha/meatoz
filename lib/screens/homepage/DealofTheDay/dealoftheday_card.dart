@@ -2,14 +2,16 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../Components/text_widget.dart';
 
-class DealOfTheDayCard extends StatelessWidget {
+class DealOfTheDayCard extends StatefulWidget {
   final String ItemName;
   final String Description;
   final String TotalPrice;
   final String OfferPrice;
   final String ImagePath;
+  final String combinationId;
   final color;
   void Function()? onTap;
   void Function()? onPressed;
@@ -22,11 +24,18 @@ class DealOfTheDayCard extends StatelessWidget {
     required this.onPressed,
     required this.TotalPrice,
     required this.OfferPrice,
-    required this.Description})
+    required this.Description, required this.combinationId})
       : super(key: key);
 
   @override
+  State<DealOfTheDayCard> createState() => _DealOfTheDayCardState();
+}
+
+class _DealOfTheDayCardState extends State<DealOfTheDayCard> {
+  String WID="NO";
+  @override
   Widget build(BuildContext context) {
+    check(widget.combinationId);
     return Padding(
       padding: const EdgeInsets.all(5),
       child: Container(
@@ -35,7 +44,7 @@ class DealOfTheDayCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(15),
             border: Border.all(color: Colors.teal.shade50, width: 1)),
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
           child: Column(
             children: [
                   Container(
@@ -50,7 +59,7 @@ class DealOfTheDayCard extends StatelessWidget {
                     ),
                     // Image border// Image radius
                     child: CachedNetworkImage(
-                      imageUrl: ImagePath,
+                      imageUrl: widget.ImagePath,
                       placeholder: (context, url) =>
                           Container(
                             color: Colors.grey[300],
@@ -79,7 +88,7 @@ class DealOfTheDayCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          TotalPrice,
+                          widget.TotalPrice,
                           style: const TextStyle(
                             decoration: TextDecoration.lineThrough,
                             decorationStyle: TextDecorationStyle.solid,
@@ -92,7 +101,7 @@ class DealOfTheDayCard extends StatelessWidget {
                           width: 8,
                         ),
                         Text(
-                          OfferPrice,
+                          widget.OfferPrice,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -103,24 +112,31 @@ class DealOfTheDayCard extends StatelessWidget {
                           width: 15,
                         ),
                         IconButton(
-                          onPressed: onPressed,
-                          icon: Icon(
-                            Icons.favorite,
-                            color: Colors.grey,
-                            size: 25,
-                          ),
-                        )
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white, shape: CircleBorder()),
+                            onPressed: widget.onPressed,
+                            icon :  WID=="NO"?
+                            Icon(
+                              Icons.favorite_border_sharp,
+                              color: Colors.black,
+                              size: 25,
+                            ):Icon(
+                              Icons.favorite_sharp,
+                              color: Colors.red,
+                              size: 25,
+                            )
+                        ),
                       ],
                     ),
                     SizedBox(
                       height: 10,
                     ),
                     TextConst(
-                        text: ItemName),
+                        text: widget.ItemName),
                     SizedBox(
                       height: 10,
                     ),
-                    Text(Description,
+                    Text(widget.Description,
                         maxLines: 2,
                         style: TextStyle(
                             fontSize: 12,
@@ -134,5 +150,14 @@ class DealOfTheDayCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> check(String id) async {
+
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      WID = prefs.getString(id)!;
+    });
+
   }
 }

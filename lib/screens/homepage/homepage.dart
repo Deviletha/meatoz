@@ -29,6 +29,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? UID;
+  String? WID="NO";
   List<String> WISHLISTIDs = [];
 
   bool isLoading = true;
@@ -40,9 +41,34 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
+
     getMyOrders();
+  }
+
+  Future<void> check(String id,String  PID) async {
+
+    if(WID=="NO"|| WID==null){
+      addwisH(id,"YES");
+
+      addTowishtist(PID, id);
+    }
+    else{
+      addwisH(id, "NO");
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      WID = prefs.getString(id)!;
+
+    });
+
+  }
+
+  addwisH(String wid,String v) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(
+      wid, v );
   }
 
   String? base = "https://meatoz.in/basicapi/public/";
@@ -79,34 +105,6 @@ class _HomePageState extends State<HomePage> {
   Map? popularlist1;
   List? Finalpopularlist;
   int index = 0;
-
-  Map? prlist;
-  Map? prlist1;
-  List? Prlist;
-
-
-
-  Future<void> APIcall() async {
-
-    var response = await ApiHelper().post(endpoint: "wishList/get", body: {
-      "userid": UID,
-    }).catchError((err) {});
-
-    setState(() {
-      isLoading = false;
-    });
-
-    if (response != null) {
-      setState(() {
-        debugPrint('wishlist api successful:');
-        prlist = jsonDecode(response);
-        prlist1 = prlist!["pagination"];
-        Prlist = prlist1!["pageData"];
-      });
-    } else {
-      debugPrint('api failed:');
-    }
-  }
 
   getMyOrders() async {
 
@@ -279,20 +277,20 @@ class _HomePageState extends State<HomePage> {
 
 
   Future<void> addTowishtist(String id, String combination) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Check if the combination is already in the wishlist
-    if (WISHLISTIDs.contains(combination)) {
-      Fluttertoast.showToast(
-        msg: "Product is already in Wishlist",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.SNACKBAR,
-        timeInSecForIosWeb: 1,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-      return; // Exit the function if the combination is already in the wishlist
-    }
+    // final prefs = await SharedPreferences.getInstance();
+    //
+    // // Check if the combination is already in the wishlist
+    // if (WISHLISTIDs.contains(combination)) {
+    //   Fluttertoast.showToast(
+    //     msg: "Product is already in Wishlist",
+    //     toastLength: Toast.LENGTH_SHORT,
+    //     gravity: ToastGravity.SNACKBAR,
+    //     timeInSecForIosWeb: 1,
+    //     textColor: Colors.white,
+    //     fontSize: 16.0,
+    //   );
+    //   return; // Exit the function if the combination is already in the wishlist
+    // }
 
     var response = await ApiHelper().post(endpoint: "wishList/add", body: {
       "userid": UID,
@@ -312,8 +310,8 @@ class _HomePageState extends State<HomePage> {
           }
         }
 
-        // Add the combination to the wishlist list
-        WISHLISTIDs.add(combination);
+        // // Add the combination to the wishlist list
+        // WISHLISTIDs.add(combination);
 
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
@@ -936,6 +934,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getProducts(int index) {
+
     if (Finalproductlist == null || Finalproductlist![index] == null) {
       return Container();
     }
@@ -949,7 +948,8 @@ class _HomePageState extends State<HomePage> {
       ItemName: Finalproductlist![index]["combinationName"].toString(),
       ImagePath: image,
       onPressed: () {
-        addTowishtist(PID, CombID);
+        check(CombID,PID);
+
         } ,
       TotalPrice: price,
       OfferPrice: offerPrice,
@@ -973,7 +973,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         );
-      },
+      }, combinationId: CombID,
     );
   }
 
@@ -1006,6 +1006,7 @@ class _HomePageState extends State<HomePage> {
     var CombID = (dealOfTheDayList![index]["combinationId"] ?? "").toString();
 
     return DealOfTheDayCard(
+        combinationId: CombID,
         ItemName: dealOfTheDayList![index]["name"].toString(),
         ImagePath: image,
         onTap: () {
@@ -1028,7 +1029,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
-          addTowishtist(PID, CombID);
+          check(CombID,PID);
         },
         TotalPrice: price,
         OfferPrice: offerPrice,
@@ -1068,9 +1069,10 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
-          addTowishtist(PID, CombID);
+          check(CombID,PID);
         },
         TotalPrice: price,
+        combinationId: CombID,
         OfferPrice: offerPrice,
         Description: ourProductList![index]["description"].toString());
   }
