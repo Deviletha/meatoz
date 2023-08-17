@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
+import 'package:meatoz/screens/accounts/widgets/about_us.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -340,6 +341,17 @@ class _AccountsState extends State<Accounts> {
                             )
                           ],
                         ),
+                      ),
+                    ),
+                    Divider(),
+                    AccountCustomTile(
+                      title: "Abou Us",
+                      icon: Icons.settings_outlined,
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return AboutUs();
+                        }),
                       ),
                     ),
                     Divider(),

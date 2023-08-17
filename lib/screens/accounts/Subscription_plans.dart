@@ -333,6 +333,15 @@ class _SubscriptionState extends State<Subscription> {
     if (SubscriptionList == null) {
       return Container();
     }
+    final bool isPlanActivated =
+        SubdetailList != null &&
+            SubdetailList!.isNotEmpty &&
+            SubdetailList![0]["plan_id"].toString() == SubscriptionList![index1]["id"].toString();
+
+    print("Plan ID: ${SubscriptionList![index1]["id"]}");
+    print("Activated Plan ID: ${SubdetailList![0]["plan_id"]}");
+    print("isPlanActivated: $isPlanActivated");
+
     // PLANID = SubscriptionList![index1]["id"].toString();
 
     return Padding(
@@ -421,20 +430,34 @@ class _SubscriptionState extends State<Subscription> {
               height: 40,
               width: 330,
               decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(20),
-                      bottomRight: Radius.circular(20))),
+                color: isPlanActivated &&
+                    SubdetailList![0]["plan_id"] == SubscriptionList![index1]["id"].toString()
+                    ? Colors.grey[400] // Disabled color
+                    : Colors.grey[800],
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
               child: TextButton(
-                onPressed: () {
-                  _showPlanConfirmationDialog(context, SubscriptionList![index1]["id"].toString());
+                onPressed: isPlanActivated &&
+                    SubdetailList![0]["plan_id"] == SubscriptionList![index1]["id"].toString()
+                    ? null // Disable the button if plan is activated
+                    : () {
+                  _showPlanConfirmationDialog(
+                    context,
+                    SubscriptionList![index1]["id"].toString(),
+                  );
                 },
                 child: Text(
-                  "Choose Plan",
+                  isPlanActivated &&
+                      SubdetailList![0]["plan_id"] == SubscriptionList![index1]["id"].toString()
+                      ? "Plan Activated"
+                      : "Choose Plan",
                   style: TextStyle(fontSize: 15, color: Colors.white),
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

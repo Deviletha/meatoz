@@ -13,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/Title_widget.dart';
 import '../../Config/ApiHelper.dart';
+import '../registration/Login_page.dart';
 import 'Notification_page.dart';
 import '../orders/Orderdetails.dart';
 import '../product_view/Product_view.dart';
@@ -42,7 +43,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       UID = prefs.getString("UID");
     });
-
     getMyOrders();
   }
 
@@ -50,13 +50,11 @@ class _HomePageState extends State<HomePage> {
 
     if(WID=="NO"|| WID==null){
       addwisH(id,"YES");
-
-      addTowishtist(PID, id);
+      addTowishtist(PID, id,context);
     }
     else{
       addwisH(id, "NO");
     }
-
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       WID = prefs.getString(id)!;
@@ -276,21 +274,30 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  Future<void> addTowishtist(String id, String combination) async {
-    // final prefs = await SharedPreferences.getInstance();
-    //
-    // // Check if the combination is already in the wishlist
-    // if (WISHLISTIDs.contains(combination)) {
-    //   Fluttertoast.showToast(
-    //     msg: "Product is already in Wishlist",
-    //     toastLength: Toast.LENGTH_SHORT,
-    //     gravity: ToastGravity.SNACKBAR,
-    //     timeInSecForIosWeb: 1,
-    //     textColor: Colors.white,
-    //     fontSize: 16.0,
-    //   );
-    //   return; // Exit the function if the combination is already in the wishlist
-    // }
+  Future<void> addTowishtist(String id, String combination, BuildContext context) async {
+    if (UID == null) {
+      // User is not logged in, show Snackbar and navigate to login page
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Text('Please log in to add to wishlist.'),
+              SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+                child: Text('Log In'),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
 
     var response = await ApiHelper().post(endpoint: "wishList/add", body: {
       "userid": UID,
@@ -310,9 +317,6 @@ class _HomePageState extends State<HomePage> {
           }
         }
 
-        // // Add the combination to the wishlist list
-        // WISHLISTIDs.add(combination);
-
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
           toastLength: Toast.LENGTH_SHORT,
@@ -326,10 +330,6 @@ class _HomePageState extends State<HomePage> {
       debugPrint('Add to wishlist failed:');
     }
   }
-
-
-
-
 
 
   @override
