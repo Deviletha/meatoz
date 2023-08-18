@@ -129,7 +129,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: const [
               Text(
                 "Delivery is not available in this pincode.",
                 style: TextStyle(
@@ -151,7 +151,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
         ),
       ),
     ).closed.then((reason) {
-
       Navigator.of(context).pop();
     });
   }
@@ -464,9 +463,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
           ),
         ),
         backgroundColor: Colors.grey.shade200,
-        body: isLoading
-            ? ShimmerLoading() // Replace CircularProgressIndicator with ShimmerLoading
-            : Container(
+        body: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.bottomLeft,
@@ -481,7 +478,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             ),
           ),
           child: isLoading
-              ? ShimmerLoading()
+              ? CircularProgressIndicator()
               : ListView(
             children: [
               Center(
@@ -606,17 +603,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               walletList == null
                                   ? Text("0")
                                   : Text(
-                                "Wallet Amount Rs." +
-                                    WALLET_AMOUNT_L
-                                        .toString(),
+                                "Wallet Amount Rs.$WALLET_AMOUNT_L",
                                 textAlign: TextAlign.start,
                               ),
                               SizedBox(height: 20),
                               Text(
-                                "Applied Amount:" +
-                                    WALLET_AMOUNT
-                                        .toInt()
-                                        .toString(),
+                                "Applied Amount:${WALLET_AMOUNT
+                                        .toInt()}",
                                 textAlign: TextAlign.start,
                               ),
                               Slider(
@@ -634,8 +627,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     double AMOUNT = subtotal + double.parse(PACKINGCHARGE!) + double.parse(SHIPPINGCHARGE!) - WALLET_AMOUNT;
                                     GRNDAMNT = AMOUNT.toInt();
                                     GRANDTOTAL = GRNDAMNT.toString();
-                                    print("CHECK AMOUNT = " + WALLET_AMOUNT.toInt().toString());
-                                    print("GRAND TOTAL = " + GRANDTOTAL.toString());
+                                    print("CHECK AMOUNT = ${WALLET_AMOUNT.toInt()}");
+                                    print("GRAND TOTAL = $GRANDTOTAL");
                                   });
                                 },
                               ),

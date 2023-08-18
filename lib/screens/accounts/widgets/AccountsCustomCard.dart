@@ -20,17 +20,15 @@ class AccountCustomTile extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: InkWell(
         onTap: onTap,
-        child: Container(
-          child: Row(
-            children: [
-              Icon(icon, size: 25), // Use the IconData for the Icon widget
-              SizedBox(width: 10),
-              Text(
-                title,
-                style: TextStyle(fontSize: 20),
-              ),
-            ],
-          ),
+        child: Row(
+          children: [
+            Icon(icon, size: 25), // Use the IconData for the Icon widget
+            SizedBox(width: 25),
+            Text(
+              title,
+              style: TextStyle(fontSize: 20),
+            ),
+          ],
         ),
       ),
     );

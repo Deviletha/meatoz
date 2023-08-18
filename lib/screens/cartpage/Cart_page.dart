@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -7,7 +6,6 @@ import 'package:meatoz/screens/cartpage/CartCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
-import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../registration/Login_page.dart';
 import '../placeOrder/Select_address.dart';

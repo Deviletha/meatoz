@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:meatoz/screens/splash_bottomNav/SplashScreen.dart';
 
 void main() {
@@ -8,6 +7,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -22,7 +23,7 @@ ThemeData _buildTheme(brightness) {
   var baseTheme = ThemeData(brightness: brightness);
 
   return baseTheme.copyWith(
-    textTheme: GoogleFonts.robotoCondensedTextTheme(baseTheme.textTheme),
+    // textTheme: GoogleFonts.robotoCondensedTextTheme(baseTheme.textTheme),
       appBarTheme: AppBarTheme(backgroundColor: Colors.teal[900],
   centerTitle: true, elevation: 0,systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.teal[900],

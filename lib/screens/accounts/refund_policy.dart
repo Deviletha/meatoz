@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:meatoz/Components/text_widget.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../../../Components/appbar_text.dart';
 import '../../../Config/ApiHelper.dart';
 
-class AboutUs extends StatefulWidget {
-  const AboutUs({Key? key}) : super(key: key);
+class RefundPolicy extends StatefulWidget {
+  const RefundPolicy({Key? key}) : super(key: key);
 
   @override
-  State<AboutUs> createState() => _AboutUsState();
+  State<RefundPolicy> createState() => _RefundPolicyState();
 }
 
-class _AboutUsState extends State<AboutUs> {
+class _RefundPolicyState extends State<RefundPolicy> {
   Map? list;
   List? genralList;
   int index = 0;
@@ -46,7 +46,7 @@ class _AboutUsState extends State<AboutUs> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "ABOUT US",
+          text: "Refund Policy",
         ),
       ),
       body: Container(
@@ -67,19 +67,10 @@ class _AboutUsState extends State<AboutUs> {
             : ListView(
           children: [
             if (genralList != null) ...[
-              TextConst(text: genralList![index]["shop_name"].toString()),
-              TextConst(
-                  text:
-                  "Location: ${genralList![index]["address"] + "," + genralList![index]["location"]}"),
-              TextConst(text: "Pin Code: ${genralList![index]["pincode"]}"),
-              TextConst(
-                  text: "License No: ${genralList![index]["license_number"]}"),
-              TextConst(
-                  text:
-                  "Terms & Conditions: ${genralList![index]["terms_and_conditions"]}"),
-              TextConst(
-                  text:
-                  "Privacy & Policy: ${genralList![index]["privacy_policy"]}"),
+              Padding(
+                padding:  EdgeInsets.all(8.0),
+                child: HtmlWidget(genralList![index]["return_policy"]),
+              ),
             ],
           ],
         ),

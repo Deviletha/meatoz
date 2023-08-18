@@ -409,7 +409,7 @@ class _HomePageState extends State<HomePage> {
                             border: Border.all(color: Colors.grey.shade100)),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
+                          children: const [
                             Text(
                               "Type product name to search items",
                               style:
