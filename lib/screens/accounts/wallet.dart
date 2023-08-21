@@ -30,7 +30,6 @@ class _WalletPageState extends State<WalletPage> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     apiForWalletAmount();
   }

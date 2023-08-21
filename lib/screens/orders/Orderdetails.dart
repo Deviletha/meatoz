@@ -34,7 +34,6 @@ class _OrderDetailsState extends State<OrderDetails> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     getMyOrders();
   }

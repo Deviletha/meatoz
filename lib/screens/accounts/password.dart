@@ -30,7 +30,6 @@ class _ChangePasswordState extends State<ChangePassword> {
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     UID = prefs.getString("UID");
-    print(UID);
   }
 
   ChangePassword() async {

@@ -30,8 +30,6 @@ class _ChangeProfileState extends State<ChangeProfile> {
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     UID = prefs.getString("UID");
-    print(UID);
-
   }
 
   void convertImageToBase64() async {

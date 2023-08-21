@@ -76,7 +76,6 @@ class _ProductViewState extends State<ProductView> {
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     UID = prefs.getString("UID");
-    print(UID);
   }
 
   addToCart(String PrID, String PrName, String PrPrice, String Psize,

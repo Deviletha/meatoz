@@ -24,7 +24,6 @@ class _AddAddressState extends State<AddAddress> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     AddAddress();
   }
@@ -61,8 +60,6 @@ class _AddAddressState extends State<AddAddress> {
           } else {
             userAddresslist = null; // or handle the case when the response is not a list
           }
-          print(responseData.toString());
-
         });
       }
 

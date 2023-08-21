@@ -38,7 +38,6 @@ class _Cart_pageState extends State<Cart_page> {
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     UID = prefs.getString("UID");
-    print(UID);
     setState(() {
       isLoggedIn = UID != null;
     });

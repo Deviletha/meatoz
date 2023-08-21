@@ -46,7 +46,6 @@ class _SubscriptionState extends State<Subscription> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     getSubscriptionplan();
   }

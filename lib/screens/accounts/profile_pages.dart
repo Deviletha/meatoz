@@ -35,7 +35,6 @@ class _ProfileState extends State<Profile> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     Apicall();
     getUserAddress();

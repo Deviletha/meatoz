@@ -239,7 +239,9 @@ class _AccountsState extends State<Accounts> {
                         }),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                       title: "My Wishlist",
                       icon: Icons.favorite_border_sharp,
@@ -250,7 +252,9 @@ class _AccountsState extends State<Accounts> {
                         }),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                       title: "My Orders",
                       icon: Icons.shopping_bag_outlined,
@@ -261,7 +265,9 @@ class _AccountsState extends State<Accounts> {
                         }),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                         title: "Wallet",
                         icon: Icons.wallet_rounded,
@@ -271,7 +277,9 @@ class _AccountsState extends State<Accounts> {
                             return WalletPage();
                           }),
                         ),),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                       title: "Subscription",
                       icon: Icons.local_offer_outlined,
@@ -282,7 +290,9 @@ class _AccountsState extends State<Accounts> {
                         }),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                       title: "Settings",
                       icon: Icons.settings_outlined,
@@ -293,7 +303,9 @@ class _AccountsState extends State<Accounts> {
                         }),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                       title: "Privacy info & Terms",
                       icon: Icons.privacy_tip_outlined,
@@ -304,7 +316,9 @@ class _AccountsState extends State<Accounts> {
                         }),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     AccountCustomTile(
                       title: "Help & Support",
                       icon: Icons.help_outline_rounded,
@@ -312,7 +326,9 @@ class _AccountsState extends State<Accounts> {
                         openGmail();
                       },
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: InkWell(
@@ -327,7 +343,7 @@ class _AccountsState extends State<Accounts> {
                               Icons.person_outline,
                               size: 25,
                             ),
-                            SizedBox(width: 10),
+                            SizedBox(width: 25),
                             Expanded(
                               flex: 1,
                               child: Text(
@@ -354,7 +370,9 @@ class _AccountsState extends State<Accounts> {
                         ),
                       ),
                     ),
-                    Divider(),
+                    Divider(
+                      thickness: 1,
+                    ),
                   ],
                 ),
               )

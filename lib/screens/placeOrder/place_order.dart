@@ -193,7 +193,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     apiForCart();
     deliverySlotApi();
@@ -350,7 +349,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
         todaySlotList = slotlist?["today"] ?? [];
         tomorrowSlotList = slotlist?["tomorrow"] ?? [];
-
         // Add null check
         print("slotid" + SLOTID!);
         print("slotdate" + SLOTDATE!);
