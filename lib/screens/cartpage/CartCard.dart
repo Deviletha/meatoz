@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../Components/text_widget.dart';
 
@@ -86,7 +87,7 @@ class CartTile extends StatelessWidget {
                 children: [
                   IconButton(
                       onPressed: onPressedLess,
-                      icon: Icon(Icons.remove_circle_outline_rounded)),
+                      icon: Icon(Iconsax.minus_square,)),
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: TextConst(text:
@@ -95,7 +96,7 @@ class CartTile extends StatelessWidget {
                   ),
                   IconButton(
                       onPressed: onPressedAdd,
-                      icon: Icon(Icons.add_circle_outline_rounded)),
+                      icon: Icon(Iconsax.add_square,)),
                 ],
               ),
               TextButton(

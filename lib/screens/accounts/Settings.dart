@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Components/Alertbox_text.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Components/appbar_text.dart';
+import '../splash_bottomNav/BottomNavBar.dart';
 import 'EditProfile.dart';
 
 class Settings extends StatefulWidget {
@@ -37,8 +39,12 @@ class _SettingsState extends State<Settings> {
             TextButton(
               child: AlertText(text: 'Logout',),
               onPressed: () async {
-                Navigator.of(context).pop();
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return BottomNav();
+                  }),
+                );
                 // Clear the user session data
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.remove("UID");
@@ -82,7 +88,7 @@ class _SettingsState extends State<Settings> {
           children: [
             AccountCustomTile(
               title: "Edit Profile",
-              icon: Icons.person_outline_outlined,
+              icon: Iconsax.user_edit,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChangeProfile();
@@ -91,7 +97,7 @@ class _SettingsState extends State<Settings> {
             Divider(),
             AccountCustomTile(
               title: "Change Password",
-              icon: Icons.keyboard_outlined,
+              icon: Iconsax.keyboard,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChangePassword();
@@ -100,7 +106,7 @@ class _SettingsState extends State<Settings> {
             Divider(),
             AccountCustomTile(
               title: "Logout",
-              icon: Icons.logout_outlined,
+              icon: Iconsax.logout,
               onTap: () => _showLogoutConfirmationDialog(),
             ),
             Divider(),

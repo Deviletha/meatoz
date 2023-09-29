@@ -20,9 +20,6 @@ class _SetectAddressState extends State<SetectAddress> {
   Map? address;
   List? Addresslist;
 
-  Map? pincode;
-  List? pincodeList;
-
   @override
   void initState() {
     checkUser();
@@ -33,33 +30,35 @@ class _SetectAddressState extends State<SetectAddress> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       UID = prefs.getString("UID");
-      print(UID);
     });
     getUserAddress();
   }
 
-  checkPincode(String pin, int position) async {
-    var response = await ApiHelper().post(
-      endpoint: "postal/checkAvailabilityAtCheckout",
-      body: {
-        "userid": UID,
-        "pincode": pin,
-      },
-    ).catchError((err) {});
-    if (response != null) {
-      setState(() {
-        debugPrint('check pin code api successful:');
-        pincode = jsonDecode(response);
-        pincodeList = pincode!["orderData"];
-        int pincodeAvailability = pincodeList![position]["pincode_availability"];
-        if (pincodeAvailability == 0) {
-          showCustomSnackBar(context);
-        }
-      });
-    } else {
-      debugPrint('api failed:');
-    }
-  }
+  // checkPincode(String pin, int position) async {
+  //   var response = await ApiHelper().post(
+  //     endpoint: "postal/checkAvailabilityAtCheckout",
+  //     body: {
+  //       "userid": UID,
+  //       "pincode": pin,
+  //     },
+  //   ).catchError((err) {});
+  //   if (response != null) {
+  //     setState(() {
+  //       debugPrint('check pin code api successful:');
+  //       pincode = jsonDecode(response);
+  //       pincodeList = pincode!["orderData"];
+  //       int pincodeAvailability = pincodeList![position]["pincode_availability"];
+  //       if (pincodeAvailability == 0) {
+  //         showCustomSnackBar(context);
+  //       }
+  //       String expressDeliveryStatus = pincodeList![position]["express_delivery_available"];
+  //       print("Express Delivery Status: $expressDeliveryStatus");
+  //     });
+  //   } else {
+  //     debugPrint('api failed:');
+  //   }
+  // }
+
 
   void showCustomSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(

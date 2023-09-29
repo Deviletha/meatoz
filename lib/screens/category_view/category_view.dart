@@ -8,17 +8,11 @@ import '../../Config/ApiHelper.dart';
 
 class Category_View extends StatefulWidget {
   final String itemname;
-  final String description;
-  final String price;
-  final String url;
   final int id;
 
   const Category_View({
     Key? key,
     required this.itemname,
-    required this.description,
-    required this.price,
-    required this.url,
     required this.id,
   }) : super(key: key);
 
@@ -44,13 +38,32 @@ class _Category_ViewState extends State<Category_View> {
   bool isLoading = false;
   String? UID;
   String? data;
+  String? WID = "NO";
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     UID = prefs.getString("UID");
   }
 
-  addTowishtist(String id, String combination) async {
+  Future<void> check(String id, String PID) async {
+    if (WID == "NO" || WID == null) {
+      addwisH(id, "YES");
+      addTowishtist(PID, id, context);
+    } else {
+      addwisH(id, "NO");
+    }
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      WID = prefs.getString(id)!;
+    });
+  }
+
+  addwisH(String wid, String v) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(wid, v);
+  }
+
+  addTowishtist(String id, String combination, BuildContext context) async {
     var response = await ApiHelper().post(
       endpoint: "wishList/add",
       body: {
@@ -64,7 +77,9 @@ class _Category_ViewState extends State<Category_View> {
       setState(() {
         debugPrint('addwishlist api successful:');
         data = response.toString();
-        wscategorylist = jsonDecode(data!) as List<dynamic>?;
+        // wscategorylist = jsonDecode(data!) as List?;
+
+        print(response);
 
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
@@ -95,7 +110,7 @@ class _Category_ViewState extends State<Category_View> {
       setState(() {
         debugPrint('cartpage successful:');
         clist = jsonDecode(response);
-        CartList = clist!["cart"];
+        // CartList = clist!["cart"];
 
         Fluttertoast.showToast(
           msg: "Item added to Cart",
@@ -166,10 +181,17 @@ class _Category_ViewState extends State<Category_View> {
                   height: 15,
                 ),
                 Expanded(
-                  child: ListView.builder(
+                  child: FinalClist != null && FinalClist!.isNotEmpty
+                      ? ListView.builder(
                     scrollDirection: Axis.vertical,
-                    itemCount: FinalClist?.length ?? 0,
+                    itemCount: FinalClist!.length,
                     itemBuilder: (context, index) => getCatView(index),
+                  )
+                      : Center(
+                    child: Text(
+                      "There are currently no items. Items will be available soon..!!",
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ],
@@ -180,27 +202,29 @@ class _Category_ViewState extends State<Category_View> {
     );
   }
 
-  Widget getCatView(int index) {
-    var image = base! + FinalClist![index]["image"].toString();
-    var PID = FinalClist![index]["id"].toString();
-    var CombID = FinalClist![index]["combinationId"].toString();
+  Widget getCatView(int index1) {
+    var image = base! + FinalClist![index1]["image"].toString();
+    var PID = FinalClist![index1]["id"].toString();
+    var CombID = FinalClist![index1]["combinationId"].toString();
 
     return CategoryViewTile(
-        ItemName: FinalClist![index]["name"].toString(),
-        ImagePath: image,
-        onPressed: () {
-          addTowishtist(PID, CombID);
-        },
-        onPressed1: () {
-          PRODUCTID = FinalClist![index]["id"].toString();
-          PRODUCTNAME = FinalClist![index]["name"].toString();
-          PRICE = FinalClist![index]["offerPrice"].toString();
-          COMBINATIONID = FinalClist![index]["combinationId"].toString();
-          PSIZE = FinalClist![index]["size_attribute_name"].toString();
-          addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
-        },
-        OfferPrice: FinalClist![index]["offerPrice"].toString(),
-        Description: FinalClist![index]["description"].toString(),
-        TotalPrice: FinalClist![index]["totalPrice"].toString());
+      ItemName: FinalClist![index1]["name"].toString(),
+      ImagePath: image,
+      onPressed: () {
+        check(CombID, PID);
+      },
+      onPressed1: () {
+        PRODUCTID = FinalClist![index1]["id"].toString();
+        PRODUCTNAME = FinalClist![index1]["name"].toString();
+        PRICE = FinalClist![index1]["offerPrice"].toString();
+        COMBINATIONID = FinalClist![index1]["combinationId"].toString();
+        PSIZE = FinalClist![index1]["size_attribute_name"].toString();
+        addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
+      },
+      OfferPrice: FinalClist![index1]["offerPrice"].toString(),
+      Description: FinalClist![index1]["description"].toString(),
+      TotalPrice: FinalClist![index1]["totalPrice"].toString(),
+      combinationId: CombID,
+    );
   }
 }

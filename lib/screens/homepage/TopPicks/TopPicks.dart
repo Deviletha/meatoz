@@ -19,8 +19,8 @@ class TopPicksCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         clipBehavior: Clip.antiAlias,
-        height: 200,
-        width: 330,
+        height: MediaQuery.of(context).size.height / 6,
+        width: MediaQuery.of(context).size.width / 1.05,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),

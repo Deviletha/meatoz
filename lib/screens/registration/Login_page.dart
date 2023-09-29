@@ -29,6 +29,81 @@ class _LoginPageState extends State<LoginPage> {
     print(UID);
   }
 
+  apiForLogin() async {
+    String username = usernameController.text.toString();
+    String password = passwordController.text.toString();
+    if (username.isNotEmpty && password.isNotEmpty) {
+      var response = await ApiHelper()
+          .post(endpoint: "common/authenticate", body: {
+        'username': username,
+        'password': password,
+      }).catchError((err) {});
+
+      if (response != null) {
+        var jsonResponse = jsonDecode(response);
+        if (jsonResponse is List && jsonResponse.isNotEmpty) {
+          if (jsonResponse[0]["error"] == "username or password is incorrect") {
+            // Username or password is incorrect
+            debugPrint('API failed:');
+            Fluttertoast.showToast(
+              msg: "Username or password is incorrect",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.SNACKBAR,
+              timeInSecForIosWeb: 1,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          } else {
+            // Successful login
+            setState(() {
+              debugPrint('API successful:');
+              UserList = jsonResponse;
+              print(response);
+            });
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setString("UID", UserList![0]["id"].toString());
+            checkUser();
+            Fluttertoast.showToast(
+              msg: "Login success",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.SNACKBAR,
+              timeInSecForIosWeb: 1,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BottomNav()),
+            );
+          }
+        }
+      } else {
+        // API call failed
+        debugPrint('API failed:');
+        Fluttertoast.showToast(
+          msg: "Login failed",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      // Username or password is empty
+      Fluttertoast.showToast(
+        msg: "Please enter username and password",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.SNACKBAR,
+        timeInSecForIosWeb: 1,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -112,59 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () async {
-                    String username = usernameController.text.toString();
-                    String password = passwordController.text.toString();
-                    if (username.isNotEmpty && password.isNotEmpty) {
-                      var response = await ApiHelper()
-                          .post(endpoint: "common/authenticate", body: {
-                        'username': username,
-                        'password': password,
-                      }).catchError((err) {});
-                      if (response != null) {
-                        setState(() {
-                          debugPrint('API successful:');
-                          UserList = jsonDecode(response);
-                          print(response);
-                        });
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setString(
-                            "UID", UserList![0]["id"].toString());
-                        checkUser();
-                        Fluttertoast.showToast(
-                          msg: "Login success",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.SNACKBAR,
-                          timeInSecForIosWeb: 1,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => BottomNav()),
-                        );
-                      } else {
-                        // API call failed
-                        debugPrint('API failed:');
-                        Fluttertoast.showToast(
-                          msg: "Login failed",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.SNACKBAR,
-                          timeInSecForIosWeb: 1,
-                          textColor: Colors.white,
-                          fontSize: 16.0,
-                        );
-                      }
-                    } else {
-                      // Username or password is empty
-                      Fluttertoast.showToast(
-                        msg: "Please enter username and password",
-                        toastLength: Toast.LENGTH_SHORT,
-                        gravity: ToastGravity.SNACKBAR,
-                        timeInSecForIosWeb: 1,
-                        textColor: Colors.white,
-                        fontSize: 16.0,
-                      );
-                    }
+                    apiForLogin();
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal[900],

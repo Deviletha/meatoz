@@ -51,7 +51,6 @@ class _Cart_pageState extends State<Cart_page> {
   }
 
   APIforCart() async {
-
     var response = await ApiHelper().post(endpoint: "cart/get", body: {
       "userid": UID,
     }).catchError((err) {});
@@ -82,8 +81,8 @@ class _Cart_pageState extends State<Cart_page> {
       setState(() {
         debugPrint('cartpage successful:');
         clist = jsonDecode(response);
-        CartList = clist!["cart"];
       });
+      APIforCart();
     } else {
       debugPrint('api failed:');
     }
@@ -98,8 +97,8 @@ class _Cart_pageState extends State<Cart_page> {
       setState(() {
         debugPrint('cartpage successful:');
         clist = jsonDecode(response);
-        CartList = clist!["cart"];
       });
+      APIforCart();
     } else {
       debugPrint('api failed:');
     }
@@ -114,7 +113,6 @@ class _Cart_pageState extends State<Cart_page> {
       setState(() {
         debugPrint('cartpage successful:');
         clist = jsonDecode(response);
-        CartList = clist!["cart"];
 
         Fluttertoast.showToast(
           msg: "Item Removed",
@@ -125,6 +123,7 @@ class _Cart_pageState extends State<Cart_page> {
           fontSize: 16.0,
         );
       });
+      APIforCart();
     } else {
       debugPrint('api failed:');
     }

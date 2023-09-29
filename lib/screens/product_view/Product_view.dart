@@ -109,6 +109,7 @@ class _ProductViewState extends State<ProductView> {
     }
   }
 
+
   Future<void> checkLoggedIn(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? loginId = prefs.getString('UID');
@@ -246,7 +247,8 @@ class _ProductViewState extends State<ProductView> {
         child: ListView(
           children: [
             ProductViewTile(
-
+              noOfPiece: "2",
+                servingCaapcity: "bjh hg 12",
                 ItemName: widget.productname.toString(),
                 ImagePath: widget.url,
                 onPressed: () {

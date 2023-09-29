@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../Components/text_widget.dart';
 
@@ -50,7 +51,7 @@ class _DealOfTheDayCardState extends State<DealOfTheDayCard> {
                   Container(
                     clipBehavior: Clip.antiAlias,
                     width: double.infinity,
-                    height: 140,
+                    height:MediaQuery.of(context).size.height / 6,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
@@ -117,11 +118,11 @@ class _DealOfTheDayCardState extends State<DealOfTheDayCard> {
                             onPressed: widget.onPressed,
                             icon :  WID=="NO"?
                             Icon(
-                              Icons.favorite_border_sharp,
+                              Iconsax.heart,
                               color: Colors.black,
                               size: 25,
                             ):Icon(
-                              Icons.favorite_sharp,
+                              Iconsax.heart5,
                               color: Colors.red,
                               size: 25,
                             )

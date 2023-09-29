@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/screens/homepage/AllProducts/Product_tile.dart';
 import 'package:meatoz/screens/homepage/Category/CategoryWidget.dart';
 import 'package:meatoz/screens/homepage/DealofTheDay/dealoftheday_card.dart';
@@ -46,11 +47,11 @@ class _HomePageState extends State<HomePage> {
     getMyOrders();
   }
 
-  Future<void> check(String id,String  PID) async {
+  Future<void> check(String id,String  PID, String amount) async {
 
     if(WID=="NO"|| WID==null){
       addwisH(id,"YES");
-      addTowishtist(PID, id,context);
+      addTowishtist(PID, id,amount, context,);
     }
     else{
       addwisH(id, "NO");
@@ -274,7 +275,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  Future<void> addTowishtist(String id, String combination, BuildContext context) async {
+  Future<void> addTowishtist(String id, String combination, String amount, BuildContext context) async {
     if (UID == null) {
       // User is not logged in, show Snackbar and navigate to login page
       ScaffoldMessenger.of(context).showSnackBar(
@@ -303,6 +304,8 @@ class _HomePageState extends State<HomePage> {
       "userid": UID,
       "productid": id,
       "combination": combination,
+      "amount": amount,
+
     }).catchError((err) {});
 
     if (response != null) {
@@ -415,7 +418,7 @@ class _HomePageState extends State<HomePage> {
                               style:
                                   TextStyle(color: Colors.grey, fontSize: 16),
                             ),
-                            Icon(Icons.search)
+                            Icon(Iconsax.search_normal_1,)
                           ],
                         ),
                       ),
@@ -429,41 +432,41 @@ class _HomePageState extends State<HomePage> {
             ),
             Container(
                 child: isLoading
-                    ? Center(child: CircularProgressIndicator(color: Colors.teal[900],))
-                // Shimmer.fromColors(
-                //         baseColor: Colors.grey[300]!,
-                //         highlightColor: Colors.grey[100]!,
-                //         child: CarouselSlider.builder(
-                //           itemCount:
-                //               BannerList == null ? 0 : BannerList?.length,
-                //           itemBuilder: (context, index, realIndex) {
-                //             return getBanner(index);
-                //           },
-                //           options: CarouselOptions(
-                //             height: 125,
-                //             aspectRatio: 15 / 6,
-                //             viewportFraction: .8,
-                //             initialPage: 0,
-                //             enableInfiniteScroll: true,
-                //             reverse: false,
-                //             autoPlay: false,
-                //             enlargeCenterPage: true,
-                //             autoPlayInterval: Duration(seconds: 3),
-                //             autoPlayAnimationDuration:
-                //                 Duration(milliseconds: 800),
-                //             autoPlayCurve: Curves.fastOutSlowIn,
-                //             onPageChanged: (index, reason) {},
-                //             scrollDirection: Axis.horizontal,
-                //           ),
-                //         ),
-                //       )
+                    ?
+                Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: CarouselSlider.builder(
+                          itemCount:
+                              BannerList == null ? 0 : BannerList?.length,
+                          itemBuilder: (context, index, realIndex) {
+                            return getBanner(index);
+                          },
+                          options: CarouselOptions(
+                            height: 125,
+                            aspectRatio: 15 / 6,
+                            viewportFraction: .8,
+                            initialPage: 0,
+                            enableInfiniteScroll: true,
+                            reverse: false,
+                            autoPlay: false,
+                            enlargeCenterPage: true,
+                            autoPlayInterval: Duration(seconds: 3),
+                            autoPlayAnimationDuration:
+                                Duration(milliseconds: 800),
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            onPageChanged: (index, reason) {},
+                            scrollDirection: Axis.horizontal,
+                          ),
+                        ),
+                      )
                     : CarouselSlider.builder(
                         itemCount: BannerList == null ? 0 : BannerList?.length,
                         itemBuilder: (context, index, realIndex) {
                           return getBanner(index);
                         },
                         options: CarouselOptions(
-                          height: 125,
+                          height: MediaQuery.of(context).size.height / 6,
                           aspectRatio: 15 / 6,
                           viewportFraction: 1,
                           initialPage: 0,
@@ -567,111 +570,136 @@ class _HomePageState extends State<HomePage> {
                     ),
             ),
             Heading(text: "Top Picks For You"),
-            Container(
-                child: isLoading
-                    ? Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: CarouselSlider.builder(
-                          itemCount:
-                              categorylist == null ? 0 : categorylist?.length,
-                          itemBuilder: (context, index, realIndex) {
-                            return getCategoryImage(index);
-                          },
-                          options: CarouselOptions(
-                            height: 180,
-                            aspectRatio: 15 / 6,
-                            viewportFraction: 1,
-                            initialPage: 0,
-                            enableInfiniteScroll: true,
-                            reverse: false,
-                            autoPlay: false,
-                            enlargeCenterPage: true,
-                            autoPlayInterval: Duration(seconds: 3),
-                            autoPlayAnimationDuration:
-                                Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            onPageChanged: (index, reason) {},
-                            scrollDirection: Axis.horizontal,
-                          ),
-                        ),
-                      )
-                    : CarouselSlider.builder(
-                        itemCount:
-                            categorylist == null ? 0 : categorylist?.length,
-                        itemBuilder: (context, index, realIndex) {
-                          return getCategoryImage(index);
-                        },
-                        options: CarouselOptions(
-                          height: 180,
-                          aspectRatio: 15 / 6,
-                          viewportFraction: 1,
-                          initialPage: 0,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: true,
-                          enlargeCenterPage: false,
-                          autoPlayInterval: Duration(seconds: 3),
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          onPageChanged: (index, reason) {},
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      )),
+          Container(
+            child: categorylist != null && categorylist!.isNotEmpty
+                ? isLoading
+                ? Shimmer.fromColors(
+              baseColor: Colors.grey[300]!,
+              highlightColor: Colors.grey[100]!,
+              child: CarouselSlider.builder(
+                itemCount: categorylist!.length,
+                itemBuilder: (context, index, realIndex) {
+                  return getCategoryImage(index);
+                },
+                options: CarouselOptions(
+                  height: 180,
+                  aspectRatio: 15 / 6,
+                  viewportFraction: 1,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: false,
+                  enlargeCenterPage: true,
+                  autoPlayInterval: Duration(seconds: 3),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  onPageChanged: (index, reason) {},
+                  scrollDirection: Axis.horizontal,
+                ),
+              ),
+            )
+                : CarouselSlider.builder(
+              itemCount: categorylist!.length,
+              itemBuilder: (context, index, realIndex) {
+                return getCategoryImage(index);
+              },
+              options: CarouselOptions(
+                height: 180,
+                aspectRatio: 15 / 6,
+                viewportFraction: 1,
+                initialPage: 0,
+                enableInfiniteScroll: true,
+                reverse: false,
+                autoPlay: true,
+                enlargeCenterPage: false,
+                autoPlayInterval: Duration(seconds: 3),
+                autoPlayAnimationDuration: Duration(milliseconds: 800),
+                autoPlayCurve: Curves.fastOutSlowIn,
+                onPageChanged: (index, reason) {},
+                scrollDirection: Axis.horizontal,
+              ),
+            )
+                : SizedBox(),
+          ),
             Heading(text: "Deal of The Day"),
             Container(
-              child: isLoading
-                  ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: CarouselSlider.builder(
-                        itemCount: 5, // Set a fixed count for shimmer effect
-                        itemBuilder: (context, index, realIndex) {
-                          return getDealOfTheDay(index);
-                        },
-                        options: CarouselOptions(
-                          height: 300,
-                          aspectRatio: 15 / 6,
-                          viewportFraction: .50,
-                          initialPage: 0,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: true,
-                          enlargeCenterPage: false,
-                          autoPlayInterval: Duration(seconds: 3),
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          onPageChanged: (index, reason) {},
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      ),
-                    )
-                  : CarouselSlider.builder(
-                      itemCount: dealOfTheDayList == null
-                          ? 0
-                          : dealOfTheDayList?.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return getDealOfTheDay(index);
-                      },
-                      options: CarouselOptions(
-                        height: 300,
-                        aspectRatio: 15 / 6,
-                        viewportFraction: .50,
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        reverse: false,
-                        autoPlay: true,
-                        enlargeCenterPage: false,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        onPageChanged: (index, reason) {},
-                        scrollDirection: Axis.horizontal,
-                      ),
-                    ),
+              child: dealOfTheDayList != null && dealOfTheDayList!.isNotEmpty
+                  ? CarouselSlider.builder(
+                itemCount: dealOfTheDayList!.length,
+                itemBuilder: (context, index, realIndex) {
+                  return getDealOfTheDay(index);
+                },
+                options: CarouselOptions(
+                  height: 300,
+                  aspectRatio: 15 / 6,
+                  viewportFraction: .50,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: true,
+                  enlargeCenterPage: false,
+                  autoPlayInterval: Duration(seconds: 3),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  onPageChanged: (index, reason) {},
+                  scrollDirection: Axis.horizontal,
+                ),
+              )
+                  : Center(
+                child: Text('No deals available'),
+              ),
             ),
+            // Container(
+            //   child: isLoading
+            //       ? Shimmer.fromColors(
+            //           baseColor: Colors.grey[300]!,
+            //           highlightColor: Colors.grey[100]!,
+            //           child: CarouselSlider.builder(
+            //             itemCount: 5, // Set a fixed count for shimmer effect
+            //             itemBuilder: (context, index, realIndex) {
+            //               return getDealOfTheDay(index);
+            //             },
+            //             options: CarouselOptions(
+            //               height: 300,
+            //               aspectRatio: 15 / 6,
+            //               viewportFraction: .50,
+            //               initialPage: 0,
+            //               enableInfiniteScroll: true,
+            //               reverse: false,
+            //               autoPlay: true,
+            //               enlargeCenterPage: false,
+            //               autoPlayInterval: Duration(seconds: 3),
+            //               autoPlayAnimationDuration:
+            //                   Duration(milliseconds: 800),
+            //               autoPlayCurve: Curves.fastOutSlowIn,
+            //               onPageChanged: (index, reason) {},
+            //               scrollDirection: Axis.horizontal,
+            //             ),
+            //           ),
+            //         )
+            //       :
+            //   CarouselSlider.builder(
+            //           itemCount: dealOfTheDayList == null ? 0 : dealOfTheDayList?.length,
+            //           itemBuilder: (context, index, realIndex) {
+            //             return getDealOfTheDay(index);
+            //           },
+            //           options: CarouselOptions(
+            //             height: 300,
+            //             aspectRatio: 15 / 6,
+            //             viewportFraction: .50,
+            //             initialPage: 0,
+            //             enableInfiniteScroll: true,
+            //             reverse: false,
+            //             autoPlay: true,
+            //             enlargeCenterPage: false,
+            //             autoPlayInterval: Duration(seconds: 3),
+            //             autoPlayAnimationDuration: Duration(milliseconds: 800),
+            //             autoPlayCurve: Curves.fastOutSlowIn,
+            //             onPageChanged: (index, reason) {},
+            //             scrollDirection: Axis.horizontal,
+            //           ),
+            //         ),
+            // ),
             Heading(text: "Our Products"),
             Container(
               child: isLoading
@@ -736,7 +764,7 @@ class _HomePageState extends State<HomePage> {
                           return getPopularRow(index);
                         },
                         options: CarouselOptions(
-                          height: 300,
+                          height: MediaQuery.of(context).size.height / 2.5,
                           aspectRatio: 15 / 6,
                           viewportFraction: .58,
                           initialPage: 0,
@@ -761,7 +789,7 @@ class _HomePageState extends State<HomePage> {
                         return getPopularRow(index);
                       },
                       options: CarouselOptions(
-                        height: 300,
+                        height: MediaQuery.of(context).size.height / 2.5,
                         aspectRatio: 15 / 6,
                         viewportFraction: .7,
                         initialPage: 0,
@@ -874,10 +902,10 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => Category_View(
-              url: image,
+              // url: image,
               itemname: categorylist![index]["name"].toString(),
-              description: categorylist![index]["description"].toString(),
-              price: categorylist![index]["price"].toString(),
+              // description: categorylist![index]["description"].toString(),
+              // price: categorylist![index]["price"].toString(),
               id: categorylist![index]["id"],
             ),
           ),
@@ -897,8 +925,8 @@ class _HomePageState extends State<HomePage> {
     var image = base! + BannerList![index]["image"];
 
     return Container(
-      height: 200,
-      width: 330,
+      height: MediaQuery.of(context).size.height / 6,
+      width: MediaQuery.of(context).size.width / 1.05,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image:
@@ -921,10 +949,10 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => Category_View(
-              url: image,
+              // url: image,
               itemname: categorylist![index]["name"].toString(),
-              description: categorylist![index]["description"].toString(),
-              price: categorylist![index]["price"].toString(),
+              // description: categorylist![index]["description"].toString(),
+              // price: categorylist![index]["price"].toString(),
               id: categorylist![index]["id"],
             ),
           ),
@@ -948,7 +976,7 @@ class _HomePageState extends State<HomePage> {
       ItemName: Finalproductlist![index]["combinationName"].toString(),
       ImagePath: image,
       onPressed: () {
-        check(CombID,PID);
+        check(CombID,PID,Finalproductlist![index]["offerPrice"].toString());
 
         } ,
       TotalPrice: price,
@@ -1029,7 +1057,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
-          check(CombID,PID);
+          check(CombID,PID,dealOfTheDayList![index]["offerPrice"].toString());
         },
         TotalPrice: price,
         OfferPrice: offerPrice,
@@ -1069,7 +1097,7 @@ class _HomePageState extends State<HomePage> {
           );
         },
         onPressed: () {
-          check(CombID,PID);
+          check(CombID,PID,ourProductList![index]["offerPrice"].toString());
         },
         TotalPrice: price,
         combinationId: CombID,

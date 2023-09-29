@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:typed_data';
+// import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
@@ -42,8 +42,6 @@ class _ChangeProfileState extends State<ChangeProfile> {
     }
   }
 
-
-  Uint8List? _image;
 
   void selectImage() async {
     final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -135,26 +133,25 @@ class _ChangeProfileState extends State<ChangeProfile> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(height: 10,),
-            Stack(
-              children: [
-                _pickedImage != null
-                    ? CircleAvatar(
-                  radius: 50,
-                  backgroundImage: FileImage(_pickedImage!),
-                )
-                    : CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage("assets/contactavatar.png"),
-                ),
-                IconButton(
-                  onPressed: () {
-                    selectImage();
-                  },
-                  icon: Icon(Icons.add_a_photo, color: Colors.teal[900]),
-                ),
-              ],
-            ),
-
+            // Stack(
+            //   children: [
+            //     _pickedImage != null
+            //         ? CircleAvatar(
+            //       radius: 50,
+            //       backgroundImage: FileImage(_pickedImage!),
+            //     )
+            //         : CircleAvatar(
+            //       radius: 50,
+            //       backgroundImage: AssetImage("assets/contactavatar.png"),
+            //     ),
+            //     IconButton(
+            //       onPressed: () {
+            //         selectImage();
+            //       },
+            //       icon: Icon(Icons.add_a_photo, color: Colors.teal[900]),
+            //     ),
+            //   ],
+            // ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 35, right: 35, top: 20, bottom: 20),

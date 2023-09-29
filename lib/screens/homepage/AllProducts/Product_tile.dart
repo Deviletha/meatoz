@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Components/text_widget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -54,7 +55,7 @@ String WID="NO";
                 Container(
                   clipBehavior: Clip.antiAlias,
                   width: double.infinity,
-                  height: 120,
+                  height: MediaQuery.of(context).size.height / 6,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
@@ -132,11 +133,11 @@ String WID="NO";
                   onPressed: widget.onPressed,
                   icon :  WID=="NO"?
                   Icon(
-                    Icons.favorite_border_sharp,
+                    Iconsax.heart,
                     color: Colors.black,
                     size: 30,
                   ):Icon(
-                    Icons.favorite_sharp,
+                    Iconsax.heart5,
                     color: Colors.red,
                     size: 30,
                   )

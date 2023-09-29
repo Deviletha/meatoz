@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
@@ -27,7 +28,7 @@ class Accounts extends StatefulWidget {
 }
 
 class _AccountsState extends State<Accounts> {
-  String? base = "https://meatoz.in/basicapi/public/";
+  // String? base = "https://meatoz.in/basicapi/public/";
   String? UID;
   String? datas;
   Map? responseData;
@@ -142,7 +143,7 @@ class _AccountsState extends State<Accounts> {
 
   @override
   Widget build(BuildContext context) {
-    var image = base! + (dataList?[index]["image"] ?? "").toString();
+    // var image = base! + (dataList?[index]["image"] ?? "").toString();
     return Scaffold(
       appBar: AppBar(
         title: AppText(
@@ -209,10 +210,10 @@ class _AccountsState extends State<Accounts> {
                                   ),
                                 )
                               : ListTile(
-                                  leading: CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: NetworkImage(image),
-                                  ),
+                                  // leading: CircleAvatar(
+                                  //   radius: 30,
+                                  //   backgroundImage: NetworkImage(image),
+                                  // ),
                                   title: Text(
                                     dataList![index]["first_name"].toString(),
                                     style: TextStyle(
@@ -231,7 +232,7 @@ class _AccountsState extends State<Accounts> {
                     SizedBox(height: 15),
                     AccountCustomTile(
                       title: "Add Address",
-                      icon: Icons.add_home_outlined,
+                      icon: Iconsax.home,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -244,7 +245,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                       title: "My Wishlist",
-                      icon: Icons.favorite_border_sharp,
+                      icon: Iconsax.heart,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -257,7 +258,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                       title: "My Orders",
-                      icon: Icons.shopping_bag_outlined,
+                      icon: Iconsax.bag_2,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -270,7 +271,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                         title: "Wallet",
-                        icon: Icons.wallet_rounded,
+                        icon: Iconsax.wallet_3,
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) {
@@ -282,7 +283,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                       title: "Subscription",
-                      icon: Icons.local_offer_outlined,
+                      icon: Iconsax.user_tick,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -295,7 +296,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                       title: "Settings",
-                      icon: Icons.settings_outlined,
+                      icon: Iconsax.setting_2,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -308,7 +309,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                       title: "Privacy info & Terms",
-                      icon: Icons.privacy_tip_outlined,
+                      icon: Iconsax.security_safe,
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) {
@@ -321,7 +322,7 @@ class _AccountsState extends State<Accounts> {
                     ),
                     AccountCustomTile(
                       title: "Help & Support",
-                      icon: Icons.help_outline_rounded,
+                      icon: Iconsax.info_circle,
                       onTap: () {
                         openGmail();
                       },
@@ -340,7 +341,7 @@ class _AccountsState extends State<Accounts> {
                         child: Row(
                           children: [
                             Icon(
-                              Icons.person_outline,
+                              Iconsax.user_octagon,
                               size: 25,
                             ),
                             SizedBox(width: 25),

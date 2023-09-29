@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../Components/text_widget.dart';
 
@@ -105,11 +106,10 @@ class WishlistTile extends StatelessWidget {
               ),
             ],
           ),
-          trailing: TextButton(
+          trailing: IconButton(
             onPressed: onPressed,
-            child: Text(
-              "Remove",
-              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            icon: Icon(
+              Iconsax.trash, size: 25, color: Colors.red,
             ),
           )),
     );

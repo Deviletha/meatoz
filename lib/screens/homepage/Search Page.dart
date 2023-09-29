@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
@@ -40,14 +41,12 @@ class _SearchState extends State<Search> {
     super.initState();
   }
 
-  addTowishtist(
-    String id,
-      String Comid
-  ) async {
+  addTowishtist(String id, String Comid, String amount) async {
     var response = await ApiHelper().post(endpoint: "wishList/add", body: {
       "userid": UID,
       "productid": id,
-      "combination": Comid
+      "combination": Comid,
+      "amount" : amount
     }).catchError((err) {});
 
     if (response != null) {
@@ -68,7 +67,6 @@ class _SearchState extends State<Search> {
       });
     } else {
       debugPrint('Add to wishlist failed:');
-
     }
   }
 
@@ -92,7 +90,6 @@ class _SearchState extends State<Search> {
       });
     } else {
       debugPrint('api failed:');
-
     }
   }
 
@@ -101,8 +98,8 @@ class _SearchState extends State<Search> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: AppText(text:
-            "Search Items",
+          title: AppText(
+            text: "Search Items",
           ),
         ),
         body: Container(
@@ -111,13 +108,12 @@ class _SearchState extends State<Search> {
                   begin: Alignment.bottomLeft,
                   end: Alignment.topRight,
                   colors: [
-                    Colors.grey.shade400,
-                    Colors.grey.shade200,
-                    Colors.grey.shade50,
-                    Colors.grey.shade200,
-                    Colors.grey.shade400,
-                  ])
-          ),
+                Colors.grey.shade400,
+                Colors.grey.shade200,
+                Colors.grey.shade50,
+                Colors.grey.shade200,
+                Colors.grey.shade400,
+              ])),
           child: ListView(
             children: [
               Padding(
@@ -128,19 +124,23 @@ class _SearchState extends State<Search> {
                     controller: _searchController,
                     decoration: InputDecoration(
                       hintText: 'Type product name to search items',
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.clear),
+                      prefixIcon: IconButton(
+                        icon: Icon(
+                          Iconsax.close_square,
+                        ),
                         onPressed: () => _searchController.clear(),
                       ),
-                      prefixIcon: IconButton(
-                        icon: Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          Iconsax.search_normal_1,
+                        ),
                         onPressed: _performSearch,
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                     ),
-                    textInputAction: TextInputAction.done,
+                    textInputAction: TextInputAction.search,
                   ),
                 ),
               ),
@@ -161,17 +161,18 @@ class _SearchState extends State<Search> {
 
   Widget getSearchList(int index) {
     var image = base! + searchlist![index]["image"].toString();
-    var price =  searchlist![index]["totalPrice"].toString();
-    var PID =  searchlist![index]["id"].toString();
+    var price = searchlist![index]["offerPrice"].toString();
+    var PID = searchlist![index]["id"].toString();
+    var COMBID = searchlist![index]["combinationId"].toString();
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ProductView(
-              stock: searchlist![index]["stock"].toString(),
+                stock: searchlist![index]["stock"].toString(),
                 recipe: searchlist![index]["hint"].toString(),
-              position: index,
+                position: index,
                 id: searchlist![index]["id"].toString(),
                 productname: searchlist![index]["name"].toString(),
                 url: image,
@@ -249,9 +250,7 @@ class _SearchState extends State<Search> {
                       ),
                       ElevatedButton(
                           onPressed: () {
-                            addTowishtist(
-                             PID,PID
-                            );
+                            addTowishtist(PID, COMBID,price );
                           },
                           style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.teal[900],

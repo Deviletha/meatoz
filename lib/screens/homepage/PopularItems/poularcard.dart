@@ -23,8 +23,8 @@ class PopularCard extends StatelessWidget {
           children: [
             Container(
               clipBehavior: Clip.antiAlias,
-              height: 300,
-              width: 280,
+              height: MediaQuery.of(context).size.height / 2.5,
+              width: MediaQuery.of(context).size.width / 1,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15),

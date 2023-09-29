@@ -27,8 +27,8 @@ class CategoryCard extends StatelessWidget {
               clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(360), color: Colors.grey),
-              width: 70,
-              height: 70,
+              width: MediaQuery.of(context).size.width / 5,
+              height: MediaQuery.of(context).size.height / 12,
               child: CachedNetworkImage(
                 imageUrl: ImagePath,
                 placeholder: (context, url) => Container(

@@ -11,6 +11,7 @@ class TextConst extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
+      maxLines: 10,
       style: TextStyle(fontSize: 12, color: Colors.teal[900],fontWeight: FontWeight.bold),
     );
   }

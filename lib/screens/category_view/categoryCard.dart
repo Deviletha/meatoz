@@ -1,15 +1,18 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Components/text_widget.dart';
 
-class CategoryViewTile extends StatelessWidget {
+class CategoryViewTile extends StatefulWidget {
   final String ItemName;
   final String Description;
   final String TotalPrice;
   final String OfferPrice;
   final String ImagePath;
+  final String combinationId;
   final color;
   void Function()? onPressed;
   void Function()? onPressed1;
@@ -22,19 +25,26 @@ class CategoryViewTile extends StatelessWidget {
     required this.onPressed1,
     required this.OfferPrice,
     required this.Description,
-    required this.TotalPrice})
+    required this.TotalPrice, required this.combinationId})
       : super(key: key);
 
   @override
+  State<CategoryViewTile> createState() => _CategoryViewTileState();
+}
+
+class _CategoryViewTileState extends State<CategoryViewTile> {
+  String WID="NO";
+  @override
   Widget build(BuildContext context) {
+    check(widget.combinationId);
     return
       Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
               color: Colors.teal.shade50, borderRadius: BorderRadius.circular(15)),
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -43,9 +53,9 @@ class CategoryViewTile extends StatelessWidget {
                     borderRadius: BorderRadius.circular(15),color: Colors.white
                 ),
                   width: double.infinity,
-                  height: 150,
+                  height: MediaQuery.of(context).size.height / 3.5,
                   child: CachedNetworkImage(
-                    imageUrl: ImagePath,
+                    imageUrl: widget.ImagePath,
                     placeholder: (context, url) => Container(
                       color: Colors.grey[300],
                     ),
@@ -60,7 +70,7 @@ class CategoryViewTile extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),TextConst(
-                  text: ItemName,
+                  text: widget.ItemName,
                 ),
                 SizedBox(
                   height: 15,
@@ -68,7 +78,7 @@ class CategoryViewTile extends StatelessWidget {
                 Row(mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "₹${TotalPrice}",
+                      "₹${widget.TotalPrice}",
                       style: TextStyle(
                           decoration: TextDecoration.lineThrough,
                           decorationStyle: TextDecorationStyle.solid,
@@ -79,7 +89,7 @@ class CategoryViewTile extends StatelessWidget {
                     ),
                     SizedBox(width: 10,),
                     Text(
-                       "₹ ${OfferPrice}",
+                       "₹ ${widget.OfferPrice}",
                       style: TextStyle(
                           color: Colors.green,fontWeight: FontWeight.bold,
                           fontSize: 20
@@ -91,29 +101,28 @@ class CategoryViewTile extends StatelessWidget {
                   height: 15,
                 ),
                 TextConst(text:
-                 Description,
+                 widget.Description,
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly
-                    ,
+                  child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(
-                        onPressed: onPressed,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal[900],
-                          shadowColor: Colors.teal[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(10),
-                              topLeft: Radius.circular(10),
-                            ),
-                          ),
-                        ),
-                        child: Icon(Icons.favorite_sharp),
+                      IconButton(
+                          onPressed:
+                          widget.onPressed,
+                          icon :  WID=="NO"?
+                          Icon(
+                            Iconsax.heart,
+                            color: Colors.black,
+                            size: 25,
+                          ):Icon(
+                            Iconsax.heart5,
+                            color: Colors.red,
+                            size: 25,
+                          )
                       ),
                       ElevatedButton(
-                        onPressed: onPressed1,
+                        onPressed: widget.onPressed1,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal[900],
                           shadowColor: Colors.teal[300],
@@ -134,5 +143,12 @@ class CategoryViewTile extends StatelessWidget {
           ),
         ),
       );
+  }
+  Future<void> check(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      WID = prefs.getString(id)!;
+    });
+
   }
 }

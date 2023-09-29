@@ -84,13 +84,8 @@ class _WishlistState extends State<Wishlist> {
       setState(() {
         debugPrint('Remove api successful:');
         prlist = jsonDecode(response);
-        wslist = prlist!["pagination"];
-        WsList = wslist!["pageData"];
 
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => Wishlist()),
-        );
+        APIcall();
         Fluttertoast.showToast(
           msg: "Removed product",
           toastLength: Toast.LENGTH_SHORT,
@@ -106,11 +101,11 @@ class _WishlistState extends State<Wishlist> {
     }
   }
 
-  Future<void> refreshPage() async {
-    refreshKey.currentState?.show(atTop: false);
-    await Future.delayed(Duration(seconds: 1));
-    await APIcall();
-  }
+  // Future<void> refreshPage() async {
+  //   refreshKey.currentState?.show(atTop: false);
+  //   await Future.delayed(Duration(seconds: 1));
+  //   await APIcall();
+  // }
 
 
   @override
@@ -147,14 +142,10 @@ class _WishlistState extends State<Wishlist> {
             ],
           ),
         )
-            : RefreshIndicator(
-          key: refreshKey,
-          onRefresh: refreshPage,
-          child: ListView.builder(
-            itemCount: Prlist == null ? 0 : Prlist?.length ?? 0,
-            itemBuilder: (context, index) => getWishlist(index),
-          ),
-        )
+            : ListView.builder(
+              itemCount: Prlist == null ? 0 : Prlist?.length ?? 0,
+              itemBuilder: (context, index) => getWishlist(index),
+            )
             : Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
