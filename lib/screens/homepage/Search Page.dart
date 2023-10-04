@@ -26,11 +26,66 @@ class _SearchState extends State<Search> {
   Map? productlist1;
   List? Finalproductlist;
   int index = 0;
+  bool isLoading = true;
 
-  checkUser() async {
+  Map? prlist;
+  Map? prlist1;
+  List? Prlist;
+
+  removeFromWishList(String id) async {
+    var response =
+        await ApiHelper().post(endpoint: "wishList/removeByCombination", body: {
+      "userid": UID,
+      "product_id": id,
+    }).catchError((err) {});
+
+    if (response != null) {
+      setState(() {
+        debugPrint('add-wishlist api successful:');
+        print("remove" + response);
+        Fluttertoast.showToast(
+          msg: "Removed from Wishlist",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      });
+    } else {
+      debugPrint('Remove wishlist failed:');
+    }
+  }
+
+  Future<void> wishListGet() async {
+    var response = await ApiHelper().post(endpoint: "wishList/get", body: {
+      "userid": UID,
+    }).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response != null) {
+      setState(() {
+        debugPrint('wishlist api successful:');
+        prlist = jsonDecode(response);
+        prlist1 = prlist!["pagination"];
+        Prlist = prlist1!["pageData"];
+        print(Prlist);
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
-    print(UID);
+    setState(() {
+      UID = prefs.getString("UID");
+    });
+
+    wishListGet();
   }
 
   final TextEditingController _searchController = TextEditingController();
@@ -46,15 +101,13 @@ class _SearchState extends State<Search> {
       "userid": UID,
       "productid": id,
       "combination": Comid,
-      "amount" : amount
+      "amount": amount
     }).catchError((err) {});
 
     if (response != null) {
       setState(() {
         debugPrint('addwishlist api successful:');
-        productlist = jsonDecode(response);
-        productlist1 = productlist!["pagination"];
-        Finalproductlist = productlist1!["pageData"];
+        print(response);
 
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
@@ -102,59 +155,65 @@ class _SearchState extends State<Search> {
             text: "Search Items",
           ),
         ),
-        body: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.bottomLeft,
-                  end: Alignment.topRight,
-                  colors: [
-                Colors.grey.shade400,
-                Colors.grey.shade200,
-                Colors.grey.shade50,
-                Colors.grey.shade200,
-                Colors.grey.shade400,
-              ])),
-          child: ListView(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Type product name to search items',
-                      prefixIcon: IconButton(
-                        icon: Icon(
-                          Iconsax.close_square,
-                        ),
-                        onPressed: () => _searchController.clear(),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          Iconsax.search_normal_1,
-                        ),
-                        onPressed: _performSearch,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(20.0),
-                      ),
-                    ),
-                    textInputAction: TextInputAction.search,
-                  ),
-                ),
-              ),
-              Container(
-                child: ListView.builder(
-                  physics: ScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: searchlist == null ? 0 : searchlist?.length,
-                  itemBuilder: (context, index) => getSearchList(index),
+        body: isLoading
+            ? Center(
+                child: CircularProgressIndicator(
+                  color: Colors.teal[900],
                 ),
               )
-            ],
-          ),
-        ),
+            : Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
+                        colors: [
+                      Colors.grey.shade400,
+                      Colors.grey.shade200,
+                      Colors.grey.shade50,
+                      Colors.grey.shade200,
+                      Colors.grey.shade400,
+                    ])),
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Type product name to search items',
+                            prefixIcon: IconButton(
+                              icon: Icon(
+                                Iconsax.close_square,
+                              ),
+                              onPressed: () => _searchController.clear(),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                Iconsax.search_normal_1,
+                              ),
+                              onPressed: _performSearch,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          textInputAction: TextInputAction.search,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: ListView.builder(
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: searchlist == null ? 0 : searchlist?.length,
+                        itemBuilder: (context, index) => getSearchList(index),
+                      ),
+                    )
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -164,12 +223,19 @@ class _SearchState extends State<Search> {
     var price = searchlist![index]["offerPrice"].toString();
     var PID = searchlist![index]["id"].toString();
     var COMBID = searchlist![index]["combinationId"].toString();
+
+    bool isInWishlist = Prlist != null &&
+        Prlist!.any((item) => item['combinationId'].toString() == COMBID);
+
     return InkWell(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ProductView(
+                noOfPiece: searchlist![index]["no_of_piece"].toString(),
+                serveCapacity:
+                    searchlist![index]["serving_cupacity"].toString(),
                 stock: searchlist![index]["stock"].toString(),
                 recipe: searchlist![index]["hint"].toString(),
                 position: index,
@@ -245,25 +311,26 @@ class _SearchState extends State<Search> {
                       ),
                       Text(
                         searchlist![index]["description"].toString(),
-                        maxLines: 2,
+                        maxLines: 4,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      ElevatedButton(
-                          onPressed: () {
-                            addTowishtist(PID, COMBID,price );
-                          },
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal[900],
-                              shadowColor: Colors.teal[300],
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    bottomLeft: Radius.circular(10),
-                                    topRight: Radius.circular(10)),
-                              )),
-                          child: Icon(
-                            Icons.favorite_outlined,
-                            color: Colors.white,
-                          ))
+                      IconButton(
+                        icon: Icon(
+                          isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                          color: isInWishlist ? Colors.red : Colors.black,
+                          size: 30,
+                        ),
+                        onPressed: () {
+                          if (isInWishlist) {
+                            removeFromWishList(COMBID);
+                            wishListGet();
+                          } else {
+                            // The item is not in the wishlist, you may want to add it.
+                            addTowishtist(PID, COMBID, price);
+                            wishListGet();
+                          }
+                        },
+                      )
                     ],
                   ),
                 )

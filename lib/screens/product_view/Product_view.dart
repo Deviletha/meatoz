@@ -14,6 +14,8 @@ import '../registration/Login_page.dart';
 
 class ProductView extends StatefulWidget {
   final String productname;
+  final String noOfPiece;
+  final String serveCapacity;
   final String url;
   final String description;
   final String amount;
@@ -35,7 +37,7 @@ class ProductView extends StatefulWidget {
       required this.psize,
       required this.position,
       required this.stock,
-      required this.recipe})
+      required this.recipe, required this.noOfPiece, required this.serveCapacity})
       : super(key: key);
 
   @override
@@ -92,8 +94,8 @@ class _ProductViewState extends State<ProductView> {
     if (response != null) {
       setState(() {
         debugPrint('cartpage successful:');
-        clist = jsonDecode(response);
-        CartList = clist!["cart"];
+        // clist = jsonDecode(response);
+        // CartList = clist!["cart"];
 
         Fluttertoast.showToast(
           msg: "Item added to Cart",
@@ -128,8 +130,8 @@ class _ProductViewState extends State<ProductView> {
       if (response != null) {
         setState(() {
           debugPrint('cartpage successful:');
-          clist = jsonDecode(response);
-          CartList = clist!["cart"];
+          // clist = jsonDecode(response);
+          // CartList = clist!["cart"];
 
           var stock = widget.stock.toString();
           bool isStockAvailable = int.parse(stock) > 0;
@@ -218,8 +220,6 @@ class _ProductViewState extends State<ProductView> {
   @override
   Widget build(BuildContext context) {
 
-    var stock = widget.stock.toString();
-    bool isStockAvailable = int.parse(stock) > 0;
     return Scaffold(
       appBar: AppBar(
         title: AppText(
@@ -247,8 +247,8 @@ class _ProductViewState extends State<ProductView> {
         child: ListView(
           children: [
             ProductViewTile(
-              noOfPiece: "2",
-                servingCaapcity: "bjh hg 12",
+                noOfPiece: widget.noOfPiece,
+                servingCaapcity: widget.serveCapacity,
                 ItemName: widget.productname.toString(),
                 ImagePath: widget.url,
                 onPressed: () {
@@ -322,8 +322,8 @@ class _ProductViewState extends State<ProductView> {
     var image = base! + (RelatedPrdctList![index]["image"] ?? "").toString();
     var price = "₹${RelatedPrdctList![index]["offerPrice"] ?? ""}";
 
-    var stock = RelatedPrdctList![index]["stock"].toString();
-    bool isStockAvailable = int.parse(stock) > 0;
+    var stock = RelatedPrdctList![index]["stock"];
+    bool isStockAvailable = stock != null && int.parse(stock.toString()) > 0;
 
     return RelatedItemTile(
         ItemName: RelatedPrdctList![index]["name"].toString(),

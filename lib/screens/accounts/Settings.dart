@@ -24,9 +24,9 @@ class _SettingsState extends State<Settings> {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),gapPadding: 20
-          ),
+          // shape: OutlineInputBorder(
+          //     borderRadius: BorderRadius.circular(20),gapPadding: 20
+          // ),
           title:  Text('Logout'),
           content:  Text('Do you want to logout?'),
           actions: <Widget>[

@@ -37,7 +37,7 @@ class _WishlistState extends State<Wishlist> {
       print(UID);
     });
     if (isLoggedIn) {
-      APIcall();
+      wishListGet();
     } else {
       setState(() {
         isLoading = false;
@@ -52,10 +52,9 @@ class _WishlistState extends State<Wishlist> {
   Map? prlist;
   Map? prlist1;
   List? Prlist;
-  int index = 0;
 
-  Future<void> APIcall() async {
 
+  Future<void> wishListGet() async {
     var response = await ApiHelper().post(endpoint: "wishList/get", body: {
       "userid": UID,
     }).catchError((err) {});
@@ -85,7 +84,7 @@ class _WishlistState extends State<Wishlist> {
         debugPrint('Remove api successful:');
         prlist = jsonDecode(response);
 
-        APIcall();
+        wishListGet();
         Fluttertoast.showToast(
           msg: "Removed product",
           toastLength: Toast.LENGTH_SHORT,
@@ -100,13 +99,6 @@ class _WishlistState extends State<Wishlist> {
       debugPrint('api failed:');
     }
   }
-
-  // Future<void> refreshPage() async {
-  //   refreshKey.currentState?.show(atTop: false);
-  //   await Future.delayed(Duration(seconds: 1));
-  //   await APIcall();
-  // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -194,6 +186,8 @@ class _WishlistState extends State<Wishlist> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
+                serveCapacity: Prlist![index]["serving_cupacity"].toString(),
+                noOfPiece: Prlist![index]["no_of_piece"].toString(),
                 stock: Prlist![index]["stock"].toString(),
                 recipe: "Recipe not available for this item",
                 position: index,

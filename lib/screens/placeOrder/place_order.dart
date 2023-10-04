@@ -49,8 +49,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
   String? SLOTID;
   String? SLOTDATE;
   String? SHIPPINGCHARGE;
+  String? TOTALSHIPPINGCHARGE;
   String? PACKINGCHARGE;
   String? SUBTOTAL;
+  String? SUBTOTALFORAPI;
   String? CARTTOTAL;
   String? GRANDTOTAL;
   String? WALLET_AMOUNT_VALUE;
@@ -115,6 +117,28 @@ class _PlaceOrderState extends State<PlaceOrder> {
   bool hidePlaceOrderButton = false;
 
 
+  Map? sub1;
+  List? SubdetailList;
+
+  getSubscriptionplan() async {
+    var response = await ApiHelper().post(
+        endpoint: "subscriptionPlan/getUserPlan",
+        body: {"userid": UID}).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+    if (response != null) {
+      setState(() {
+        debugPrint('Subscription detail api successful:');
+        sub1 = jsonDecode(response);
+        SubdetailList = sub1!["planDetails"];
+        print("subs plan: "+response);
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
   checkPincode() async {
     var response = await ApiHelper().post(
       endpoint: "postal/checkAvailabilityAtCheckout",
@@ -155,7 +179,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         }
       });
     } else {
-      debugPrint('api failed:');
+      debugPrint('pin code api failed:');
     }
   }
 
@@ -236,6 +260,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
     apiForWalletAmount();
     apiForCheckplan();
     checkPincode();
+    getSubscriptionplan();
     apiForCart();
   }
 
@@ -276,6 +301,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
           SUBTOTALFIRSTPURCHASE = subtotalfrmfirstpuchase.toString();
           subtotal = subtotal1 - WALLET_AMOUNT - subtotalfrmfirstpuchase;
           SUBTOTAL = subtotal.toString();
+          SUBTOTALFORAPI = subtotal1.toString();
 
           if (subtotalfrmfirstpuchase != 0) {
             Fluttertoast.showToast(
@@ -311,7 +337,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         discountList = discount!["discountAmount"];
 
         DSCOUNTAMOUNT = discountList!["discountAmount"].toInt();
-        print("dscnt amt$DSCOUNTAMOUNT");
+        print("dscnt amount: $DSCOUNTAMOUNT");
 
         NETPAYABLEAFTERDISCOUNT = GRNDAMNT - DSCOUNTAMOUNT;
         print("netpayable after discount$NETPAYABLEAFTERDISCOUNT");
@@ -441,16 +467,25 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   generalDetailsApi() async {
-    var response = await ApiHelper()
-        .post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
+    var response = await ApiHelper().post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('general detailsapi successful:');
         list = jsonDecode(response);
         genralList = list!["general_info"];
-        SHIPPINGCHARGE =
-            genralList![index]["delivery_charge"]?.toString() ?? "0";
-        PACKINGCHARGE = genralList![index]["packing_charge"]?.toString() ?? "0";
+
+        // Check if SubdetailList is not empty and set SHIPPINGCHARGE and PACKINGCHARGE to "0"
+        if (SubdetailList != null && SubdetailList!.isNotEmpty) {
+          SHIPPINGCHARGE = "0";
+          PACKINGCHARGE = "0";
+        }
+
+        SHIPPINGCHARGE ??= genralList![index]["delivery_charge"]?.toString() ?? "0";
+        PACKINGCHARGE ??= genralList![index]["packing_charge"]?.toString() ?? "0";
+
+        int shippingCharge = 0;
+
+        shippingCharge = genralList![index]["delivery_charge"];
 
         double expressDeliveryCharge = 0.0;
 
@@ -459,11 +494,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
               genralList![index]["express_delivery_charge"].toString());
         }
 
+        double finalShippingCharge = shippingCharge + expressDeliveryCharge;
+
+        TOTALSHIPPINGCHARGE = finalShippingCharge.toString();
+        print("total shipping charge : "+TOTALSHIPPINGCHARGE!);
+
         double AMOUNT = subtotal +
             double.parse(PACKINGCHARGE!) +
             double.parse(SHIPPINGCHARGE!) +
+            subscriptionPlanAmount +
             expressDeliveryCharge -
             WALLET_AMOUNT;
+
 
         GRNDAMNT = AMOUNT.toInt();
         GRANDTOTAL = GRNDAMNT.toString() ?? "0";
@@ -482,15 +524,15 @@ class _PlaceOrderState extends State<PlaceOrder> {
       "address": widget.id,
       "delivery_time": isExpressDeliverySelected ? "express_delivery" : SLOTID,
       "delivery_date": SLOTDATE,
-      "totalAmount": SUBTOTAL,
+      "totalAmount": SUBTOTALFORAPI,
       "amount": GRANDTOTAL,
-      "discountAmount": "0",
-      "shippingCharge": SHIPPINGCHARGE,
+      "discountAmount": subtotalfrmfirstpuchase.toString(),
+      "shippingCharge": TOTALSHIPPINGCHARGE,
       "paymentType": "COD",
       "contactless": CONTACTLESS.toString(),
       "delivery_note": noteController.text,
       "tip": tipController.text,
-      "paid": "1",
+      "paid": 1,
       "subscriptionPlanAmount": subscriptionPlanAmount.toString(),
       "walletAppliedAmounts": WALLET_AMOUNT.toString()
     }).catchError((err) {});
@@ -680,6 +722,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(10))),
                                 child: CheckboxListTile(
+                                  activeColor: Colors.teal[900],
                                   title: TextConst(text: "Express Delivery"),
                                   value: isExpressDeliverySelected,
                                   onChanged: (value) {
@@ -764,25 +807,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 children: [
                                   AmountRow(
                                     text: "Subtotal",
-                                    subtext: "Rs.${SUBTOTAL!}",
+                                    subtext: "Rs.${SUBTOTALFORAPI ?? "0"}" ,
                                   ),
                                   CustomRow(
                                     text: "Delivery Charges",
-                                    subtext: "Rs.0",
-                                  ),
-                                  CustomRow(
-                                    text: "Packing Charges",
                                     subtext: "Rs.${SHIPPINGCHARGE ?? '0'}",
                                   ),
-                                  CustomRow(
-                                    text: "Packing Charges",
-                                    subtext:
-                                        "Rs.${PACKINGCHARGE ?? '0'}", // Add null check
-                                  ),
-                                  CustomRow(
-                                    text: "First time Purchase Offer Discount",
-                                    subtext: "Rs.${SUBTOTALFIRSTPURCHASE ?? '0'}",
-                                  ),
+                                  // CustomRow(
+                                  //   text: "Packing Charges",
+                                  //   subtext:
+                                  //       "Rs.${PACKINGCHARGE ?? '0'}", // Add null check
+                                  // ),
+
                                   if (isExpressDeliverySelected &&
                                       genralList != null)
                                     CustomRow(
@@ -790,6 +826,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       subtext:
                                           "Rs.${genralList![index]["express_delivery_charge"]}",
                                     ),
+                                  if (planList != null &&
+                                      planList!.isNotEmpty &&
+                                      planList![0]["paid_status"] == "Unpaid")
+                                    CustomRow(
+                                      text: "Subscription Plan Amount",
+                                      subtext:
+                                      "Rs.$subscriptionPlanAmount",
+                                    ),
+                                  CustomRow(
+                                    text: "First time Purchase Discount",
+                                    subtext: "Rs.${SUBTOTALFIRSTPURCHASE ?? '0'}",
+                                  ),
                                   CustomRow(
                                     text: "Grand Total",
                                     subtext:
@@ -807,7 +855,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             SizedBox(
                               height: 10,
                             ),
-
                             // OfferCard(
                             //   title: cartDiscountList![index]["title"] ?? ""
                             //       .toString(),
@@ -827,26 +874,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   borderRadius: BorderRadius.circular(12)),
                               child: Column(
                                 children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      TextConst(text: "Contactless Delivery"),
-                                      Checkbox(
-                                        activeColor: Colors.teal[900],
-                                        focusColor: Colors.red,
-                                        shape: CircleBorder(eccentricity: .8),
-                                        value: isContactless,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            isContactless = value!;
-                                            CONTACTLESS = value
-                                                ? "Contactless_Delivery"
-                                                : "";
-                                          });
-                                        },
-                                      ),
-                                    ],
+                                  CheckboxListTile(
+                                    activeColor: Colors.teal[900],
+                                    title: TextConst(text: "Contactless Delivery"),
+                                    value: isContactless,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isContactless = value!;
+                                        CONTACTLESS = value
+                                            ? "Contactless_Delivery"
+                                            : "";
+                                      });
+                                    },
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(

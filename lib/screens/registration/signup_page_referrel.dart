@@ -6,14 +6,14 @@ import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
 import 'Login_page.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({Key? key}) : super(key: key);
+class SignupPage1 extends StatefulWidget {
+  const SignupPage1({Key? key, required String referralCode}) : super(key: key);
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupPage1> createState() => _SignupPage1State();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPage1State extends State<SignupPage1> {
   String? UID;
   Map? signuplist;
   List? slist;
@@ -90,17 +90,17 @@ class _SignupPageState extends State<SignupPage> {
           width: double.infinity,
           height: MediaQuery.of(context).size.height/1,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
+              gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                  colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ])
+          ),
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(15),
@@ -112,8 +112,8 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Name",),
+                        isDense: true,
+                        labelText: "Name",),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -133,9 +133,9 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Email ID",
-                          ),
+                        isDense: true,
+                        labelText: "Email ID",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains('@')) {
@@ -151,9 +151,9 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _contactController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Mobile",
-                        ),
+                        isDense: true,
+                        labelText: "Mobile",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -166,13 +166,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15,top: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15,top: 15),
                     child: TextFormField(
                       controller: _addressController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Address",
-                        ),
+                        isDense: true,
+                        labelText: "Address",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -185,13 +185,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15),
                     child: TextFormField(
                       controller: _stateController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "State",
-                         ),
+                        isDense: true,
+                        labelText: "State",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -204,13 +204,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15),
                     child: TextFormField(
                       controller: _locationController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "location",
-                        ),
+                        isDense: true,
+                        labelText: "location",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -223,13 +223,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15),
                     child: TextFormField(
                       controller: _postalController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Postal code",
-                         ),
+                        isDense: true,
+                        labelText: "Postal code",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -242,30 +242,30 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15),
                     child: TextFormField(
                       controller: _passwordController,
                       obscureText: showpass,
                       obscuringCharacter: "*",
                       decoration: InputDecoration(
-                          isDense: true,
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (showpass) {
-                                    showpass = false;
-                                  } else {
-                                    showpass = true;
-                                  }
-                                });
-                              },
-                              icon: Icon(
-                                showpass == true
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              )),
-                          labelText: "Password",
-                       ),
+                        isDense: true,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if (showpass) {
+                                  showpass = false;
+                                } else {
+                                  showpass = true;
+                                }
+                              });
+                            },
+                            icon: Icon(
+                              showpass == true
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            )),
+                        labelText: "Password",
+                      ),
                       textInputAction: TextInputAction.done,
                       validator: (Password) {
                         if (Password!.isEmpty || Password.length < 6) {
@@ -278,13 +278,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15),
                     child: TextFormField(
                       controller: _latitudeController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Latitude",
-                         ),
+                        isDense: true,
+                        labelText: "Latitude",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -297,13 +297,13 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                    const EdgeInsets.only(left: 20, right: 20, bottom: 15),
                     child: TextFormField(
                       controller: _longitudeController,
                       decoration: InputDecoration(
-                          isDense: false,
-                          labelText: "Longitude",
-                        ),
+                        isDense: false,
+                        labelText: "Longitude",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {

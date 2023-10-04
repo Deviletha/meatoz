@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:meatoz/screens/homepage/AllProducts/Product_tile.dart';
 import 'package:meatoz/screens/homepage/Category/CategoryWidget.dart';
-import 'package:meatoz/screens/homepage/DealofTheDay/dealoftheday_card.dart';
 import 'package:meatoz/screens/homepage/Order/OrderListtile.dart';
-import 'package:meatoz/screens/homepage/OurProducts/CardWidget.dart';
 import 'package:meatoz/screens/homepage/PopularItems/poularcard.dart';
 import 'package:meatoz/screens/homepage/TopPicks/TopPicks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/Title_widget.dart';
+import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
 import '../registration/Login_page.dart';
 import 'Notification_page.dart';
@@ -31,13 +30,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String? UID;
-  String? WID="NO";
-  List<String> WISHLISTIDs = [];
-
   bool isLoading = true;
-  bool isLoadingProducts = true;
+  // bool isLoadingProducts = true;
 
-  // Track API loading state
 
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -45,29 +40,7 @@ class _HomePageState extends State<HomePage> {
       UID = prefs.getString("UID");
     });
     getMyOrders();
-  }
-
-  Future<void> check(String id,String  PID, String amount) async {
-
-    if(WID=="NO"|| WID==null){
-      addwisH(id,"YES");
-      addTowishtist(PID, id,amount, context,);
-    }
-    else{
-      addwisH(id, "NO");
-    }
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      WID = prefs.getString(id)!;
-
-    });
-
-  }
-
-  addwisH(String wid,String v) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(
-      wid, v );
+    wishListGet();
   }
 
   String? base = "https://meatoz.in/basicapi/public/";
@@ -105,10 +78,35 @@ class _HomePageState extends State<HomePage> {
   List? Finalpopularlist;
   int index = 0;
 
-  getMyOrders() async {
 
-    var response =
-        await ApiHelper().post(endpoint: "common/getMyOrders", body: {
+  Map? prlist;
+  Map? prlist1;
+  List? Prlist;
+
+  Future<void> wishListGet() async {
+    var response = await ApiHelper().post(endpoint: "wishList/get", body: {
+      "userid": UID,
+    }).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response != null) {
+      setState(() {
+        debugPrint('wishlist api successful:');
+        prlist = jsonDecode(response);
+        prlist1 = prlist!["pagination"];
+        Prlist = prlist1!["pageData"];
+        print(Prlist);
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  Future<void> getMyOrders() async {
+    var response = await ApiHelper().post(endpoint: "common/getMyOrders", body: {
       "userid": UID,
       "offset": "0",
       "pageLimit": "1",
@@ -120,15 +118,22 @@ class _HomePageState extends State<HomePage> {
 
     if (response != null) {
       setState(() {
-        debugPrint('get address api successful:');
+        debugPrint('get my orders api successful:');
         order = jsonDecode(response);
         order1 = order!["data"];
-        orderList = order1!["pageData"];
+        dynamic pageData = order1!["pageData"]; // Declare pageData as dynamic
+        if (pageData is List<dynamic>) {
+          orderList = pageData;
+        } else {
+          // Handle the case where pageData is not a List
+          orderList = []; // Set it to an empty list or handle it accordingly
+        }
       });
     } else {
       debugPrint('api failed:');
     }
   }
+
 
   ApiForCategory() async {
 
@@ -153,7 +158,7 @@ class _HomePageState extends State<HomePage> {
   ApiforAllProducts() async {
 
     var response =
-        await ApiHelper().post(endpoint: "products/ByCombination", body: {
+    await ApiHelper().post(endpoint: "products/ByCombination", body: {
       "offset": "0",
       "pageLimit": "50",
     }).catchError((err) {});
@@ -204,7 +209,7 @@ class _HomePageState extends State<HomePage> {
         body: {
           "table": "products",
           "offset": "0",
-          "pageLimit": "10"
+          "pageLimit": "20"
         }).catchError((err) {});
 
     setState(() {
@@ -230,7 +235,7 @@ class _HomePageState extends State<HomePage> {
         body: {
           "table": "products",
           "offset": "0",
-          "pageLimit": "10"
+          "pageLimit": "20"
         }).catchError((err) {});
 
     setState(() {
@@ -252,7 +257,7 @@ class _HomePageState extends State<HomePage> {
   ApiforPopularProducts() async {
 
     var response =
-        await ApiHelper().post(endpoint: "products/ByCombination", body: {
+    await ApiHelper().post(endpoint: "products/ByCombination", body: {
       "offset": "0",
       "pageLimit": "8",
     }).catchError((err) {});
@@ -281,6 +286,7 @@ class _HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Text('Please log in to add to wishlist.'),
               SizedBox(width: 8),
@@ -311,14 +317,6 @@ class _HomePageState extends State<HomePage> {
     if (response != null) {
       setState(() {
         debugPrint('add-wishlist api successful:');
-        data = response.toString();
-        productlist = jsonDecode(response);
-        if (productlist != null) {
-          productlist1 = productlist!["pagination"];
-          if (productlist1 != null) {
-            Finalproductlist = productlist1!["pageData"];
-          }
-        }
 
         Fluttertoast.showToast(
           msg: "Added to Wishlist",
@@ -334,20 +332,42 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+   removeFromWishList(String id) async {
+    var response = await ApiHelper().post(endpoint: "wishList/removeByCombination", body: {
+      "userid": UID,
+      "product_id": id,
+
+    }).catchError((err) {});
+
+    if (response != null) {
+      setState(() {
+        debugPrint('add-wishlist api successful:');
+
+        Fluttertoast.showToast(
+          msg: "Removed from Wishlist",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      });
+    } else {
+      debugPrint('Remove wishlist failed:');
+    }
+  }
 
   @override
   void initState() {
-    ApiforPopularProducts().then((_) {
-      setState(() {
-        isLoadingProducts = false;
-      });
+    setState(() {
+      ApiforPopularProducts();
+      ApiForCategory();
+      ApiforBanner();
+      ApiforAllProducts();
+      apiForDealofTheDAy();
+      apiForOurProducts();
+      checkUser();
     });
-    ApiForCategory();
-    ApiforBanner();
-    ApiforAllProducts();
-    apiForDealofTheDAy();
-    apiForOurProducts();
-    checkUser();
     super.initState();
   }
 
@@ -362,10 +382,10 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
               onPressed: () => Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return Notifications();
-                    },
-                  )),
+                builder: (context) {
+                  return Notifications();
+                },
+              )),
               icon: Icon(
                 Icons.notifications_outlined,
                 color: Colors.white,
@@ -381,12 +401,12 @@ class _HomePageState extends State<HomePage> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade200,
-              Colors.grey.shade50,
-              Colors.grey.shade200,
-              Colors.grey.shade400,
-            ])),
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ])),
         child: ListView(
           children: [
             Column(
@@ -416,7 +436,7 @@ class _HomePageState extends State<HomePage> {
                             Text(
                               "Type product name to search items",
                               style:
-                                  TextStyle(color: Colors.grey, fontSize: 16),
+                              TextStyle(color: Colors.grey, fontSize: 16),
                             ),
                             Icon(Iconsax.search_normal_1,)
                           ],
@@ -434,54 +454,54 @@ class _HomePageState extends State<HomePage> {
                 child: isLoading
                     ?
                 Shimmer.fromColors(
-                        baseColor: Colors.grey[300]!,
-                        highlightColor: Colors.grey[100]!,
-                        child: CarouselSlider.builder(
-                          itemCount:
-                              BannerList == null ? 0 : BannerList?.length,
-                          itemBuilder: (context, index, realIndex) {
-                            return getBanner(index);
-                          },
-                          options: CarouselOptions(
-                            height: 125,
-                            aspectRatio: 15 / 6,
-                            viewportFraction: .8,
-                            initialPage: 0,
-                            enableInfiniteScroll: true,
-                            reverse: false,
-                            autoPlay: false,
-                            enlargeCenterPage: true,
-                            autoPlayInterval: Duration(seconds: 3),
-                            autoPlayAnimationDuration:
-                                Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            onPageChanged: (index, reason) {},
-                            scrollDirection: Axis.horizontal,
-                          ),
-                        ),
-                      )
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: CarouselSlider.builder(
+                    itemCount:
+                    BannerList == null ? 0 : BannerList?.length,
+                    itemBuilder: (context, index, realIndex) {
+                      return getBanner(index);
+                    },
+                    options: CarouselOptions(
+                      height: 125,
+                      aspectRatio: 15 / 6,
+                      viewportFraction: .8,
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      reverse: false,
+                      autoPlay: false,
+                      enlargeCenterPage: true,
+                      autoPlayInterval: Duration(seconds: 3),
+                      autoPlayAnimationDuration:
+                      Duration(milliseconds: 800),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      onPageChanged: (index, reason) {},
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  ),
+                )
                     : CarouselSlider.builder(
-                        itemCount: BannerList == null ? 0 : BannerList?.length,
-                        itemBuilder: (context, index, realIndex) {
-                          return getBanner(index);
-                        },
-                        options: CarouselOptions(
-                          height: MediaQuery.of(context).size.height / 6,
-                          aspectRatio: 15 / 6,
-                          viewportFraction: 1,
-                          initialPage: 0,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: true,
-                          enlargeCenterPage: false,
-                          autoPlayInterval: Duration(seconds: 3),
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          onPageChanged: (index, reason) {},
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      )),
+                  itemCount: BannerList == null ? 0 : BannerList?.length,
+                  itemBuilder: (context, index, realIndex) {
+                    return getBanner(index);
+                  },
+                  options: CarouselOptions(
+                    height: MediaQuery.of(context).size.height / 6,
+                    aspectRatio: 15 / 6,
+                    viewportFraction: 1,
+                    initialPage: 0,
+                    enableInfiniteScroll: true,
+                    reverse: false,
+                    autoPlay: true,
+                    enlargeCenterPage: false,
+                    autoPlayInterval: Duration(seconds: 3),
+                    autoPlayAnimationDuration:
+                    Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    onPageChanged: (index, reason) {},
+                    scrollDirection: Axis.horizontal,
+                  ),
+                )),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
@@ -533,50 +553,72 @@ class _HomePageState extends State<HomePage> {
             Container(
               child: isLoading
                   ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: GridView.builder(
-                        physics: ScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          childAspectRatio: .95,
-                        ),
-                        itemCount: 8,
-                        // Set a fixed count for shimmer effect
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          );
-                        },
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: GridView.builder(
+                  physics: ScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: .95,
+                  ),
+                  itemCount: 8,
+                  // Set a fixed count for shimmer effect
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                    )
+                    );
+                  },
+                ),
+              )
                   : GridView.builder(
-                      physics: ScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 4,
-                        childAspectRatio: .95,
-                      ),
-                      itemCount:
-                          categorylist == null ? 0 : categorylist?.length,
-                      itemBuilder: (context, index) => getCategoryRow(index),
-                    ),
+                physics: ScrollPhysics(),
+                shrinkWrap: true,
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: .95,
+                ),
+                itemCount:
+                categorylist == null ? 0 : categorylist?.length,
+                itemBuilder: (context, index) => getCategoryRow(index),
+              ),
             ),
             Heading(text: "Top Picks For You"),
-          Container(
-            child: categorylist != null && categorylist!.isNotEmpty
-                ? isLoading
-                ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: CarouselSlider.builder(
+            Container(
+              child: categorylist != null && categorylist!.isNotEmpty
+                  ? isLoading
+                  ? Shimmer.fromColors(
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: CarouselSlider.builder(
+                  itemCount: categorylist!.length,
+                  itemBuilder: (context, index, realIndex) {
+                    return getCategoryImage(index);
+                  },
+                  options: CarouselOptions(
+                    height: 180,
+                    aspectRatio: 15 / 6,
+                    viewportFraction: 1,
+                    initialPage: 0,
+                    enableInfiniteScroll: true,
+                    reverse: false,
+                    autoPlay: false,
+                    enlargeCenterPage: true,
+                    autoPlayInterval: Duration(seconds: 3),
+                    autoPlayAnimationDuration: Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    onPageChanged: (index, reason) {},
+                    scrollDirection: Axis.horizontal,
+                  ),
+                ),
+              )
+                  : CarouselSlider.builder(
                 itemCount: categorylist!.length,
                 itemBuilder: (context, index, realIndex) {
                   return getCategoryImage(index);
@@ -588,39 +630,17 @@ class _HomePageState extends State<HomePage> {
                   initialPage: 0,
                   enableInfiniteScroll: true,
                   reverse: false,
-                  autoPlay: false,
-                  enlargeCenterPage: true,
+                  autoPlay: true,
+                  enlargeCenterPage: false,
                   autoPlayInterval: Duration(seconds: 3),
                   autoPlayAnimationDuration: Duration(milliseconds: 800),
                   autoPlayCurve: Curves.fastOutSlowIn,
                   onPageChanged: (index, reason) {},
                   scrollDirection: Axis.horizontal,
                 ),
-              ),
-            )
-                : CarouselSlider.builder(
-              itemCount: categorylist!.length,
-              itemBuilder: (context, index, realIndex) {
-                return getCategoryImage(index);
-              },
-              options: CarouselOptions(
-                height: 180,
-                aspectRatio: 15 / 6,
-                viewportFraction: 1,
-                initialPage: 0,
-                enableInfiniteScroll: true,
-                reverse: false,
-                autoPlay: true,
-                enlargeCenterPage: false,
-                autoPlayInterval: Duration(seconds: 3),
-                autoPlayAnimationDuration: Duration(milliseconds: 800),
-                autoPlayCurve: Curves.fastOutSlowIn,
-                onPageChanged: (index, reason) {},
-                scrollDirection: Axis.horizontal,
-              ),
-            )
-                : SizedBox(),
-          ),
+              )
+                  : SizedBox(),
+            ),
             Heading(text: "Deal of The Day"),
             Container(
               child: dealOfTheDayList != null && dealOfTheDayList!.isNotEmpty
@@ -649,202 +669,151 @@ class _HomePageState extends State<HomePage> {
                 child: Text('No deals available'),
               ),
             ),
-            // Container(
-            //   child: isLoading
-            //       ? Shimmer.fromColors(
-            //           baseColor: Colors.grey[300]!,
-            //           highlightColor: Colors.grey[100]!,
-            //           child: CarouselSlider.builder(
-            //             itemCount: 5, // Set a fixed count for shimmer effect
-            //             itemBuilder: (context, index, realIndex) {
-            //               return getDealOfTheDay(index);
-            //             },
-            //             options: CarouselOptions(
-            //               height: 300,
-            //               aspectRatio: 15 / 6,
-            //               viewportFraction: .50,
-            //               initialPage: 0,
-            //               enableInfiniteScroll: true,
-            //               reverse: false,
-            //               autoPlay: true,
-            //               enlargeCenterPage: false,
-            //               autoPlayInterval: Duration(seconds: 3),
-            //               autoPlayAnimationDuration:
-            //                   Duration(milliseconds: 800),
-            //               autoPlayCurve: Curves.fastOutSlowIn,
-            //               onPageChanged: (index, reason) {},
-            //               scrollDirection: Axis.horizontal,
-            //             ),
-            //           ),
-            //         )
-            //       :
-            //   CarouselSlider.builder(
-            //           itemCount: dealOfTheDayList == null ? 0 : dealOfTheDayList?.length,
-            //           itemBuilder: (context, index, realIndex) {
-            //             return getDealOfTheDay(index);
-            //           },
-            //           options: CarouselOptions(
-            //             height: 300,
-            //             aspectRatio: 15 / 6,
-            //             viewportFraction: .50,
-            //             initialPage: 0,
-            //             enableInfiniteScroll: true,
-            //             reverse: false,
-            //             autoPlay: true,
-            //             enlargeCenterPage: false,
-            //             autoPlayInterval: Duration(seconds: 3),
-            //             autoPlayAnimationDuration: Duration(milliseconds: 800),
-            //             autoPlayCurve: Curves.fastOutSlowIn,
-            //             onPageChanged: (index, reason) {},
-            //             scrollDirection: Axis.horizontal,
-            //           ),
-            //         ),
-            // ),
             Heading(text: "Our Products"),
             Container(
               child: isLoading
                   ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: CarouselSlider.builder(
-                        itemCount: 5, // Set a fixed count for shimmer effect
-                        itemBuilder: (context, index, realIndex) {
-                          return getOurProducts(index);
-                        },
-                        options: CarouselOptions(
-                          height: 300,
-                          aspectRatio: 15 / 6,
-                          viewportFraction: .50,
-                          initialPage: 0,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: false,
-                          enlargeCenterPage: false,
-                          autoPlayInterval: Duration(seconds: 3),
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          onPageChanged: (index, reason) {},
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      ),
-                    )
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: CarouselSlider.builder(
+                  itemCount: 5, // Set a fixed count for shimmer effect
+                  itemBuilder: (context, index, realIndex) {
+                    return getOurProducts(index);
+                  },
+                  options: CarouselOptions(
+                    height: 300,
+                    aspectRatio: 15 / 6,
+                    viewportFraction: .50,
+                    initialPage: 0,
+                    enableInfiniteScroll: true,
+                    reverse: false,
+                    autoPlay: false,
+                    enlargeCenterPage: false,
+                    autoPlayInterval: Duration(seconds: 3),
+                    autoPlayAnimationDuration:
+                    Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    onPageChanged: (index, reason) {},
+                    scrollDirection: Axis.horizontal,
+                  ),
+                ),
+              )
                   : CarouselSlider.builder(
-                      itemCount:
-                          ourProductList == null ? 0 : ourProductList?.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return getOurProducts(index);
-                      },
-                      options: CarouselOptions(
-                        height: 300,
-                        aspectRatio: 15 / 6,
-                        viewportFraction: .50,
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        reverse: false,
-                        autoPlay: false,
-                        enlargeCenterPage: false,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        onPageChanged: (index, reason) {},
-                        scrollDirection: Axis.horizontal,
-                      ),
-                    ),
+                itemCount:
+                ourProductList == null ? 0 : ourProductList?.length,
+                itemBuilder: (context, index, realIndex) {
+                  return getOurProducts(index);
+                },
+                options: CarouselOptions(
+                  height: 300,
+                  aspectRatio: 15 / 6,
+                  viewportFraction: .50,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: false,
+                  enlargeCenterPage: false,
+                  autoPlayInterval: Duration(seconds: 3),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  onPageChanged: (index, reason) {},
+                  scrollDirection: Axis.horizontal,
+                ),
+              ),
             ),
             Heading(text: "Popular Items"),
             Container(
-              child: isLoadingProducts
+              child: isLoading
                   ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: CarouselSlider.builder(
-                        itemCount: 5, // Set a fixed count for shimmer effect
-                        itemBuilder: (context, index, realIndex) {
-                          return getPopularRow(index);
-                        },
-                        options: CarouselOptions(
-                          height: MediaQuery.of(context).size.height / 2.5,
-                          aspectRatio: 15 / 6,
-                          viewportFraction: .58,
-                          initialPage: 0,
-                          enableInfiniteScroll: true,
-                          reverse: false,
-                          autoPlay: false,
-                          enlargeCenterPage: true,
-                          autoPlayInterval: Duration(seconds: 3),
-                          autoPlayAnimationDuration:
-                              Duration(milliseconds: 800),
-                          autoPlayCurve: Curves.fastOutSlowIn,
-                          onPageChanged: (index, reason) {},
-                          scrollDirection: Axis.horizontal,
-                        ),
-                      ),
-                    )
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: CarouselSlider.builder(
+                  itemCount: 5, // Set a fixed count for shimmer effect
+                  itemBuilder: (context, index, realIndex) {
+                    return getPopularRow(index);
+                  },
+                  options: CarouselOptions(
+                    height: MediaQuery.of(context).size.height / 2.5,
+                    aspectRatio: 15 / 6,
+                    viewportFraction: .58,
+                    initialPage: 0,
+                    enableInfiniteScroll: true,
+                    reverse: false,
+                    autoPlay: false,
+                    enlargeCenterPage: true,
+                    autoPlayInterval: Duration(seconds: 3),
+                    autoPlayAnimationDuration:
+                    Duration(milliseconds: 800),
+                    autoPlayCurve: Curves.fastOutSlowIn,
+                    onPageChanged: (index, reason) {},
+                    scrollDirection: Axis.horizontal,
+                  ),
+                ),
+              )
                   : CarouselSlider.builder(
-                      itemCount: Finalpopularlist == null
-                          ? 0
-                          : Finalpopularlist?.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return getPopularRow(index);
-                      },
-                      options: CarouselOptions(
-                        height: MediaQuery.of(context).size.height / 2.5,
-                        aspectRatio: 15 / 6,
-                        viewportFraction: .7,
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        reverse: false,
-                        autoPlay: false,
-                        enlargeCenterPage: true,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        onPageChanged: (index, reason) {},
-                        scrollDirection: Axis.horizontal,
-                      ),
-                    ),
+                itemCount: Finalpopularlist == null
+                    ? 0
+                    : Finalpopularlist?.length,
+                itemBuilder: (context, index, realIndex) {
+                  return getPopularRow(index);
+                },
+                options: CarouselOptions(
+                  height: MediaQuery.of(context).size.height / 2.5,
+                  aspectRatio: 15 / 6,
+                  viewportFraction: .7,
+                  initialPage: 0,
+                  enableInfiniteScroll: true,
+                  reverse: false,
+                  autoPlay: false,
+                  enlargeCenterPage: true,
+                  autoPlayInterval: Duration(seconds: 3),
+                  autoPlayAnimationDuration: Duration(milliseconds: 800),
+                  autoPlayCurve: Curves.fastOutSlowIn,
+                  onPageChanged: (index, reason) {},
+                  scrollDirection: Axis.horizontal,
+                ),
+              ),
             ),
             Heading(text: "Today's Featured"),
             Container(
               child: isLoading
                   ? Shimmer.fromColors(
-                      baseColor: Colors.grey[300]!,
-                      highlightColor: Colors.grey[100]!,
-                      child: GridView.builder(
-                        physics: ScrollPhysics(),
-                        shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: .65,
-                        ),
-                        itemCount: 8,
-                        // Set a fixed count for shimmer effect
-                        itemBuilder: (context, index) {
-                          return Container(
-                            margin: EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                          );
-                        },
+                baseColor: Colors.grey[300]!,
+                highlightColor: Colors.grey[100]!,
+                child: GridView.builder(
+                  physics: ScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate:
+                  const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: .65,
+                  ),
+                  itemCount: 8,
+                  // Set a fixed count for shimmer effect
+                  itemBuilder: (context, index) {
+                    return Container(
+                      margin: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                    )
+                    );
+                  },
+                ),
+              )
                   : GridView.builder(
-                      physics: ScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: .65,
-                      ),
-                      itemCount: Finalproductlist == null
-                          ? 0
-                          : Finalproductlist?.length,
-                      itemBuilder: (context, index) => getProducts(index),
-                    ),
+                physics: ScrollPhysics(),
+                shrinkWrap: true,
+                gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: .65,
+                ),
+                itemCount: Finalproductlist == null
+                    ? 0
+                    : Finalproductlist?.length,
+                itemBuilder: (context, index) => getProducts(index),
+              ),
             ),
           ],
         ),
@@ -858,7 +827,7 @@ class _HomePageState extends State<HomePage> {
     }
     var image = base! + (Finalpopularlist![index]["image"] ?? "").toString();
     var itemName =
-        (Finalpopularlist![index]["combinationName"] ?? "").toString();
+    (Finalpopularlist![index]["combinationName"] ?? "").toString();
     return PopularCard(
         ImagePath: image,
         onTap: () {
@@ -866,17 +835,19 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
+                serveCapacity: Finalpopularlist![index]["serving_cupacity"].toString(),
+                noOfPiece: Finalpopularlist![index]["no_of_piece"].toString(),
                 stock: Finalpopularlist![index]["stock"].toString(),
                 recipe: Finalpopularlist![index]["hint"].toString(),
                 position: index,
                 id: Finalpopularlist![index]["id"].toString(),
                 productname:
-                    Finalpopularlist![index]["combinationName"].toString(),
+                Finalpopularlist![index]["combinationName"].toString(),
                 url: image,
                 description: Finalpopularlist![index]["description"].toString(),
                 amount: Finalpopularlist![index]["offerPrice"].toString(),
                 combinationId:
-                    Finalpopularlist![index]["combinationId"].toString(),
+                Finalpopularlist![index]["combinationId"].toString(),
                 psize: Finalpopularlist![index]["size_attribute_name"].toString(),
               ),
             ),
@@ -930,7 +901,25 @@ class _HomePageState extends State<HomePage> {
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           image:
-              DecorationImage(image: NetworkImage(image), fit: BoxFit.cover)),
+          DecorationImage(image: NetworkImage(image), fit: BoxFit.cover)),
+    );
+  }
+
+  Widget getOrderList(int index) {
+    var image = base! + orderList![index]["image"].toString();
+    return OrderCard(
+      CartName: orderList![index]["cartName"].toString(),
+      ImagePath: image,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrderDetails(
+              id: orderList![index]["id"].toString(),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -961,66 +950,149 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget getProducts(int index) {
+  Widget getProducts(int index1) {
 
-    if (Finalproductlist == null || Finalproductlist![index] == null) {
+    if (Finalproductlist == null || Finalproductlist![index1] == null) {
       return Container();
     }
-    var image = base! + (Finalproductlist![index]["image"] ?? "").toString();
-    var price = "₹${Finalproductlist![index]["totalPrice"] ?? ""}";
-    var offerPrice = "₹${Finalproductlist![index]["offerPrice"] ?? ""}";
-    var PID = (Finalproductlist![index]["id"] ?? "").toString();
-    var CombID = (Finalproductlist![index]["combinationId"] ?? "").toString();
+    var image = base! + (Finalproductlist![index1]["image"] ?? "").toString();
+    var price = "₹${Finalproductlist![index1]["totalPrice"] ?? ""}";
+    var offerPrice = Finalproductlist![index1]["offerPrice"].toString() ?? "";
+    var PID = (Finalproductlist![index1]["id"] ?? "").toString();
+    var CombID = (Finalproductlist![index1]["combinationId"] ?? "").toString();
 
-    return ProductTile(
-      ItemName: Finalproductlist![index]["combinationName"].toString(),
-      ImagePath: image,
-      onPressed: () {
-        check(CombID,PID,Finalproductlist![index]["offerPrice"].toString());
+    bool isInWishlist = Prlist != null && Prlist!.any((item) => item['combinationId'].toString() == CombID);
 
-        } ,
-      TotalPrice: price,
-      OfferPrice: offerPrice,
-      Description: Finalproductlist![index]["description"].toString(),
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductView(
-              stock: Finalproductlist![index]["stock"].toString(),
-              recipe: Finalproductlist![index]["hint"].toString(),
-              position: index,
-              id: PID,
-              productname:
-                  Finalproductlist![index]["combinationName"].toString(),
-              url: image,
-              description: Finalproductlist![index]["description"].toString(),
-              amount: Finalproductlist![index]["offerPrice"].toString(),
-              combinationId: CombID,
-              psize: Finalproductlist![index]["size_attribute_name"].toString(),
+    return
+      Padding(
+        padding: const EdgeInsets.all(5),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey, width: 1)),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductView(
+                    serveCapacity: Finalpopularlist![index]["serving_cupacity"].toString(),
+                    noOfPiece: Finalpopularlist![index]["no_of_piece"].toString(),
+                    stock: Finalproductlist![index1]["stock"].toString(),
+                    recipe: Finalproductlist![index1]["hint"].toString(),
+                    position: index1,
+                    id: PID,
+                    productname:
+                    Finalproductlist![index1]["combinationName"].toString(),
+                    url: image,
+                    description: Finalproductlist![index1]["description"].toString(),
+                    amount: Finalproductlist![index1]["offerPrice"].toString(),
+                    combinationId: CombID,
+                    psize: Finalproductlist![index1]["size_attribute_name"].toString(),
+                  ),
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 6,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10)),
+                  ),
+                  // Image border// Image radius
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[300],
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("assets/noItem.png"))),
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextConst(
+                          text: Finalproductlist![index1]["combinationName"].toString(),),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(Finalproductlist![index1]["description"].toString(),
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.teal[900],
+                              fontWeight: FontWeight.bold)),
+                      Row(mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(price,
+                            style: const TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              decorationStyle: TextDecorationStyle.solid,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            "₹ "+ offerPrice,
+                            // WID,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.green,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                    color: isInWishlist ? Colors.red : Colors.black,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    if (isInWishlist) {
+                      removeFromWishList(CombID);
+                      wishListGet();
+                    } else {
+                      addTowishtist(PID, CombID, offerPrice, context);
+                      wishListGet();
+                    }
+                  },
+                )
+              ],
             ),
           ),
-        );
-      }, combinationId: CombID,
-    );
-  }
-
-  Widget getOrderList(int index) {
-    var image = base! + orderList![index]["image"].toString();
-    return OrderCard(
-      CartName: orderList![index]["cartName"].toString(),
-      ImagePath: image,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrderDetails(
-              id: orderList![index]["id"].toString(),
-            ),
-          ),
-        );
-      },
-    );
+        ),
+      );
   }
 
   Widget getDealOfTheDay(int index) {
@@ -1029,79 +1101,299 @@ class _HomePageState extends State<HomePage> {
     }
     var image = base! + (dealOfTheDayList![index]["image"] ?? "").toString();
     var price = "₹${dealOfTheDayList![index]["totalPrice"] ?? ""}";
-    var offerPrice = "₹${dealOfTheDayList![index]["offerPrice"] ?? ""}";
+    var offerPrice = (dealOfTheDayList![index]["offerPrice"] ?? "" ).toString() ;
     var PID = (dealOfTheDayList![index]["id"] ?? "").toString();
     var CombID = (dealOfTheDayList![index]["combinationId"] ?? "").toString();
 
-    return DealOfTheDayCard(
-        combinationId: CombID,
-        ItemName: dealOfTheDayList![index]["name"].toString(),
-        ImagePath: image,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductView(
-                stock: dealOfTheDayList![index]["stock"].toString(),
-                recipe: "Recipe not available for this product",
-                position: index,
-                id: PID,
-                productname: dealOfTheDayList![index]["name"].toString(),
-                url: image,
-                description: dealOfTheDayList![index]["description"].toString(),
-                amount: dealOfTheDayList![index]["offerPrice"].toString(),
-                combinationId: CombID,
-                psize: dealOfTheDayList![index]["size_attribute_name"].toString(),
-              ),
+    bool isInWishlist = Prlist != null && Prlist!.any((item) => item['combinationId'].toString() == CombID);
+
+
+    return
+      Padding(
+        padding: const EdgeInsets.all(5),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: Colors.teal.shade50, width: 1)),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductView(
+                    serveCapacity: dealOfTheDayList![index]["serving_cupacity"].toString(),
+                    noOfPiece: dealOfTheDayList![index]["no_of_piece"].toString(),
+                    stock: dealOfTheDayList![index]["stock"].toString(),
+                    recipe: "Recipe not available for this product",
+                    position: index,
+                    id: PID,
+                    productname: dealOfTheDayList![index]["name"].toString(),
+                    url: image,
+                    description: dealOfTheDayList![index]["description"].toString(),
+                    amount: dealOfTheDayList![index]["offerPrice"].toString(),
+                    combinationId: CombID,
+                    psize: dealOfTheDayList![index]["size_attribute_name"].toString(),
+                  ),
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  width: double.infinity,
+                  height:MediaQuery.of(context).size.height / 6,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15)),
+                  ),
+                  // Image border// Image radius
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) =>
+                        Container(
+                          color: Colors.grey[300],
+                        ),
+                    errorWidget: (context, url, error) =>
+                        Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/noItem.png"))),
+                        ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                  price,
+                            style: const TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              decorationStyle: TextDecorationStyle.solid,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                           "₹ $offerPrice",
+                            style:  TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.green,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                              color: isInWishlist ? Colors.red : Colors.black,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              if (isInWishlist) {
+                                // The item is in the wishlist, you may want to remove it.
+                                removeFromWishList(CombID);
+                                wishListGet();
+                              } else {
+                                // The item is not in the wishlist, you may want to add it.
+                                addTowishtist(PID, CombID, offerPrice, context);
+                                wishListGet();
+                              }
+                            },
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      TextConst(
+                          text: dealOfTheDayList![index]["name"].toString(),),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(dealOfTheDayList![index]["description"].toString(),
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.teal[900],
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          );
-        },
-        onPressed: () {
-          check(CombID,PID,dealOfTheDayList![index]["offerPrice"].toString());
-        },
-        TotalPrice: price,
-        OfferPrice: offerPrice,
-        Description: dealOfTheDayList![index]["description"].toString());
+          ),
+        ),
+      );
   }
 
-  Widget getOurProducts(int index) {
-    if (ourProductList == null || ourProductList![index] == null) {
+  Widget getOurProducts(int index2) {
+    if (ourProductList == null || ourProductList![index2] == null) {
       return Container();
     }
-    var image = base! + (ourProductList![index]["image"] ?? "").toString();
-    var price = "₹${ourProductList![index]["totalPrice"] ?? ""}";
-    var offerPrice = "₹${ourProductList![index]["offerPrice"] ?? ""}";
-    var PID = (ourProductList![index]["id"] ?? "").toString();
-    var CombID = (ourProductList![index]["combinationId"] ?? "").toString();
+    var image = base! + (ourProductList![index2]["image"] ?? "").toString();
+    var price = "₹${ourProductList![index2]["totalPrice"] ?? ""}";
+    var offerPrice = (ourProductList![index2]["offerPrice"]  ?? "").toString();
+    var PID = (ourProductList![index2]["id"] ?? "").toString();
+    var CombID = (ourProductList![index2]["combinationId"] ?? "").toString();
 
-    return OurProductCard(
-        ItemName: ourProductList![index]["name"].toString(),
-        ImagePath: image,
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductView(
-                stock: ourProductList![index]["stock"].toString(),
-                  recipe: "Recipe not available for this item",
-                  position: index,
-                  id: PID,
-                  productname: ourProductList![index]["name"].toString(),
-                  url: image,
-                  description: ourProductList![index]["description"].toString(),
-                  amount: ourProductList![index]["offerPrice"].toString(),
-                  combinationId: CombID,
-                  psize: ourProductList![index]["size_attribute_name"].toString(),
-              ),
+    bool isInWishlist = Prlist != null && Prlist!.any((item) => item['combinationId'].toString() == CombID);
+
+
+    return
+      Padding(
+        padding: const EdgeInsets.all(5),
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: Colors.teal.shade50, width: 1)),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProductView(
+                    noOfPiece: ourProductList![index2]["no_of_piece"].toString(),
+                    serveCapacity: ourProductList![index2]["serving_cupacity"].toString(),
+                    stock: ourProductList![index2]["stock"].toString(),
+                    recipe: "Recipe not available for this item",
+                    position: index2,
+                    id: PID,
+                    productname: ourProductList![index2]["name"].toString(),
+                    url: image,
+                    description: ourProductList![index2]["description"].toString(),
+                    amount: ourProductList![index2]["offerPrice"].toString(),
+                    combinationId: CombID,
+                    psize: ourProductList![index2]["size_attribute_name"].toString(),
+                  ),
+                ),
+              );
+            },
+            child: Column(
+              children: [
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 6,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15)),
+                  ),
+                  // Image border// Image radius
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) =>
+                        Container(
+                          color: Colors.grey[300],
+                        ),
+                    errorWidget: (context, url, error) =>
+                        Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/noItem.png"))),
+                        ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextConst(
+                          text: ourProductList![index2]["name"].toString(),),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(ourProductList![index2]["description"].toString(),
+                          maxLines: 2,
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.teal[900],
+                              fontWeight: FontWeight.bold)),
+                      Row(mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            price,
+                            style: const TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              decorationStyle: TextDecorationStyle.solid,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8,
+                          ),
+                          Text(
+                            "₹ $offerPrice",
+                            style:  TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.green,
+                            ),
+                          ),
+                          SizedBox(
+                            width: 15,
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                              color: isInWishlist ? Colors.red : Colors.black,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              if (isInWishlist) {
+                                removeFromWishList(CombID);
+                                wishListGet();
+                              } else {
+                                // The item is not in the wishlist, you may want to add it.
+                                addTowishtist(PID, CombID, offerPrice, context);
+                                wishListGet();
+                              }
+                            },
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          );
-        },
-        onPressed: () {
-          check(CombID,PID,ourProductList![index]["offerPrice"].toString());
-        },
-        TotalPrice: price,
-        combinationId: CombID,
-        OfferPrice: offerPrice,
-        Description: ourProductList![index]["description"].toString());
+          ),
+        ),
+      );
   }
 }

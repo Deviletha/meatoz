@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../Components/appbar_text.dart';
-import '../privacy_policy.dart';
-import '../refund_policy.dart';
-import '../terms&conditions.dart';
-import 'AccountsCustomCard.dart';
+import 'package:iconsax/iconsax.dart';
+import '../../Components/appbar_text.dart';
+import 'privacy_policy.dart';
+import 'refund_policy.dart';
+import 'terms&conditions.dart';
+import 'widgets/AccountsCustomCard.dart';
 
 class Privacy extends StatefulWidget {
   const Privacy({Key? key}) : super(key: key);
@@ -41,7 +42,7 @@ class _PrivacyState extends State<Privacy> {
           children: [
             AccountCustomTile(
               title: "Privacy Policy",
-              icon: Icons.privacy_tip_outlined,
+              icon: Iconsax.security,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return PrivacyPolicy();
@@ -50,7 +51,7 @@ class _PrivacyState extends State<Privacy> {
             Divider(),
             AccountCustomTile(
               title: "Terms & Conditions",
-              icon: Icons.note_outlined,
+              icon: Iconsax.security_time,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return TermsAndConditions();
@@ -59,7 +60,7 @@ class _PrivacyState extends State<Privacy> {
             Divider(),
             AccountCustomTile(
               title: "Refund Policy",
-              icon: Icons.monetization_on_outlined,
+              icon: Iconsax.security_card,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
                     return RefundPolicy();

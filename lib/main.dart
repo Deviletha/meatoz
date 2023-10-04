@@ -16,10 +16,21 @@ class MyApp extends StatelessWidget {
       title: 'Meatoz Application',
       theme: _buildTheme(Brightness.light),
       home: SplashScreen(),
+      // onGenerateRoute: (RouteSettings settings) {
+      //   if (settings.name == 'www.meatoz.in/Register/USR93') {
+      //     String referralCode = settings.arguments as String; // Extract referral code here
+      //
+      //     // Navigate to the relevant screen using the referral code
+      //     // Example:
+      //     return MaterialPageRoute(builder: (context) => SignupPage1(referralCode: referralCode));
+      //   }
+      //   return null;
+      // },
     );
   }
 }
 ThemeData _buildTheme(brightness) {
+
   var baseTheme = ThemeData(brightness: brightness);
 
   return baseTheme.copyWith(

@@ -4,7 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
-import 'package:meatoz/screens/accounts/widgets/privacy_terms.dart';
+import 'package:meatoz/screens/accounts/privacy_terms.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,6 +55,7 @@ class _AccountsState extends State<Accounts> {
     });
     if (isLoggedIn) {
       Apicall();
+      ApiReferal();
     } else {
       setState(() {
         isLoading = false;
@@ -89,14 +90,16 @@ class _AccountsState extends State<Accounts> {
     try {
       var response =
           await ApiHelper().post(endpoint: "refer/getReferralCode", body: {
-        "id": UID,
+        "userid": UID,
       });
       if (response != null) {
         setState(() {
           debugPrint('profile api successful:');
           datas = response.toString();
-          referal = jsonDecode(response);
+          referal = json.decode(response);
           referalList = referal?["reffercode"];
+          print(response);
+          print(referalList);
         });
       } else {
         debugPrint('api failed:');
@@ -115,9 +118,9 @@ class _AccountsState extends State<Accounts> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            shape: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(20),gapPadding: 20
-            ),
+            // shape: OutlineInputBorder(
+            //     borderRadius: BorderRadius.circular(20),gapPadding: 20
+            // ),
             title: Text("Open Gmail"),
             content: Text("Are you sure"),
             actions: [
@@ -195,13 +198,13 @@ class _AccountsState extends State<Accounts> {
                                   baseColor: Colors.grey[300]!,
                                   highlightColor: Colors.grey[100]!,
                                   child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      child: Text(
-                                        '',
-                                        style: TextStyle(fontSize: 20),
-                                      ),
-                                    ),
+                                    // leading: CircleAvatar(
+                                    //   backgroundColor: Colors.white,
+                                    //   child: Text(
+                                    //     '',
+                                    //     style: TextStyle(fontSize: 20),
+                                    //   ),
+                                    // ),
                                     title: Text(
                                       '',
                                       style: TextStyle(fontSize: 35),
@@ -335,7 +338,7 @@ class _AccountsState extends State<Accounts> {
                       child: InkWell(
                         onTap: () {
                           Share.share(
-                            "www.meatoz.in/Register/USR93",
+                            "www.meatoz.in/Register/"+referalList![index]["referral_code"].toString(),
                           );
                         },
                         child: Row(
