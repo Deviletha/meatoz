@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 
-class OfferCard extends StatelessWidget {
+class AppliedOfferCard extends StatelessWidget {
   final String title;
   final String description;
   final String image;
-  final bool isApplied;
   void Function()? onPressed;
 
-  OfferCard({
+  AppliedOfferCard({
     Key? key,
     required this.title,
     required this.description,
     required this.image,
-    required this.isApplied,
     required this.onPressed,
   }) : super(key: key);
 
@@ -24,7 +22,7 @@ class OfferCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white),
         boxShadow: [BoxShadow(color: Colors.grey.shade500,blurRadius: 3,),],
-        color: isApplied ? Colors.green[50] : Colors.white, // Change color based on isApplied
+        color: Colors.green[50],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,9 +61,9 @@ class OfferCard extends StatelessWidget {
               color: Colors.teal[900],
             ),
             child: TextButton(
-              onPressed: isApplied ? null : onPressed,
+              onPressed: onPressed,
               child: Text(
-                isApplied ? "Applied" : "Apply Now",
+                "Remove",
                 style: TextStyle(color: Colors.white),
               ),
             ),

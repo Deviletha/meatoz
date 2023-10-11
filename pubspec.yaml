@@ -50,6 +50,9 @@ dependencies:
   share_plus: ^7.1.0
   flutter_widget_from_html: ^0.10.3
   circular_bottom_navigation: ^2.3.0
+  geolocator: ^10.1.0
+  geocoding: ^2.1.0
+  location: ^5.0.3
 
 dev_dependencies:
   flutter_test:

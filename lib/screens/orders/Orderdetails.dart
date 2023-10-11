@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 
 
 class OrderDetails extends StatefulWidget {
@@ -17,7 +18,6 @@ class OrderDetails extends StatefulWidget {
 
 class _OrderDetailsState extends State<OrderDetails> {
   final TextEditingController reasonController = TextEditingController();
-  String? base = "https://meatoz.in/basicapi/public/";
   String? UID;
   Map? order;
   Map? order1;
@@ -47,7 +47,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     }).catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('get address api successful:');
+        debugPrint('Order details api successful:');
         order = jsonDecode(response);
         order1 = order!["data"];
         orderList = order1!["pageData"];
@@ -91,7 +91,7 @@ class _OrderDetailsState extends State<OrderDetails> {
   }
 
   Widget getOrderList(int index) {
-    var image = base! + orderList![index]["image"].toString();
+    var image = UrlConstants.base + orderList![index]["image"].toString();
     var price = "₹ " + orderList![index]["price"].toString();
     return Card(
         color: Colors.grey.shade50,

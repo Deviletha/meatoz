@@ -33,79 +33,83 @@ class CartTile extends StatelessWidget {
       Padding(
         padding: const EdgeInsets.only(left: 5, right: 5),
         child: Card(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(
-                height: 8,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ClipRRect(
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  borderRadius: BorderRadius.circular(20), // Image border
-                  child: SizedBox.fromSize(
-                    size: Size.fromRadius(71), // Image radius
-                    child: CachedNetworkImage(
-                      imageUrl: ImagePath,
-                      placeholder: (context, url) =>
-                          Container(
-                            color: Colors.grey[300],
-                          ),
-                      errorWidget: (context, url, error) =>
-                          Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: AssetImage("assets/noItem.png"))),
-                          ),
-                      fit: BoxFit.cover,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: ClipRRect(
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    borderRadius: BorderRadius.circular(20), // Image border
+                    child: SizedBox.fromSize(
+                      size: Size.fromRadius(50), // Image radius
+                      child: CachedNetworkImage(
+                        imageUrl: ImagePath,
+                        placeholder: (context, url) =>
+                            Container(
+                              color: Colors.grey[300],
+                            ),
+                        errorWidget: (context, url, error) =>
+                            Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage("assets/noItem.png"))),
+                            ),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
               ),
               SizedBox(
-                height: 10,
+                width: 5,
               ),
-               TextConst(text:
-             ItemName,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Text(
-                "₹$TotalPrice",
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.green),
-              ),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
+              Column(
                 children: [
-                  IconButton(
-                      onPressed: onPressedLess,
-                      icon: Icon(Iconsax.minus_square,)),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: TextConst(text:
-                    Quantity,
-                    ),
+                  TextConst(text:
+                  ItemName,
                   ),
-                  IconButton(
-                      onPressed: onPressedAdd,
-                      icon: Icon(Iconsax.add_square,)),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "₹$TotalPrice",
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.green),
+                  ),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      IconButton(
+                          onPressed: onPressedLess,
+                          icon: Icon(Iconsax.minus_square,)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20, right: 20),
+                        child: TextConst(text:
+                        Quantity,
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: onPressedAdd,
+                          icon: Icon(Iconsax.add_square,)),
+                    ],
+                  ),
                 ],
               ),
-              TextButton(
-                  onPressed: onPressed,
-                  child: Text(
-                    "Remove Item", style: TextStyle(
-                    color: Colors.red[600], fontWeight: FontWeight.bold
-                  ),
-                  ))
+              IconButton(
+                onPressed: onPressed,
+                icon: Icon(
+                  Iconsax.trash, size: 25, color: Colors.red,
+                ),
+              )
             ],
           ),
         ),

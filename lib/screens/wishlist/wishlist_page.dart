@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
 import '../product_view/Product_view.dart';
 
@@ -20,8 +21,6 @@ class _WishlistState extends State<Wishlist> {
   String? UID;
   bool isLoading = true;
   bool isLoggedIn = true;
-  GlobalKey<RefreshIndicatorState> refreshKey =
-  GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -45,7 +44,6 @@ class _WishlistState extends State<Wishlist> {
     }
   }
 
-  String? base = "https://meatoz.in/basicapi/public/";
   Map? wslist;
   List? WsList;
 
@@ -152,12 +150,7 @@ class _WishlistState extends State<Wishlist> {
                   );
                 }, style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal[900],
-                  shadowColor: Colors.teal[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(10),
-                        topLeft: Radius.circular(10)),
-                  )),
+                  shadowColor: Colors.teal[300],),
                 child: Text(
                   "Please LogIn",
                 ),
@@ -170,7 +163,7 @@ class _WishlistState extends State<Wishlist> {
   }
 
   Widget getWishlist(int index) {
-    var image = base! + Prlist![index]["image"].toString();
+    var image = UrlConstants.base + Prlist![index]["image"].toString();
     var price = "₹ " + Prlist![index]["offerPrice"].toString();
     var PID = (Prlist![index]["id"] ?? "").toString();
     var CombID = (Prlist![index]["combinationId"] ?? "").toString();

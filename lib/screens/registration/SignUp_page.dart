@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
@@ -38,17 +39,34 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _longitudeController = TextEditingController();
 
   apiForSignup() async {
+    try {
+    LocationPermission permission = await Geolocator.requestPermission();
+
+    if (permission == LocationPermission.denied) {
+      // Handle case where user denies permission
+      return;
+    }
+
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+
+    double latitude = position.latitude;
+    double longitude = position.longitude;
+
+    print(latitude);
+    print(longitude);
+
     var response = await ApiHelper().post(endpoint: "common/signUP", body: {
-      "name": _nameController.text,
-      "email": _emailController.text,
-      "contact": _contactController.text,
-      "address": _addressController.text,
-      "state": _stateController.text,
-      "location": _locationController.text,
-      "postal": _postalController.text,
-      "password": _passwordController.text,
-      "latitude": _latitudeController.text,
-      "longitude": _longitudeController.text,
+      "name": _nameController.text.toString(),
+      "email": _emailController.text.toString(),
+      "contact": _contactController.text.toString(),
+      "address": _addressController.text.toString(),
+      "state": _stateController.text.toString(),
+      "location": _locationController.text.toString(),
+      "postal": _postalController.text.toString(),
+      "password": _passwordController.text.toString(),
+      "latitude": latitude.toString(),
+      "longitude": longitude.toString(),
     }).catchError((err) {});
     if (response != null) {
       setState(() async {
@@ -70,6 +88,9 @@ class _SignupPageState extends State<SignupPage> {
       });
     } else {
       debugPrint('api failed:');
+    }
+    } catch (err) {
+      debugPrint('An error occurred: $err');
     }
   }
 
@@ -242,7 +263,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
+                        const EdgeInsets.only(left: 20, right: 20, bottom: 30),
                     child: TextFormField(
                       controller: _passwordController,
                       obscureText: showpass,
@@ -276,44 +297,6 @@ class _SignupPageState extends State<SignupPage> {
                       },
                     ),
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
-                    child: TextFormField(
-                      controller: _latitudeController,
-                      decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Latitude",
-                         ),
-                      textInputAction: TextInputAction.next,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Enter latitude';
-                        } else {
-                          return null;
-                        }
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15),
-                    child: TextFormField(
-                      controller: _longitudeController,
-                      decoration: InputDecoration(
-                          isDense: false,
-                          labelText: "Longitude",
-                        ),
-                      textInputAction: TextInputAction.next,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Enter longitude';
-                        } else {
-                          return null;
-                        }
-                      },
-                    ),
-                  ),
                   SizedBox(
                     width: 350,
                     height: 50,
@@ -325,12 +308,7 @@ class _SignupPageState extends State<SignupPage> {
                       },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal[900],
-                          shadowColor: Colors.teal[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                bottomLeft: Radius.circular(10),
-                                topRight: Radius.circular(10)),
-                          )),
+                          shadowColor: Colors.teal[300],),
                       child: Text("Sign Up"),
                     ),
                   ),

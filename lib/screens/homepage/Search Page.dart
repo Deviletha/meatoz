@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 import '../product_view/Product_view.dart';
 
 class Search extends StatefulWidget {
@@ -16,7 +17,7 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  String? base = "https://meatoz.in/basicapi/public/";
+
   String? UID;
   Map? search;
   Map? search1;
@@ -219,7 +220,7 @@ class _SearchState extends State<Search> {
   }
 
   Widget getSearchList(int index) {
-    var image = base! + searchlist![index]["image"].toString();
+    var image = UrlConstants.base + searchlist![index]["image"].toString();
     var price = searchlist![index]["offerPrice"].toString();
     var PID = searchlist![index]["id"].toString();
     var COMBID = searchlist![index]["combinationId"].toString();

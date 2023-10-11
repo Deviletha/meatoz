@@ -73,12 +73,6 @@ class RelatedItemTile extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal[900],
                   shadowColor: Colors.teal[300],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                  ),
                 ),
                 child: Text("Add")),
           ],

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,9 +20,6 @@ class _ChangePasswordState extends State<ChangePassword> {
   final newPassController = TextEditingController();
   String? UID;
   bool showpass = true;
-  Map? passlist;
-  Map? passlist1;
-  Map? Finalpasswrd;
   int index = 0;
 
   checkUser() async {
@@ -44,9 +39,6 @@ class _ChangePasswordState extends State<ChangePassword> {
     if (response != null) {
       setState(() {
         debugPrint('change password api successful:');
-        passlist = jsonDecode(response);
-        passlist1 = passlist!["status"];
-        Finalpasswrd = passlist1!["user"];
 
         Fluttertoast.showToast(
           msg: "Password Changed",
@@ -174,22 +166,21 @@ class _ChangePasswordState extends State<ChangePassword> {
                 },
               ),
             ),
-            SizedBox(
-              width: 300,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  ChangePassword();
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal[900],
-                    shadowColor: Colors.teal[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                    )),
-                child: Text("Change Password"),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 35, right: 35),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    ChangePassword();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal[900],
+                      shadowColor: Colors.teal[300],),
+                  child: Text("Change Password"),
+                ),
               ),
             ),
           ],

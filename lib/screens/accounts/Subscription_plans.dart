@@ -39,7 +39,6 @@ class _SubscriptionState extends State<Subscription> {
 
   Map? sub1;
   List? SubdetailList;
-  String? base = "https://meatoz.in/basicapi/public/";
 
   bool isLoading = true;
 

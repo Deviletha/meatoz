@@ -91,12 +91,7 @@ class ProductViewTile extends StatelessWidget {
                 onPressed: onPressed,
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal[900],
-                    shadowColor: Colors.teal[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(10),
-                          topLeft: Radius.circular(10)),
-                    )),
+                    shadowColor: Colors.teal[300],),
                 child: Text("Add to Cart"),
               ),
             )

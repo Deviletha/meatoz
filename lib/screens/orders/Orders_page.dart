@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 import '../accounts/FAQ_page.dart';
 import 'Orderdetails.dart';
 
@@ -17,7 +19,6 @@ class MyOrders extends StatefulWidget {
 }
 
 class _MyOrdersState extends State<MyOrders> {
-  String? base = "https://meatoz.in/basicapi/public/";
   String? UID;
   String? ORDERID;
   Map? order;
@@ -78,10 +79,16 @@ class _MyOrdersState extends State<MyOrders> {
     }).catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('get address api successful:');
+        debugPrint('order details api successful:');
         order = jsonDecode(response);
         order1 = order!["data"];
-        orderList = order1!["pageData"];
+        dynamic pageData = order1!["pageData"]; // Declare pageData as dynamic
+        if (pageData is List<dynamic>) {
+          orderList = pageData;
+        } else {
+          // Handle the case where pageData is not a List
+          orderList = []; // Set it to an empty list or handle it accordingly
+        }
       });
     } else {
       debugPrint('api failed:');
@@ -107,7 +114,17 @@ class _MyOrdersState extends State<MyOrders> {
               ), icon: Icon(Icons.help_outline_rounded))
         ],
       ),
-      body: Container(
+      body: orderList == null || orderList!.isEmpty
+          ? Container(
+        color: Colors.white,
+            child: Center(
+        child: Lottie.asset(
+              "assets/emptyOrder.json",
+              height: 300,
+              repeat: true),
+      ),
+          )
+          : Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.bottomLeft,
@@ -119,7 +136,7 @@ class _MyOrdersState extends State<MyOrders> {
               Colors.grey.shade200,
               Colors.grey.shade400,
             ])),
-        child: ListView.builder(
+        child:  ListView.builder(
           physics: ScrollPhysics(),
           shrinkWrap: true,
           itemCount: orderList == null ? 0 : orderList?.length,
@@ -132,7 +149,7 @@ class _MyOrdersState extends State<MyOrders> {
   Widget getOrderList(int index) {
 
     bool isOrderCancelled = orderList![index]["status_note"].toString().toLowerCase() == "cancelled";
-    var image = base! + orderList![index]["image"].toString();
+    var image = UrlConstants.base + orderList![index]["image"].toString();
     var price = "₹ " + orderList![index]["total"].toString();
     return Card(
         color: Colors.grey.shade50,
@@ -182,7 +199,7 @@ class _MyOrdersState extends State<MyOrders> {
                       top: 8,
                       child: Container(
                         height: 30,
-                        width: 80,
+                        width: 100,
                         decoration: BoxDecoration(
                             color: Colors.green.shade300,
                             borderRadius: BorderRadius.circular(10)),

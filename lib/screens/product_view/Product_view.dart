@@ -10,6 +10,7 @@ import '../../Components/Alertbox_text.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
 
 class ProductView extends StatefulWidget {
@@ -45,7 +46,6 @@ class ProductView extends StatefulWidget {
 }
 
 class _ProductViewState extends State<ProductView> {
-  String? base = "https://meatoz.in/basicapi/public/";
 
   ///ProductList
   String? data;
@@ -319,7 +319,7 @@ class _ProductViewState extends State<ProductView> {
     if (RelatedPrdctList == null || RelatedPrdctList![index] == null) {
       return Container();
     }
-    var image = base! + (RelatedPrdctList![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (RelatedPrdctList![index]["image"] ?? "").toString();
     var price = "₹${RelatedPrdctList![index]["offerPrice"] ?? ""}";
 
     var stock = RelatedPrdctList![index]["stock"];

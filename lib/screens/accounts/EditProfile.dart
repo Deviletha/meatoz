@@ -20,6 +20,11 @@ class _ChangeProfileState extends State<ChangeProfile> {
   bool isLoading = false;
   List<String> base64Images = [];
   File? _pickedImage;
+
+  String? datas;
+  Map? responseData;
+  List? dataList;
+
   final firstnameController = TextEditingController();
   final lastnameController = TextEditingController();
   final emailIdController = TextEditingController();
@@ -30,6 +35,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     UID = prefs.getString("UID");
+    Apicall();
   }
 
   void convertImageToBase64() async {
@@ -53,9 +59,31 @@ class _ChangeProfileState extends State<ChangeProfile> {
     }
   }
 
+  Future<void> Apicall() async {
+    try {
+      var response = await ApiHelper().post(endpoint: "common/profile", body: {
+        "id": UID,
+      });
+      if (response != null) {
+        setState(() {
+          debugPrint('profile api successful:');
+          datas = response.toString();
+          responseData = jsonDecode(response);
+          dataList = responseData?["data"];
+          print(responseData.toString());
 
+          firstnameController.text = dataList![0]["first_name"];
+          lastnameController.text = dataList![0]["last_name"];
+          emailIdController.text = dataList![0]["email"];
 
-
+        });
+      } else {
+        debugPrint('api failed:');
+      }
+    } catch (err) {
+      debugPrint('An error occurred: $err');
+    }
+  }
 
   EditProfile() async {
     if (base64Images.isNotEmpty) {
@@ -74,7 +102,6 @@ class _ChangeProfileState extends State<ChangeProfile> {
       if (response != null) {
         setState(() {
           debugPrint('edit profile api successful:');
-          FinalUserlist = jsonDecode(response);
 
           Fluttertoast.showToast(
             msg: "Profile Edited Successfully",
@@ -133,25 +160,25 @@ class _ChangeProfileState extends State<ChangeProfile> {
         child: Column(mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(height: 10,),
-            // Stack(
-            //   children: [
-            //     _pickedImage != null
-            //         ? CircleAvatar(
-            //       radius: 50,
-            //       backgroundImage: FileImage(_pickedImage!),
-            //     )
-            //         : CircleAvatar(
-            //       radius: 50,
-            //       backgroundImage: AssetImage("assets/contactavatar.png"),
-            //     ),
-            //     IconButton(
-            //       onPressed: () {
-            //         selectImage();
-            //       },
-            //       icon: Icon(Icons.add_a_photo, color: Colors.teal[900]),
-            //     ),
-            //   ],
-            // ),
+            Stack(
+              children: [
+                _pickedImage != null
+                    ? CircleAvatar(
+                  radius: 50,
+                  backgroundImage: FileImage(_pickedImage!),
+                )
+                    : CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage("assets/contactavatar.png"),
+                ),
+                IconButton(
+                  onPressed: () {
+                    selectImage();
+                  },
+                  icon: Icon(Icons.add_a_photo, color: Colors.teal[900]),
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 35, right: 35, top: 20, bottom: 20),
@@ -206,22 +233,21 @@ class _ChangeProfileState extends State<ChangeProfile> {
                 textInputAction: TextInputAction.done,
               ),
             ),
-            SizedBox(
-              width: 350,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  EditProfile();
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal[900],
-                    shadowColor: Colors.teal[300],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)),
-                    )),
-                child: Text("Submit"),
+            Padding(
+              padding: const EdgeInsets.only(
+                  left: 35, right: 35),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    EditProfile();
+                  },
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.teal[900],
+                      shadowColor: Colors.teal[300],),
+                  child: Text("Submit"),
+                ),
               ),
             ),
           ],

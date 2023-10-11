@@ -5,7 +5,9 @@ import 'package:meatoz/screens/category_view/categoryCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 
+// ignore: camel_case_types
 class Category_View extends StatefulWidget {
   final String itemname;
   final int id;
@@ -21,7 +23,6 @@ class Category_View extends StatefulWidget {
 }
 
 class _Category_ViewState extends State<Category_View> {
-  String? base = "https://meatoz.in/basicapi/public/";
 
   Map? prcategorylist;
   List? FinalClist;
@@ -173,29 +174,29 @@ class _Category_ViewState extends State<Category_View> {
               Colors.grey.shade400,
             ])),
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 15,
-                ),
-                Expanded(
-                  child: FinalClist != null && FinalClist!.isNotEmpty
-                      ? ListView.builder(
-                    scrollDirection: Axis.vertical,
-                    itemCount: FinalClist!.length,
-                    itemBuilder: (context, index) => getCatView(index),
-                  )
-                      : Center(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 15,
+              ),
+              Expanded(
+                child: FinalClist != null && FinalClist!.isNotEmpty
+                    ? ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: FinalClist!.length,
+                  itemBuilder: (context, index) => getCatView(index),
+                )
+                    : Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
                     child: Text(
                       "There are currently no items. Items will be available soon..!!",
                       style: TextStyle(fontSize: 18),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -203,7 +204,7 @@ class _Category_ViewState extends State<Category_View> {
   }
 
   Widget getCatView(int index1) {
-    var image = base! + FinalClist![index1]["image"].toString();
+    var image = UrlConstants.base + FinalClist![index1]["image"].toString();
     var PID = FinalClist![index1]["id"].toString();
     var CombID = FinalClist![index1]["combinationId"].toString();
 

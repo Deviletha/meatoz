@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:meatoz/screens/placeOrder/widget/appliedoffercard.dart';
 import 'package:meatoz/screens/placeOrder/widget/offer_card.dart';
 import 'package:meatoz/screens/placeOrder/widget/subscription_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -61,8 +62,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
   String? SUBTOTALFIRSTPURCHASE;
 
   int GRNDAMNT = 0;
-  int DSCOUNTAMOUNT = 0;
-  int NETPAYABLEAFTERDISCOUNT = 0;
+  double DSCOUNTAMOUNT = 0;
+  String? DiscountAmountTotal;
+  double NETPAYABLEAFTERDISCOUNT = 0;
   double WALLET_AMOUNT = 0;
   double WALLET_AMOUNT_L = 0;
 
@@ -76,6 +78,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
   Map? clist;
   List? CartList;
   List? cartDiscountList;
+  List? cartDiscountAppliedList;
+
+  String? CARTID;
+
+  String? discountType;
+  String? discountType1;
 
   ///DiscountList
   Map? discount;
@@ -216,13 +224,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
     );
   }
 
-  // @override
-  // void dispose() {
-  //   couponController.dispose();
-  //   tipController.dispose();
-  //   noteController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    couponController.dispose();
+    tipController.dispose();
+    noteController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -231,16 +239,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
     super.initState();
   }
 
-  // bool _isApplied = false;
-  //
-  // void _onApplyButtonPressed() {
-  //   // Call the apiForDiscounts() function here or perform any other actions
-  //   apiForDiscounts();
-  //   // Update the state to toggle the button text
-  //   setState(() {
-  //     _isApplied = true;
-  //   });
-  // }
+  bool _isApplied = false;
+
+  void _onApplyButtonPressed() {
+    // Call the apiForDiscounts() function here or perform any other actions
+    apiForDiscounts();
+    // Update the state to toggle the button text
+    setState(() {
+      _isApplied = true;
+    });
+  }
 
   void setVisibilityFlags() {
     if (todaySlotList == null || todaySlotList!.isEmpty) {
@@ -280,6 +288,25 @@ class _PlaceOrderState extends State<PlaceOrder> {
           clist = jsonDecode(response);
           CartList = clist!["cart"];
           cartDiscountList = clist!["cartDiscountForAllProduct"];
+          cartDiscountAppliedList = clist!["cartAppliedDiscounts"];
+
+
+          if (cartDiscountAppliedList != null && cartDiscountAppliedList!.isNotEmpty) {
+            CARTID = cartDiscountAppliedList![0]["cartID"].toString();
+            DSCOUNTAMOUNT = cartDiscountAppliedList![0]["discountAmount"].toDouble();
+            print("dscnt amount: $DSCOUNTAMOUNT");
+            DiscountAmountTotal  = DSCOUNTAMOUNT.toString();
+
+          }
+
+          if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
+            String discountBy = cartDiscountList![index]["discount_by"];
+            if (discountBy == "percentage") {
+              discountType = "%";
+            } else if (discountBy == "amount") {
+              discountType = "/-";
+            }
+          }
 
           if (CartList != null && CartList!.isNotEmpty) {
             if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
@@ -287,8 +314,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
             } else {
               DISCOUNTID = "0";
             }
-            PRODUCTID = CartList![index]["product_id"].toString();
+
           }
+
+
           if (CartList != null && CartList!.isNotEmpty) {
             for (int i = 0; i < CartList!.length; i++) {
               int price = CartList![i]["price"];
@@ -302,6 +331,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
           subtotal = subtotal1 - WALLET_AMOUNT - subtotalfrmfirstpuchase;
           SUBTOTAL = subtotal.toString();
           SUBTOTALFORAPI = subtotal1.toString();
+          print("sub total from cart: "+SUBTOTALFORAPI!);
 
           if (subtotalfrmfirstpuchase != 0) {
             Fluttertoast.showToast(
@@ -320,11 +350,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   apiForDiscounts() async {
     var responseDiscount = await ApiHelper().post(
-        endpoint: "discount/applyDiscountAtCart",
+        endpoint: "discount/applyDiscountAtCheckout",
         body: {
           "user_id": UID,
           "discount_id": DISCOUNTID,
-          "product_id": PRODUCTID
+          "total_amount": SUBTOTALFORAPI
         }).catchError((err) {});
 
     setState(() {
@@ -336,17 +366,77 @@ class _PlaceOrderState extends State<PlaceOrder> {
         discount = jsonDecode(responseDiscount);
         discountList = discount!["discountAmount"];
 
-        DSCOUNTAMOUNT = discountList!["discountAmount"].toInt();
+        DSCOUNTAMOUNT = discountList!["discountAmount"].toDouble();
         print("dscnt amount: $DSCOUNTAMOUNT");
+        DiscountAmountTotal  = DSCOUNTAMOUNT.toString();
 
-        NETPAYABLEAFTERDISCOUNT = GRNDAMNT - DSCOUNTAMOUNT;
+
+        NETPAYABLEAFTERDISCOUNT = (GRNDAMNT - DSCOUNTAMOUNT) as double;
         print("netpayable after discount$NETPAYABLEAFTERDISCOUNT");
         GRANDTOTAL = NETPAYABLEAFTERDISCOUNT.toString();
+        print("discount response: "+responseDiscount);
+
+        Fluttertoast.showToast(
+          msg: "Discount Applied Amount Rs."+DiscountAmountTotal.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 3,
+          // backgroundColor: Colors.black,
+          // textColor: Colors.white,
+          // fontSize: 16.0,
+        );
+
+        Map<String, dynamic> responseData = json.decode(responseDiscount);
+
+        if (responseData.containsKey('discountAmount')) {
+          Map<String, dynamic> discountAmount = responseData['discountAmount'];
+
+          if (discountAmount['status'] != null && discountAmount['status'] == false) {
+            Fluttertoast.showToast(
+              msg: "Offer is not available for you",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIosWeb: 3,
+              backgroundColor: Colors.red,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          }
+        }
+
       });
     } else {
       debugPrint('discount api failed:');
     }
   }
+
+  apiForRemoveDiscount() async {
+    var responseDiscount = await ApiHelper().post(
+      endpoint: "cart/removeDiscountId",
+      body: {
+        "cart_id": CARTID,
+      },
+    ).catchError((err) {});
+
+    if (responseDiscount != null) {
+      setState(() {
+        debugPrint('remove discount api successful:');
+        print("remove discount response: " + responseDiscount);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PlaceOrder(id: widget.id, picode: widget.picode,),
+          ),
+        );
+        // Trigger a rebuild of the widget tree
+        setState(() {});
+      });
+    } else {
+      debugPrint('discount api failed:');
+    }
+  }
+
 
   // apiForFirstPurchaseOffer() async {
   //   var response = await ApiHelper().post(
@@ -452,6 +542,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
         todaySlotList = slotlist?["today"] ?? [];
         tomorrowSlotList = slotlist?["tomorrow"] ?? [];
+
         // Add null check
         // print("slotid" + SLOTID!);
         // print("slotdate" + SLOTDATE!);
@@ -485,7 +576,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
         int shippingCharge = 0;
 
-        shippingCharge = genralList![index]["delivery_charge"];
+        shippingCharge = int.parse(SHIPPINGCHARGE!);
 
         double expressDeliveryCharge = 0.0;
 
@@ -504,8 +595,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
             double.parse(SHIPPINGCHARGE!) +
             subscriptionPlanAmount +
             expressDeliveryCharge -
+            DSCOUNTAMOUNT -
             WALLET_AMOUNT;
-
 
         GRNDAMNT = AMOUNT.toInt();
         GRANDTOTAL = GRNDAMNT.toString() ?? "0";
@@ -520,19 +611,19 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   PlaceOrderApi() async {
     var response = await ApiHelper().post(endpoint: "cart/addCODOrder", body: {
-      "id": UID,
-      "address": widget.id,
-      "delivery_time": isExpressDeliverySelected ? "express_delivery" : SLOTID,
-      "delivery_date": SLOTDATE,
-      "totalAmount": SUBTOTALFORAPI,
-      "amount": GRANDTOTAL,
-      "discountAmount": subtotalfrmfirstpuchase.toString(),
-      "shippingCharge": TOTALSHIPPINGCHARGE,
+      "id": UID.toString(),
+      "address": widget.id.toString(),
+      "delivery_time": isExpressDeliverySelected ? "express_delivery" : SLOTID.toString(),
+      "delivery_date": isExpressDeliverySelected ? DateTime.now().toString() : SLOTDATE.toString(),
+      "totalAmount": SUBTOTALFORAPI.toString(),
+      "amount": GRANDTOTAL.toString(),
+      "discountAmount": DSCOUNTAMOUNT.toString(),
+      "shippingCharge": TOTALSHIPPINGCHARGE.toString(),
       "paymentType": "COD",
       "contactless": CONTACTLESS.toString(),
-      "delivery_note": noteController.text,
-      "tip": tipController.text,
-      "paid": 1,
+      "delivery_note": noteController.text.toString(),
+      "tip": tipController.text.toString(),
+      "paid": "1",
       "subscriptionPlanAmount": subscriptionPlanAmount.toString(),
       "walletAppliedAmounts": WALLET_AMOUNT.toString()
     }).catchError((err) {});
@@ -540,7 +631,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
     if (response != null) {
       setState(() {
         debugPrint('place order api successful:');
-        order = jsonDecode(response);
+        print("placeorder api response: " + response);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MyOrders(),
+          ),
+        );
       });
       // Show the toast message
       Fluttertoast.showToast(
@@ -552,6 +650,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
       );
     } else {
       debugPrint('place order api failed:');
+      print(response);
     }
     setState(() {
       isLoading = false;
@@ -834,6 +933,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       subtext:
                                       "Rs.$subscriptionPlanAmount",
                                     ),
+                                  if (cartDiscountAppliedList != null &&
+                                      cartDiscountAppliedList!.isNotEmpty)
+                                    CustomRow(
+                                      text: "Discount Applied Amount",
+                                      subtext:
+                                      "Rs.${DiscountAmountTotal ?? '0'}",
+                                    ),
                                   CustomRow(
                                     text: "First time Purchase Discount",
                                     subtext: "Rs.${SUBTOTALFIRSTPURCHASE ?? '0'}",
@@ -851,20 +957,48 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 ],
                               ),
                             ),
-                            Heading(text: "SAVINGS CORNER"),
                             SizedBox(
                               height: 10,
                             ),
-                            // OfferCard(
-                            //   title: cartDiscountList![index]["title"] ?? ""
-                            //       .toString(),
-                            //   description: cartDiscountList![index]
-                            //   ["description"]
-                            //       .toString(),
-                            //   image: "assets/offer.png",
-                            //   onPressed: _isApplied ? null : _onApplyButtonPressed,
-                            //   isApplied: _isApplied, // Pass the isApplied value to OfferCard
-                            // ),
+                            if (cartDiscountAppliedList != null &&
+                                cartDiscountAppliedList!.isNotEmpty)
+                              Column(
+                                children: [
+                                  Heading(text: "APPLIED DISCOUNTS"),
+                                  AppliedOfferCard(
+                                    title: cartDiscountAppliedList![index]["cartProductName"] ?? ""
+                                        .toString(),
+                                    description: "Rs. ${cartDiscountAppliedList![index]
+                                    ["discountAmount"]}",
+                                    image: "assets/offeratcart.png",
+                                    onPressed: (){
+                                      apiForRemoveDiscount();
+                                    }
+                                  ),
+                                ],
+                              ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            if (cartDiscountList != null &&
+                                cartDiscountList!.isNotEmpty &&
+                                // cartDiscountAppliedList == null &&
+                                cartDiscountAppliedList!.isEmpty &&
+                                cartDiscountList![0]["discountAvailable"] == 1)
+                            Column(
+                              children: [
+                                Heading(text: "AVAILABLE DISCOUNTS"),
+                                OfferCard(
+                                  title: cartDiscountList![index]["title"] ?? ""
+                                      .toString(),
+                                  description: "${cartDiscountList![index]
+                                  ["discount_value"]}${discountType!} Discount",
+                                  image: "assets/offer1.png",
+                                  onPressed: _isApplied ? null : _onApplyButtonPressed,
+                                  isApplied: _isApplied, // Pass the isApplied value to OfferCard
+                                ),
+                              ],
+                            ),
                             SizedBox(
                               height: 10,
                             ),
@@ -905,7 +1039,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                           return null;
                                         }
                                       },
-                                      textInputAction: TextInputAction.done,
+                                      textInputAction: TextInputAction.next,
                                     ),
                                   ),
                                   Padding(
@@ -942,23 +1076,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 onPressed: hidePlaceOrderButton ? null : () async {
                                   await PlaceOrderApi();
                                   // Wait for 3 seconds before navigating to MyOrders
-                                  await Future.delayed(Duration(seconds: 1));
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MyOrders(),
-                                    ),
-                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.teal[900],
                                   shadowColor: Colors.teal[300],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                      bottomRight: Radius.circular(10),
-                                      topLeft: Radius.circular(10),
-                                    ),
-                                  ),
                                 ),
                                 child: Text("Place Order"),
                               ),

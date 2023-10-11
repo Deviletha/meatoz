@@ -36,13 +36,14 @@ class _CategoryViewTileState extends State<CategoryViewTile> {
   String WID="NO";
   @override
   Widget build(BuildContext context) {
-    check(widget.combinationId);
+    // check(widget.combinationId);
     return
       Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding:  EdgeInsets.only(left: 15, right: 15, bottom: 15),
         child: Container(
           decoration: BoxDecoration(
-              color: Colors.teal.shade50, borderRadius: BorderRadius.circular(15)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15)),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -126,12 +127,6 @@ class _CategoryViewTileState extends State<CategoryViewTile> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.teal[900],
                           shadowColor: Colors.teal[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(10),
-                              topLeft: Radius.circular(10),
-                            ),
-                          ),
                         ),
                         child: Text("Add to Cart"),
                       ),
@@ -144,11 +139,11 @@ class _CategoryViewTileState extends State<CategoryViewTile> {
         ),
       );
   }
-  Future<void> check(String id) async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      WID = prefs.getString(id)!;
-    });
-
-  }
+  // Future<void> check(String id) async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     WID = prefs.getString(id)!;
+  //   });
+  //
+  // }
 }

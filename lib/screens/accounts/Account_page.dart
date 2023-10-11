@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:meatoz/Config/image_url_const.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
@@ -28,7 +30,6 @@ class Accounts extends StatefulWidget {
 }
 
 class _AccountsState extends State<Accounts> {
-  // String? base = "https://meatoz.in/basicapi/public/";
   String? UID;
   String? datas;
   Map? responseData;
@@ -110,7 +111,7 @@ class _AccountsState extends State<Accounts> {
   }
 
   void openGmail() async {
-    final url = "mailto:meatozhelp&support@gmail.com?subject=&body=";
+    final url = "mailto:customercare@meatoz.in?subject=&body=";
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -134,7 +135,7 @@ class _AccountsState extends State<Accounts> {
                 child:  AlertText(text: 'Yes',),
                 onPressed: () {
                   launch(
-                      "mailto:meatozhelp&support@gmail.com?subject=  &body=  ");
+                      "mailto:customercare@meatoz.in?subject=  &body=  ");
                 },
               ),
             ],
@@ -146,7 +147,7 @@ class _AccountsState extends State<Accounts> {
 
   @override
   Widget build(BuildContext context) {
-    // var image = base! + (dataList?[index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (dataList?[index]["image"] ?? "").toString();
     return Scaffold(
       appBar: AppBar(
         title: AppText(
@@ -198,13 +199,13 @@ class _AccountsState extends State<Accounts> {
                                   baseColor: Colors.grey[300]!,
                                   highlightColor: Colors.grey[100]!,
                                   child: ListTile(
-                                    // leading: CircleAvatar(
-                                    //   backgroundColor: Colors.white,
-                                    //   child: Text(
-                                    //     '',
-                                    //     style: TextStyle(fontSize: 20),
-                                    //   ),
-                                    // ),
+                                    leading: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      child: Text(
+                                        '',
+                                        style: TextStyle(fontSize: 20),
+                                      ),
+                                    ),
                                     title: Text(
                                       '',
                                       style: TextStyle(fontSize: 35),
@@ -213,7 +214,29 @@ class _AccountsState extends State<Accounts> {
                                   ),
                                 )
                               : ListTile(
-                                  // leading: CircleAvatar(
+                                  leading: Container(
+                                    clipBehavior: Clip.antiAlias,
+                                    width: 60,
+                                    height:60,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(180),),
+                                    ),
+                                    // Image border// Image radius
+                                    child: CachedNetworkImage(
+                                      imageUrl: image,
+                                      placeholder: (context, url) => Container(
+                                        color: Colors.grey[300],
+                                      ),
+                                      errorWidget: (context, url, error) => Container(
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image: AssetImage("assets/noItem.png"))),
+                                      ),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                   //   radius: 30,
                                   //   backgroundImage: NetworkImage(image),
                                   // ),
@@ -399,12 +422,6 @@ class _AccountsState extends State<Accounts> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.teal[900],
                         shadowColor: Colors.teal[300],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(10),
-                            topLeft: Radius.circular(10),
-                          ),
-                        ),
                       ),
                       child: Text("Please LogIn"),
                     ),

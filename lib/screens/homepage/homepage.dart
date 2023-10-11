@@ -13,6 +13,7 @@ import 'package:shimmer/shimmer.dart';
 import '../../Components/Title_widget.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/ApiHelper.dart';
+import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
 import 'Notification_page.dart';
 import '../orders/Orderdetails.dart';
@@ -42,8 +43,6 @@ class _HomePageState extends State<HomePage> {
     getMyOrders();
     wishListGet();
   }
-
-  String? base = "https://meatoz.in/basicapi/public/";
 
   ///BannerList
   Map? banner;
@@ -451,7 +450,8 @@ class _HomePageState extends State<HomePage> {
               height: 15,
             ),
             Container(
-                child: isLoading
+                child: BannerList != null && BannerList!.isNotEmpty ?
+                isLoading
                     ?
                 Shimmer.fromColors(
                   baseColor: Colors.grey[300]!,
@@ -501,7 +501,34 @@ class _HomePageState extends State<HomePage> {
                     onPageChanged: (index, reason) {},
                     scrollDirection: Axis.horizontal,
                   ),
-                )),
+                ) : Shimmer.fromColors(
+                  baseColor: Colors.grey[300]!,
+                  highlightColor: Colors.grey[100]!,
+                  child: CarouselSlider.builder(
+                    itemCount:
+                    BannerList == null ? 0 : BannerList?.length,
+                    itemBuilder: (context, index, realIndex) {
+                      return getBanner(index);
+                    },
+                    options: CarouselOptions(
+                      height: 125,
+                      aspectRatio: 15 / 6,
+                      viewportFraction: .8,
+                      initialPage: 0,
+                      enableInfiniteScroll: true,
+                      reverse: false,
+                      autoPlay: false,
+                      enlargeCenterPage: true,
+                      autoPlayInterval: Duration(seconds: 3),
+                      autoPlayAnimationDuration:
+                      Duration(milliseconds: 800),
+                      autoPlayCurve: Curves.fastOutSlowIn,
+                      onPageChanged: (index, reason) {},
+                      scrollDirection: Axis.horizontal,
+                    ),
+                  ),
+                )
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Container(
@@ -825,7 +852,7 @@ class _HomePageState extends State<HomePage> {
     if (Finalpopularlist == null || Finalpopularlist![index] == null) {
       return Container();
     }
-    var image = base! + (Finalpopularlist![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (Finalpopularlist![index]["image"] ?? "").toString();
     var itemName =
     (Finalpopularlist![index]["combinationName"] ?? "").toString();
     return PopularCard(
@@ -864,7 +891,7 @@ class _HomePageState extends State<HomePage> {
         child: Container(),
       );
     }
-    var image = base! + (categorylist![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (categorylist![index]["image"] ?? "").toString();
 
     return TopPicksCard(
       ImagePath: image,
@@ -886,14 +913,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getBanner(int index) {
-    if (BannerList == null) {
-      return Container(
-        child: Center(
-          child: CircularProgressIndicator(color: Colors.teal[900],),
-        ),
+    if (BannerList == null || BannerList!.isEmpty ) {
+      return Center(
+        child: CircularProgressIndicator(color: Colors.teal[900],),
       );
     }
-    var image = base! + BannerList![index]["image"];
+    var image = UrlConstants.base + BannerList![index]["image"];
 
     return Container(
       height: MediaQuery.of(context).size.height / 6,
@@ -906,7 +931,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getOrderList(int index) {
-    var image = base! + orderList![index]["image"].toString();
+    var image = UrlConstants.base + orderList![index]["image"].toString();
     return OrderCard(
       CartName: orderList![index]["cartName"].toString(),
       ImagePath: image,
@@ -927,7 +952,7 @@ class _HomePageState extends State<HomePage> {
     if (categorylist == null) {
       return Container(); // Handle the case when categorylist is null
     }
-    var image = base! + (categorylist![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (categorylist![index]["image"] ?? "").toString();
     var itemName = categorylist![index]["name"].toString();
 
     return CategoryCard(
@@ -955,7 +980,7 @@ class _HomePageState extends State<HomePage> {
     if (Finalproductlist == null || Finalproductlist![index1] == null) {
       return Container();
     }
-    var image = base! + (Finalproductlist![index1]["image"] ?? "").toString();
+    var image = UrlConstants.base + (Finalproductlist![index1]["image"] ?? "").toString();
     var price = "₹${Finalproductlist![index1]["totalPrice"] ?? ""}";
     var offerPrice = Finalproductlist![index1]["offerPrice"].toString() ?? "";
     var PID = (Finalproductlist![index1]["id"] ?? "").toString();
@@ -1056,7 +1081,7 @@ class _HomePageState extends State<HomePage> {
                             width: 8,
                           ),
                           Text(
-                            "₹ "+ offerPrice,
+                            "₹"+ offerPrice,
                             // WID,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
@@ -1099,7 +1124,7 @@ class _HomePageState extends State<HomePage> {
     if (dealOfTheDayList == null || dealOfTheDayList![index] == null) {
       return Container();
     }
-    var image = base! + (dealOfTheDayList![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (dealOfTheDayList![index]["image"] ?? "").toString();
     var price = "₹${dealOfTheDayList![index]["totalPrice"] ?? ""}";
     var offerPrice = (dealOfTheDayList![index]["offerPrice"] ?? "" ).toString() ;
     var PID = (dealOfTheDayList![index]["id"] ?? "").toString();
@@ -1193,7 +1218,7 @@ class _HomePageState extends State<HomePage> {
                             width: 8,
                           ),
                           Text(
-                           "₹ $offerPrice",
+                           "₹$offerPrice",
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -1251,7 +1276,7 @@ class _HomePageState extends State<HomePage> {
     if (ourProductList == null || ourProductList![index2] == null) {
       return Container();
     }
-    var image = base! + (ourProductList![index2]["image"] ?? "").toString();
+    var image = UrlConstants.base + (ourProductList![index2]["image"] ?? "").toString();
     var price = "₹${ourProductList![index2]["totalPrice"] ?? ""}";
     var offerPrice = (ourProductList![index2]["offerPrice"]  ?? "").toString();
     var PID = (ourProductList![index2]["id"] ?? "").toString();
@@ -1355,7 +1380,7 @@ class _HomePageState extends State<HomePage> {
                             width: 8,
                           ),
                           Text(
-                            "₹ $offerPrice",
+                            "₹$offerPrice",
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
