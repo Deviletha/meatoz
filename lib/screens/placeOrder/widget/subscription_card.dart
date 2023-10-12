@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '../../../Components/text_widget.dart';
 import '../../accounts/Subscription_plans.dart';
 
-class MeatosPlan extends StatefulWidget {
-  const MeatosPlan({Key? key}) : super(key: key);
+class MeatozPlan extends StatefulWidget {
+  const MeatozPlan({Key? key}) : super(key: key);
 
   @override
-  State<MeatosPlan> createState() => _MeatosPlanState();
+  State<MeatozPlan> createState() => _MeatozPlanState();
 }
 
-class _MeatosPlanState extends State<MeatosPlan> {
+class _MeatozPlanState extends State<MeatozPlan> {
   @override
   Widget build(BuildContext context) {
     return InkWell(

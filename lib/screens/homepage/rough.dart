@@ -1,5 +1,3 @@
-
-
 ///OUR PRODUCT CARD
 
 // OurProductCard(
@@ -65,9 +63,7 @@
 //   OfferPrice: offerPrice,
 //   Description: dealOfTheDayList![index]["description"].toString());
 
-
 /// ALL PRODUCTS CARD
-
 
 //   ProductTile(
 //   ItemName: Finalproductlist![index]["combinationName"].toString(),
@@ -124,9 +120,7 @@
 //   }, combinationId: CombID,
 // );
 
-
 /// CHECK FUNCTION
-
 
 // Future<void> check(String id,String  PID, String amount) async {
 //
@@ -148,4 +142,40 @@
 //   final prefs = await SharedPreferences.getInstance();
 //   await prefs.setString(
 //       wid, v );
+// }
+
+///FirstPurchase Offer Api
+
+// apiForFirstPurchaseOffer() async {
+//   var response = await ApiHelper().post(
+//     endpoint: "discount/getFirstPurchaseOffer",
+//     body: {
+//       "user_id": UID,
+//       "total_amount": subtotal1.toString(),
+//     },
+//   ).catchError((err) {});
+//
+//   setState(() {
+//     isLoading = false;
+//   });
+//
+//   if (response != null) {
+//     setState(() {
+//       debugPrint('Apply first purchase api successful:');
+//       firstPurchase = json.decode(response);
+//       finalFirstPurchase = firstPurchase!["firstPurchaseOffer"];
+//       print(response);
+//
+//       bool status = finalFirstPurchase!["status"];
+//       if (status) {
+//         discountAmount = finalFirstPurchase!["discountAmount"];
+//         print(discountAmount);
+//         subtotalfrmfirstpuchase = (subtotal2 - discountAmount);
+//         SUBTOTALFIRSTPURCHASE = subtotalfrmfirstpuchase.toString();
+//         print("subtotal after first purchase offer: ${SUBTOTALFIRSTPURCHASE!}");
+//       }
+//     });
+//   } else {
+//     debugPrint('first purchase api failed:');
+//   }
 // }

@@ -1,12 +1,14 @@
 import 'dart:convert';
-// import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 
 class ChangeProfile extends StatefulWidget {
   const ChangeProfile({Key? key}) : super(key: key);
@@ -16,12 +18,12 @@ class ChangeProfile extends StatefulWidget {
 }
 
 class _ChangeProfileState extends State<ChangeProfile> {
-  String? UID;
+  String? uID;
   bool isLoading = false;
   List<String> base64Images = [];
   File? _pickedImage;
 
-  String? datas;
+  String? data;
   Map? responseData;
   List? dataList;
 
@@ -29,13 +31,31 @@ class _ChangeProfileState extends State<ChangeProfile> {
   final lastnameController = TextEditingController();
   final emailIdController = TextEditingController();
 
-  Map? FinalUserlist;
+  String? date = DateFormat('yyyy-MM-dd').format(DateTime.now()).toString();
+  DateTime _dateTime = DateTime.now();
+
+  void _showDatePicker() {
+    showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2010),
+      lastDate: DateTime(2025),
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          _dateTime = value;
+          date = DateFormat('yyyy-MM-dd').format(_dateTime).toString();
+        });
+      }
+    });
+  }
+
   int index = 0;
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
-    Apicall();
+    uID = prefs.getString("UID");
+    apiForProfile();
   }
 
   void convertImageToBase64() async {
@@ -48,9 +68,9 @@ class _ChangeProfileState extends State<ChangeProfile> {
     }
   }
 
-
   void selectImage() async {
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
         _pickedImage = File(pickedImage.path);
@@ -59,23 +79,24 @@ class _ChangeProfileState extends State<ChangeProfile> {
     }
   }
 
-  Future<void> Apicall() async {
+  Future<void> apiForProfile() async {
     try {
       var response = await ApiHelper().post(endpoint: "common/profile", body: {
-        "id": UID,
+        "id": uID,
       });
       if (response != null) {
         setState(() {
           debugPrint('profile api successful:');
-          datas = response.toString();
+          data = response.toString();
           responseData = jsonDecode(response);
           dataList = responseData?["data"];
-          print(responseData.toString());
+          if (kDebugMode) {
+            print(responseData.toString());
+          }
 
           firstnameController.text = dataList![0]["first_name"];
           lastnameController.text = dataList![0]["last_name"];
           emailIdController.text = dataList![0]["email"];
-
         });
       } else {
         debugPrint('api failed:');
@@ -85,7 +106,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
     }
   }
 
-  EditProfile() async {
+  editProfile() async {
     if (base64Images.isNotEmpty) {
       var response = await ApiHelper().post(
         endpoint: "common/updateProfile",
@@ -93,8 +114,8 @@ class _ChangeProfileState extends State<ChangeProfile> {
           "first_name": firstnameController.text,
           "last_name": lastnameController.text,
           "email": emailIdController.text,
-          "dob" : "21/06/1998",
-          "id" : UID,
+          "dob": date.toString(),
+          "id": uID,
           "imageUrl": base64Images[0],
         },
       ).catchError((err) {});
@@ -129,7 +150,6 @@ class _ChangeProfileState extends State<ChangeProfile> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -140,8 +160,8 @@ class _ChangeProfileState extends State<ChangeProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppText(text:
-          "Edit Profile",
+        title: AppText(
+          text: "Edit Profile",
         ),
       ),
       body: Container(
@@ -150,27 +170,29 @@ class _ChangeProfileState extends State<ChangeProfile> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 10,),
+            SizedBox(
+              height: 10,
+            ),
             Stack(
               children: [
                 _pickedImage != null
                     ? CircleAvatar(
-                  radius: 50,
-                  backgroundImage: FileImage(_pickedImage!),
-                )
+                        radius: 50,
+                        backgroundImage: FileImage(_pickedImage!),
+                      )
                     : CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage("assets/contactavatar.png"),
-                ),
+                        radius: 50,
+                        backgroundImage: AssetImage("assets/contactavatar.png"),
+                      ),
                 IconButton(
                   onPressed: () {
                     selectImage();
@@ -204,14 +226,14 @@ class _ChangeProfileState extends State<ChangeProfile> {
                 controller: lastnameController,
                 decoration: InputDecoration(
                   labelText: "Last Name",
-
-                ),validator: (value) {
-                if (value!.isEmpty) {
-                  return 'Enter a valid name';
-                } else {
-                  return null;
-                }
-              },
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Enter a valid name';
+                  } else {
+                    return null;
+                  }
+                },
                 textInputAction: TextInputAction.done,
               ),
             ),
@@ -224,28 +246,69 @@ class _ChangeProfileState extends State<ChangeProfile> {
                   labelText: "Email Id ",
                 ),
                 validator: (value) {
-                if (value!.isEmpty || !value.contains('@')) {
-                  return 'Enter a valid Email ID';
-                } else {
-                  return null;
-                }
-              },
+                  if (value!.isEmpty || !value.contains('@')) {
+                    return 'Enter a valid Email ID';
+                  } else {
+                    return null;
+                  }
+                },
                 textInputAction: TextInputAction.done,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(
-                  left: 35, right: 35),
+                left: 35,
+                right: 35,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Date of Birth",
+                        style: TextStyle(
+                            color: Colors.grey.shade800, fontSize: 10),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(date!),
+                    ],
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        _showDatePicker();
+                      },
+                      icon: Icon(
+                        Iconsax.calendar,
+                        size: 30,
+                      ))
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 35, right: 35, bottom: 20),
+              child: Divider(
+                thickness: 2,
+                color: Colors.grey,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 35, right: 35),
               child: SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: () {
-                    EditProfile();
+                    editProfile();
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal[900],
-                      shadowColor: Colors.teal[300],),
+                    backgroundColor: Colors.teal[900],
+                    shadowColor: Colors.teal[300],
+                  ),
                   child: Text("Submit"),
                 ),
               ),

@@ -6,22 +6,22 @@ import 'package:iconsax/iconsax.dart';
 import '../../Components/text_widget.dart';
 
 class WishlistTile extends StatelessWidget {
-  final String ItemName;
-  final String Description;
-  final String TotalPrice;
-  final String ImagePath;
-  final color;
-  void Function()? onPressed;
-  void Function()? onTap;
+  final String itemName;
+  final String description;
+  final String totalPrice;
+  final String imagePath;
+  // final color;
+  final void Function()? onPressed;
+  final void Function()? onTap;
 
-  WishlistTile({Key? key,
-    required this.ItemName,
-    required this.ImagePath,
-    this.color,
+  const WishlistTile({Key? key,
+    required this.itemName,
+    required this.imagePath,
+    // this.color,
     required this.onPressed,
     required this.onTap,
-    required this.TotalPrice,
-    required this.Description
+    required this.totalPrice,
+    required this.description
   })
       : super(key: key);
 
@@ -46,7 +46,7 @@ class WishlistTile extends StatelessWidget {
                       child: SizedBox.fromSize(
                         size: Size.fromRadius(60), // Image radius
                         child: CachedNetworkImage(
-                          imageUrl: ImagePath,
+                          imageUrl: imagePath,
                           placeholder: (context, url) =>
                               Container(
                                 color: Colors.grey[300],
@@ -75,12 +75,12 @@ class WishlistTile extends StatelessWidget {
                         height: 10,
                       ),
                        TextConst(text:
-                        ItemName
+                       itemName
                         ),
                         SizedBox(
                           height: 10,
                         ),
-                        Text(Description,
+                        Text(description,
                             maxLines: 2,
                             style: TextStyle(
                                 fontSize: 12,
@@ -90,7 +90,7 @@ class WishlistTile extends StatelessWidget {
                           height: 10,
                         ),
                         Text(
-                          TotalPrice,
+                          totalPrice,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,

@@ -1,17 +1,16 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../Components/text_widget.dart';
 
 class CategoryCard extends StatelessWidget {
-  final String ItemName;
-  final String ImagePath;
-  final color;
-  void Function()? onTap;
+  final String itemName;
+  final String imagePath;
+  final void Function()? onTap;
 
-  CategoryCard({Key? key,
-    required this.ItemName,
-    required this.ImagePath,
-    this.color,
+  const CategoryCard({Key? key,
+    required this.itemName,
+    required this.imagePath,
     required this.onTap,})
       : super(key: key);
 
@@ -30,7 +29,7 @@ class CategoryCard extends StatelessWidget {
               width: MediaQuery.of(context).size.width / 5,
               height: MediaQuery.of(context).size.height / 11,
               child: CachedNetworkImage(
-                imageUrl: ImagePath,
+                imageUrl: imagePath,
                 placeholder: (context, url) => Container(
                   color: Colors.grey[300],
                 ),
@@ -46,7 +45,7 @@ class CategoryCard extends StatelessWidget {
               height: 3,
             ),
             TextConst(
-              text: ItemName,
+              text: itemName,
             ),
           ],
         ),

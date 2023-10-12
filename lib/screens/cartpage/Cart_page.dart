@@ -4,35 +4,35 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:meatoz/screens/cartpage/CartCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Components/Title_widget.dart';
+import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../placeOrder/widget/offer_card.dart';
 import '../registration/Login_page.dart';
 import '../placeOrder/Select_address.dart';
 
-class Cart_page extends StatefulWidget {
-  const Cart_page({Key? key}) : super(key: key);
+class CartPage extends StatefulWidget {
+  const CartPage({Key? key}) : super(key: key);
 
   @override
-  State<Cart_page> createState() => _Cart_pageState();
+  State<CartPage> createState() => _CartPageState();
 }
 
-class _Cart_pageState extends State<Cart_page> {
+class _CartPageState extends State<CartPage> {
   ///CartList
-  Map? clist;
-  List? CartList;
+  Map? cList;
+  List? cartList;
   List? cartDiscountList;
   int index = 0;
-  var CID;
-  String? UID;
+
+  String? uID;
   bool isLoading = true;
   bool isLoggedIn = true;
 
   String? discountType;
-  String? DISCOUNTID;
-  String? PRODUCTID;
+  String? discountId;
+  String? productId;
 
   @override
   void initState() {
@@ -55,9 +55,9 @@ class _Cart_pageState extends State<Cart_page> {
     var responseDiscount = await ApiHelper().post(
       endpoint: "discount/applyDiscountAtCart",
       body: {
-        "user_id": UID,
-        "discount_id": DISCOUNTID,
-        "product_id": PRODUCTID
+        "user_id": uID,
+        "discount_id": discountId,
+        "product_id": productId
       },
     ).catchError((err) {});
 
@@ -68,7 +68,8 @@ class _Cart_pageState extends State<Cart_page> {
     if (responseDiscount != null) {
       setState(() {
         debugPrint('Apply discount api successful:');
-        print("apply discount response: " + responseDiscount);
+
+        // print("apply discount response: " + responseDiscount);
 
         Map<String, dynamic> responseData = json.decode(responseDiscount);
 
@@ -96,12 +97,12 @@ class _Cart_pageState extends State<Cart_page> {
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
+    uID = prefs.getString("UID");
     setState(() {
-      isLoggedIn = UID != null;
+      isLoggedIn = uID != null;
     });
     if (isLoggedIn) {
-      APIforCart();
+      apiForCart();
     } else {
       setState(() {
         isLoading = false;
@@ -109,9 +110,9 @@ class _Cart_pageState extends State<Cart_page> {
     }
   }
 
-  APIforCart() async {
+  apiForCart() async {
     var response = await ApiHelper().post(endpoint: "cart/get", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
 
     setState(() {
@@ -121,9 +122,9 @@ class _Cart_pageState extends State<Cart_page> {
     if (response != null) {
       setState(() {
         debugPrint('cartpage successful:');
-        clist = jsonDecode(response);
-        CartList = clist!["cart"];
-        cartDiscountList = clist!["cartDiscountsData"];
+        cList = jsonDecode(response);
+        cartList = cList!["cart"];
+        cartDiscountList = cList!["cartDiscountsData"];
 
         if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
           String discountBy = cartDiscountList![index]["discount_by"];
@@ -133,16 +134,16 @@ class _Cart_pageState extends State<Cart_page> {
             discountType = "/-";
           }
         }
-        if (CartList != null && CartList!.isNotEmpty) {
+        if (cartList != null && cartList!.isNotEmpty) {
           if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
-            PRODUCTID = cartDiscountList![index]["productID"].toString();
-            DISCOUNTID = cartDiscountList![index]["id"].toString();
+            productId = cartDiscountList![index]["productID"].toString();
+            discountId = cartDiscountList![index]["id"].toString();
           } else {
-            DISCOUNTID = "0";
+            discountId = "0";
           }
         }
-        print(DISCOUNTID);
-        print(PRODUCTID);
+        // print(discountId);
+        // print(productId);
 
       });
     } else {
@@ -154,15 +155,14 @@ class _Cart_pageState extends State<Cart_page> {
     String cartID,
   ) async {
     var response = await ApiHelper().post(endpoint: "cart/increment", body: {
-      "userid": "93",
+      "userid": uID,
       "cart_id": cartID,
     }).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('cartpage successful:');
-        clist = jsonDecode(response);
       });
-      APIforCart();
+      apiForCart();
     } else {
       debugPrint('api failed:');
     }
@@ -170,15 +170,14 @@ class _Cart_pageState extends State<Cart_page> {
 
   decrementQty(String cartId) async {
     var response = await ApiHelper().post(endpoint: "cart/decrement", body: {
-      "userid": UID,
+      "userid": uID,
       "cart_id": cartId,
     }).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('cartpage successful:');
-        clist = jsonDecode(response);
       });
-      APIforCart();
+      apiForCart();
     } else {
       debugPrint('api failed:');
     }
@@ -186,13 +185,12 @@ class _Cart_pageState extends State<Cart_page> {
 
   removeFromCart(String cartID) async {
     var response = await ApiHelper().post(endpoint: "cart/remove", body: {
-      "userid": UID,
+      "userid": uID,
       "cart_id": cartID,
     }).catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('cartpage successful:');
-        clist = jsonDecode(response);
+        debugPrint('cart page successful:');
 
         Fluttertoast.showToast(
           msg: "Item Removed",
@@ -203,7 +201,7 @@ class _Cart_pageState extends State<Cart_page> {
           fontSize: 16.0,
         );
       });
-      APIforCart();
+      apiForCart();
     } else {
       debugPrint('api failed:');
     }
@@ -235,7 +233,7 @@ class _Cart_pageState extends State<Cart_page> {
                 ? Center(
                     child: CircularProgressIndicator(color: Colors.teal[900]),
                   )
-                : CartList == null || CartList!.isEmpty
+                : cartList == null || cartList!.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -253,7 +251,7 @@ class _Cart_pageState extends State<Cart_page> {
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
-                                  "${CartList!.length} Items in Cart",
+                                  "${cartList!.length} Items in Cart",
                                   style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold),
@@ -276,7 +274,7 @@ class _Cart_pageState extends State<Cart_page> {
                           ListView.builder(
                             physics: ScrollPhysics(),
                             shrinkWrap: true,
-                            itemCount: CartList == null ? 0 : CartList?.length ?? 0,
+                            itemCount: cartList == null ? 0 : cartList?.length ?? 0,
                             itemBuilder: (context, index) => getCartList(index),
                           ),
                           // GridView.builder(
@@ -339,28 +337,28 @@ class _Cart_pageState extends State<Cart_page> {
   }
 
   Widget getCartList(int index) {
-    var image = UrlConstants.base + CartList![index]["image"].toString();
-    int quantity = CartList![index]["quantity"];
-    int price = CartList![index]["price"];
-    int totalamount = quantity * price;
+    var image = UrlConstants.base + cartList![index]["image"].toString();
+    int quantity = cartList![index]["quantity"];
+    int price = cartList![index]["price"];
+    int totalAmount = quantity * price;
     return CartTile(
-      ItemName: CartList![index]["product"].toString(),
-      ImagePath: image,
+      itemName: cartList![index]["product"].toString(),
+      imagePath: image,
       onPressedLess: () {
         decrementQty(
-          CartList![index]["id"].toString(),
+          cartList![index]["id"].toString(),
         );
       },
-      Quantity: CartList![index]["quantity"].toString(),
+      quantity: cartList![index]["quantity"].toString(),
       onPressedAdd: () {
         incrementQty(
-          CartList![index]["id"].toString(),
+          cartList![index]["id"].toString(),
         );
       },
-      TotalPrice: totalamount.toString(),
+      totalPrice: totalAmount.toString(),
       onPressed: () {
         removeFromCart(
-          CartList![index]["id"].toString(),
+          cartList![index]["id"].toString(),
         );
       },
     );

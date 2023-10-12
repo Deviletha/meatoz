@@ -1,9 +1,9 @@
+
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 
 
@@ -18,24 +18,17 @@ class OrderDetails extends StatefulWidget {
 
 class _OrderDetailsState extends State<OrderDetails> {
   final TextEditingController reasonController = TextEditingController();
-  String? UID;
   Map? order;
   Map? order1;
   List? orderList;
 
+  bool isLoading = true;
+
 
   @override
   void initState() {
-    checkUser();
-    super.initState();
-  }
-
-  Future<void> checkUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      UID = prefs.getString("UID");
-    });
     getMyOrders();
+    super.initState();
   }
 
   getMyOrders() async {
@@ -45,6 +38,11 @@ class _OrderDetailsState extends State<OrderDetails> {
       "offset": "0",
       "pageLimit": "10",
     }).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+
     if (response != null) {
       setState(() {
         debugPrint('Order details api successful:');
@@ -67,7 +65,12 @@ class _OrderDetailsState extends State<OrderDetails> {
           "ORDER HISTORY",
         ),
       ),
-      body: Container(
+      body: isLoading
+          ? Center(
+        child: CircularProgressIndicator(color: Colors.teal[900]),
+      )
+          :
+      Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
                 begin: Alignment.bottomLeft,
@@ -92,7 +95,7 @@ class _OrderDetailsState extends State<OrderDetails> {
 
   Widget getOrderList(int index) {
     var image = UrlConstants.base + orderList![index]["image"].toString();
-    var price = "₹ " + orderList![index]["price"].toString();
+    var price = "₹ ${orderList![index]["price"]}";
     return Card(
         color: Colors.grey.shade50,
         child: Padding(

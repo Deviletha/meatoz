@@ -1,7 +1,8 @@
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 
 class FAQ extends StatefulWidget {
   final String section;

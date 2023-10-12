@@ -3,25 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
 
 class ProductViewTile extends StatelessWidget {
-  final String ItemName;
-  final String Description;
+  final String itemName;
+  final String description;
   final String noOfPiece;
-  final String servingCaapcity;
-  final String Price;
-  final String ImagePath;
-  final color;
-  void Function()? onPressed;
+  final String servingCapacity;
+  final String price;
+  final String imagePath;
+  // final color;
+  final void Function()? onPressed;
 
-  ProductViewTile(
+  const ProductViewTile(
       {Key? key,
-      required this.ItemName,
-      required this.ImagePath,
-      this.color,
+      required this.itemName,
+      required this.imagePath,
+      // this.color,
       required this.onPressed,
-      required this.Price,
-      required this.Description,
+      required this.price,
+      required this.description,
       required this.noOfPiece,
-      required this.servingCaapcity})
+      required this.servingCapacity})
       : super(key: key);
 
   @override
@@ -43,7 +43,7 @@ class ProductViewTile extends StatelessWidget {
               ),
               // Image border// Image radius
               child: CachedNetworkImage(
-                imageUrl: ImagePath,
+                imageUrl: imagePath,
                 placeholder: (context, url) => Container(
                   color: Colors.grey[300],
                 ),
@@ -59,7 +59,7 @@ class ProductViewTile extends StatelessWidget {
               height: 15,
             ),
             Text(
-              "₹${Price}",
+              "₹$price",
               style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
@@ -69,7 +69,7 @@ class ProductViewTile extends StatelessWidget {
               height: 10,
             ),
             TextConst(
-              text: ItemName,
+              text: itemName,
             ),
             SizedBox(
               height: 10,
@@ -78,12 +78,12 @@ class ProductViewTile extends StatelessWidget {
             SizedBox(
               height: 10,
             ),
-            TextConst(text: "Serving Capacity: $servingCaapcity"),
+            TextConst(text: "Serving Capacity: $servingCapacity"),
             SizedBox(
               height: 10,
             ),
             TextConst(
-              text: Description,
+              text: description,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10),

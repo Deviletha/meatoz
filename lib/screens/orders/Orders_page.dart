@@ -6,9 +6,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
-import '../accounts/FAQ_page.dart';
+import '../accounts/faq_page.dart';
 import 'Orderdetails.dart';
 
 class MyOrders extends StatefulWidget {
@@ -19,16 +19,16 @@ class MyOrders extends StatefulWidget {
 }
 
 class _MyOrdersState extends State<MyOrders> {
-  String? UID;
-  String? ORDERID;
+  String? uID;
+  String? orderID;
   Map? order;
   Map? order1;
   List? orderList;
 
   bool isButtonVisible = true;
 
-  Map? Orderreturn;
-  Map? returnlist;
+  Map? orderReturn;
+  Map? returnList;
   final TextEditingController reasonController = TextEditingController();
 
   @override
@@ -40,21 +40,21 @@ class _MyOrdersState extends State<MyOrders> {
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
-      print(UID);
+      uID = prefs.getString("UID");
+      print(uID);
     });
     getMyOrders();
   }
 
-  CancelOrderApi() async {
+  cancelOrderApi() async {
     var response = await ApiHelper().post(endpoint: "Orders/cancel", body: {
-      "orderId": ORDERID,
+      "orderId": orderID,
     }).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('cancel api successful:');
-        Orderreturn = jsonDecode(response);
-        returnlist = Orderreturn!["data"];
+        orderReturn = jsonDecode(response);
+        returnList = orderReturn!["data"];
         Fluttertoast.showToast(
           msg: "order cancelled successfully",
           toastLength: Toast.LENGTH_SHORT,
@@ -63,6 +63,7 @@ class _MyOrdersState extends State<MyOrders> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
+        getMyOrders();
         // isButtonVisible = false;
       });
     } else {
@@ -73,7 +74,7 @@ class _MyOrdersState extends State<MyOrders> {
   getMyOrders() async {
     var response =
         await ApiHelper().post(endpoint: "common/getMyOrders", body: {
-      "userid": UID,
+      "userid": uID,
       "offset": "0",
       "pageLimit": "10",
     }).catchError((err) {});
@@ -150,7 +151,7 @@ class _MyOrdersState extends State<MyOrders> {
 
     bool isOrderCancelled = orderList![index]["status_note"].toString().toLowerCase() == "cancelled";
     var image = UrlConstants.base + orderList![index]["image"].toString();
-    var price = "₹ " + orderList![index]["total"].toString();
+    var price = "₹ ${orderList![index]["total"]}";
     return Card(
         color: Colors.grey.shade50,
         child: InkWell(
@@ -201,14 +202,18 @@ class _MyOrdersState extends State<MyOrders> {
                         height: 30,
                         width: 100,
                         decoration: BoxDecoration(
-                            color: Colors.green.shade300,
-                            borderRadius: BorderRadius.circular(10)),
+                          color: orderList![index]["status_note"] == "Cancelled"
+                              ? Colors.red.shade300
+                              : Colors.green.shade300,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: Center(
                           child: Text(
                             orderList![index]["status_note"].toString(),
                           ),
                         ),
                       ),
+
                     )
                   ],
                 ),
@@ -240,8 +245,7 @@ class _MyOrdersState extends State<MyOrders> {
                               color: Colors.green),
                         ),
                         Text(
-                          "Amount Paid: ₹ " +
-                              orderList![index]["amount_paid"].toString(),
+                          "Amount Paid: ₹ ${orderList![index]["amount_paid"]}",
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -266,10 +270,10 @@ class _MyOrdersState extends State<MyOrders> {
                     if (!isOrderCancelled && isButtonVisible)
                       ElevatedButton(
                         onPressed: () {
-                          ORDERID = orderList![index]["id"].toString();
-                          print(ORDERID);
+                          orderID = orderList![index]["id"].toString();
+                          print(orderID);
                           if (!isOrderCancelled) {
-                            CancelOrderApi();
+                            cancelOrderApi();
                           }
                         },
                         style: ElevatedButton.styleFrom(

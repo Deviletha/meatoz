@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 
 
 class SetectAddress extends StatefulWidget {
@@ -16,9 +16,9 @@ class SetectAddress extends StatefulWidget {
 }
 
 class _SetectAddressState extends State<SetectAddress> {
-  String? UID;
+  String? uID;
   Map? address;
-  List? Addresslist;
+  List? addressList;
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _SetectAddressState extends State<SetectAddress> {
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
+      uID = prefs.getString("UID");
     });
     getUserAddress();
   }
@@ -69,7 +69,7 @@ class _SetectAddressState extends State<SetectAddress> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: const [
               Text(
                 "Delivery is not available in this pincode.",
                 style: TextStyle(
@@ -96,13 +96,13 @@ class _SetectAddressState extends State<SetectAddress> {
 
   getUserAddress() async {
     var response = await ApiHelper().post(endpoint: "user/getAddress", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('get address api successful:');
         address = jsonDecode(response);
-        Addresslist = address!["status"];
+        addressList = address!["status"];
       });
     } else {
       debugPrint('api failed:');
@@ -135,7 +135,7 @@ class _SetectAddressState extends State<SetectAddress> {
             SizedBox(
               height: 10,
             ),
-            Addresslist == null
+            addressList == null
                 ? Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
@@ -176,7 +176,7 @@ class _SetectAddressState extends State<SetectAddress> {
                 ListView.builder(
                   physics: ScrollPhysics(),
                   shrinkWrap: true,
-                  itemCount: Addresslist == null ? 0 : Addresslist?.length,
+                  itemCount: addressList == null ? 0 : addressList?.length,
                   itemBuilder: (context, index) => getAddressRow(index),
                 ),
               ],
@@ -188,7 +188,7 @@ class _SetectAddressState extends State<SetectAddress> {
   }
 
   Widget getAddressRow(int index) {
-    if (Addresslist == null || Addresslist!.isEmpty) {
+    if (addressList == null || addressList!.isEmpty) {
       return Container(); // Return an empty container or another widget when Addresslist is null or empty.
     }
 
@@ -199,8 +199,8 @@ class _SetectAddressState extends State<SetectAddress> {
           MaterialPageRoute(
             builder: (context) =>
                 PlaceOrder(
-                  id: Addresslist![index]["id"].toString(),
-                  picode: Addresslist![index]["pincode"].toString(),
+                  id: addressList![index]["id"].toString(),
+                  pinCode: addressList![index]["pincode"].toString(),
                 ),
           ),
         );
@@ -212,21 +212,21 @@ class _SetectAddressState extends State<SetectAddress> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextConst(text: Addresslist![index]["address"].toString()),
+              TextConst(text: addressList![index]["address"].toString()),
               SizedBox(height: 5),
               Text(
-                Addresslist![index]["phone"].toString(),
+                addressList![index]["phone"].toString(),
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.red,
                 ),
               ),
               SizedBox(height: 5),
-              TextConst(text: Addresslist![index]["city"].toString()),
+              TextConst(text: addressList![index]["city"].toString()),
               SizedBox(height: 5),
-              TextConst(text: Addresslist![index]["pincode"].toString()),
+              TextConst(text: addressList![index]["pincode"].toString()),
               SizedBox(height: 5),
-              TextConst(text: Addresslist![index]["state"].toString()),
+              TextConst(text: addressList![index]["state"].toString()),
             ],
           ),
         ),

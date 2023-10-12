@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Config/image_url_const.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
-import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
+import 'package:meatoz/screens/accounts/widgets/accounts_custom_card.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
 import 'package:meatoz/screens/accounts/privacy_terms.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
@@ -12,11 +12,11 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../Components/Alertbox_text.dart';
+import '../../Components/alertbox_text.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import 'Add_address.dart';
-import 'FAQ_page.dart';
+import 'faq_page.dart';
 import '../registration/Login_page.dart';
 import '../orders/Orders_page.dart';
 import 'Subscription_plans.dart';
@@ -30,16 +30,16 @@ class Accounts extends StatefulWidget {
 }
 
 class _AccountsState extends State<Accounts> {
-  String? UID;
-  String? datas;
+  String? uID;
+  String? data;
   Map? responseData;
   List? dataList;
   int index = 0;
   bool isLoggedIn = true;
   bool isLoading = true;
 
-  Map? referal;
-  List? referalList;
+  Map? referral;
+  List? referralList;
 
   @override
   void initState() {
@@ -49,14 +49,13 @@ class _AccountsState extends State<Accounts> {
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
+    uID = prefs.getString("UID");
     setState(() {
-      isLoggedIn = UID != null;
-      print(UID);
+      isLoggedIn = uID != null;
     });
     if (isLoggedIn) {
-      Apicall();
-      ApiReferal();
+      apiForProfile();
+      apiForReferral();
     } else {
       setState(() {
         isLoading = false;
@@ -64,10 +63,10 @@ class _AccountsState extends State<Accounts> {
     }
   }
 
-  Future<void> Apicall() async {
+  Future<void> apiForProfile() async {
     try {
       var response = await ApiHelper().post(endpoint: "common/profile", body: {
-        "id": UID,
+        "id": uID,
       });
       setState(() {
         isLoading = false;
@@ -75,7 +74,7 @@ class _AccountsState extends State<Accounts> {
       if (response != null) {
         setState(() {
           debugPrint('profile api successful:');
-          datas = response.toString();
+          data = response.toString();
           responseData = jsonDecode(response);
           dataList = responseData?["data"];
         });
@@ -87,20 +86,19 @@ class _AccountsState extends State<Accounts> {
     }
   }
 
-  Future<void> ApiReferal() async {
+  Future<void> apiForReferral() async {
     try {
       var response =
           await ApiHelper().post(endpoint: "refer/getReferralCode", body: {
-        "userid": UID,
+        "userid": uID,
       });
       if (response != null) {
         setState(() {
           debugPrint('profile api successful:');
-          datas = response.toString();
-          referal = json.decode(response);
-          referalList = referal?["reffercode"];
-          print(response);
-          print(referalList);
+          referral = json.decode(response);
+          referralList = referral?["reffercode"];
+          // print(response);
+          // print(referralList);
         });
       } else {
         debugPrint('api failed:');
@@ -361,7 +359,7 @@ class _AccountsState extends State<Accounts> {
                       child: InkWell(
                         onTap: () {
                           Share.share(
-                            "www.meatoz.in/Register/"+referalList![index]["referral_code"].toString(),
+                            "www.meatoz.in/Register/${referralList![index]["referral_code"]}",
                           );
                         },
                         child: Row(

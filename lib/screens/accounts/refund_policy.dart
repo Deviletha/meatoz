@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../../../Components/appbar_text.dart';
-import '../../../Config/ApiHelper.dart';
+import '../../../Config/api_helper.dart';
 
 class RefundPolicy extends StatefulWidget {
   const RefundPolicy({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class RefundPolicy extends StatefulWidget {
 
 class _RefundPolicyState extends State<RefundPolicy> {
   Map? list;
-  List? genralList;
+  List? generalList;
   int index = 0;
   bool isLoading = true;
 
@@ -25,13 +25,12 @@ class _RefundPolicyState extends State<RefundPolicy> {
 
   generalDetailsApi() async {
     var response = await ApiHelper()
-        .post(endpoint: "generalInfo/get", body: {})
-        .catchError((err) {});
+        .post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('general detailsapi successful:');
+        debugPrint('general details api successful:');
         list = jsonDecode(response);
-        genralList = list!["general_info"];
+        generalList = list!["general_info"];
       });
     } else {
       debugPrint('api failed:');
@@ -52,28 +51,30 @@ class _RefundPolicyState extends State<RefundPolicy> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              colors: [
-                Colors.grey.shade400,
-                Colors.grey.shade200,
-                Colors.grey.shade50,
-                Colors.grey.shade200,
-                Colors.grey.shade400,
-              ],
-            )),
-        child: isLoading
-            ? Center(child: CircularProgressIndicator()) // Show a CircularProgressIndicator while loading
-            : ListView(
-          children: [
-            if (genralList != null) ...[
-              Padding(
-                padding:  EdgeInsets.all(8.0),
-                child: HtmlWidget(genralList![index]["return_policy"]),
-              ),
-            ],
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+          colors: [
+            Colors.grey.shade400,
+            Colors.grey.shade200,
+            Colors.grey.shade50,
+            Colors.grey.shade200,
+            Colors.grey.shade400,
           ],
-        ),
+        )),
+        child: isLoading
+            ? Center(
+                child:
+                    CircularProgressIndicator()) // Show a CircularProgressIndicator while loading
+            : ListView(
+                children: [
+                  if (generalList != null) ...[
+                    Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: HtmlWidget(generalList![index]["return_policy"]),
+                    ),
+                  ],
+                ],
+              ),
       ),
     );
   }

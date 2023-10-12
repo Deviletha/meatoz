@@ -1,15 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import '../../../../../Components/text_widget.dart';
 
 class TopPicksCard extends StatelessWidget {
-  final String ImagePath;
-  final color;
-  void Function()? onTap;
+  final String imagePath;
 
-  TopPicksCard({Key? key,
-    required this.ImagePath,
-    this.color,
+  final void Function()? onTap;
+
+  const TopPicksCard({Key? key,
+    required this.imagePath,
+
     required this.onTap,})
       : super(key: key);
 
@@ -27,7 +26,7 @@ class TopPicksCard extends StatelessWidget {
         ),
         // Image border// Image radius
         child: CachedNetworkImage(
-          imageUrl: ImagePath,
+          imageUrl: imagePath,
           placeholder: (context, url) =>
               Container(
                 color: Colors.grey[300],

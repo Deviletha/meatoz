@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-import 'package:meatoz/Components/text_widget.dart';
 import '../../../Components/appbar_text.dart';
-import '../../../Config/ApiHelper.dart';
+import '../../../Config/api_helper.dart';
 
 class TermsAndConditions extends StatefulWidget {
   const TermsAndConditions({Key? key}) : super(key: key);
@@ -14,7 +13,7 @@ class TermsAndConditions extends StatefulWidget {
 
 class _TermsAndConditionsState extends State<TermsAndConditions> {
   Map? list;
-  List? genralList;
+  List? generalList;
   int index = 0;
   bool isLoading = true;
 
@@ -30,9 +29,9 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
         .catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('general detailsapi successful:');
+        debugPrint('general details api successful:');
         list = jsonDecode(response);
-        genralList = list!["general_info"];
+        generalList = list!["general_info"];
       });
     } else {
       debugPrint('api failed:');
@@ -67,10 +66,10 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
             ? Center(child: CircularProgressIndicator()) // Show a CircularProgressIndicator while loading
             : ListView(
           children: [
-            if (genralList != null) ...[
+            if (generalList != null) ...[
               Padding(
                 padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-                child: HtmlWidget(genralList![index]["terms_and_conditions"]),
+                child: HtmlWidget(generalList![index]["terms_and_conditions"]),
               ),
             ],
           ],

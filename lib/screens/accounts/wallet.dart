@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/Components/appbar_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../Config/ApiHelper.dart';
-import 'FAQ_page.dart';
+import '../../Config/api_helper.dart';
+import 'faq_page.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({Key? key}) : super(key: key);
@@ -16,20 +16,20 @@ class WalletPage extends StatefulWidget {
 
 class _WalletPageState extends State<WalletPage> {
   bool isLoading = true;
-  String? UID;
+  String? uID;
   int index = 0;
 
   ///WalletAmountList
   Map? wallet;
   List? walletList;
 
-  double WALLET_AMOUNT = 0;
-  double WALLET_AMOUNT_L = 0;
+  double walletAmount = 0;
+  double walletAmountL = 0;
 
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
+      uID = prefs.getString("UID");
     });
     apiForWalletAmount();
   }
@@ -37,7 +37,7 @@ class _WalletPageState extends State<WalletPage> {
   apiForWalletAmount() async {
 
     var responseWallet = await ApiHelper().post(endpoint: "wallet", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
 
     setState(() {
@@ -48,9 +48,9 @@ class _WalletPageState extends State<WalletPage> {
         debugPrint('Wallet successful:');
         wallet = jsonDecode(responseWallet);
         walletList = wallet!["walletAmount"];
-        WALLET_AMOUNT_L = walletList![index]["wallet_amount"].toDouble();
+        walletAmountL = walletList![index]["wallet_amount"].toDouble();
         // Initialize the WALLET_AMOUNT to the maximum available value initially
-        WALLET_AMOUNT = WALLET_AMOUNT_L;
+        walletAmount = walletAmountL;
       });
     } else {
       debugPrint('wallet api failed:');
@@ -100,7 +100,7 @@ class _WalletPageState extends State<WalletPage> {
             SizedBox(
               height: 10,
             ),
-            Text("Your Wallet Amount Rs."+WALLET_AMOUNT_L.toString(),
+            Text("Your Wallet Amount Rs.$walletAmountL",
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),)
           ],
         ),

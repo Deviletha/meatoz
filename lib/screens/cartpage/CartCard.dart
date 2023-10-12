@@ -1,29 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../Components/text_widget.dart';
 
 class CartTile extends StatelessWidget {
-  final String ItemName;
-  final String Quantity;
-  final String TotalPrice;
-  final String ImagePath;
-  final color;
-  void Function()? onPressed;
-  void Function()? onPressedAdd;
-  void Function()? onPressedLess;
+  final String itemName;
+  final String quantity;
+  final String totalPrice;
+  final String imagePath;
+  // final color;
+  final void Function()? onPressed;
+  final void Function()? onPressedAdd;
+  final void Function()? onPressedLess;
 
-  CartTile({Key? key,
-    required this.ItemName,
-    required this.ImagePath,
-    this.color,
+  const CartTile({Key? key,
+    required this.itemName,
+    required this.imagePath,
+    // this.color,
     required this.onPressed,
     required this.onPressedAdd,
     required this.onPressedLess,
-    required this.TotalPrice,
-    required this.Quantity
+    required this.totalPrice,
+    required this.quantity
   })
       : super(key: key);
 
@@ -50,7 +49,7 @@ class CartTile extends StatelessWidget {
                     child: SizedBox.fromSize(
                       size: Size.fromRadius(50), // Image radius
                       child: CachedNetworkImage(
-                        imageUrl: ImagePath,
+                        imageUrl: imagePath,
                         placeholder: (context, url) =>
                             Container(
                               color: Colors.grey[300],
@@ -73,13 +72,13 @@ class CartTile extends StatelessWidget {
               Column(
                 children: [
                   TextConst(text:
-                  ItemName,
+                  itemName,
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
-                    "₹$TotalPrice",
+                    "₹$totalPrice",
                     style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
@@ -94,7 +93,7 @@ class CartTile extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(left: 20, right: 20),
                         child: TextConst(text:
-                        Quantity,
+                        quantity,
                         ),
                       ),
                       IconButton(

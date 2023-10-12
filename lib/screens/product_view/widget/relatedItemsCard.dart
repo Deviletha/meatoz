@@ -1,20 +1,21 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class RelatedItemTile extends StatelessWidget {
-  final String ItemName;
-  final String Price;
-  final String ImagePath;
-  final color;
-  void Function()? onPressed;
+  final String itemName;
+  final String price;
+  final String imagePath;
+  // final color;
+  final void Function()? onPressed;
 
-  RelatedItemTile({Key? key,
-    required this.ItemName,
-    required this.ImagePath,
-    this.color,
+  const RelatedItemTile({Key? key,
+    required this.itemName,
+    required this.imagePath,
+    // this.color,
     required this.onPressed,
-    required this.Price,
+    required this.price,
     })
       : super(key: key);
 
@@ -33,7 +34,7 @@ class RelatedItemTile extends StatelessWidget {
               child: SizedBox.fromSize(
                 size: Size.fromHeight(90),
                 child: CachedNetworkImage(
-                  imageUrl: ImagePath,
+                  imageUrl: imagePath,
                   placeholder: (context, url) => Container(
                     color: Colors.grey[300],
                   ),
@@ -52,13 +53,13 @@ class RelatedItemTile extends StatelessWidget {
               height: 10,
             ),
             TextConst(
-              text: ItemName,
+              text: itemName,
             ),
             SizedBox(
               height: 10,
             ),
             Text(
-              Price,
+              price,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,

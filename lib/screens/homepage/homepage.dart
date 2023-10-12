@@ -10,12 +10,11 @@ import 'package:meatoz/screens/homepage/PopularItems/poularcard.dart';
 import 'package:meatoz/screens/homepage/TopPicks/TopPicks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../Components/Title_widget.dart';
+import '../../Components/title_widget.dart';
 import '../../Components/text_widget.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
-import 'Notification_page.dart';
 import '../orders/Orderdetails.dart';
 import '../product_view/Product_view.dart';
 import 'Search Page.dart';
@@ -30,7 +29,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String? UID;
+  String? uID;
   bool isLoading = true;
   // bool isLoadingProducts = true;
 
@@ -38,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
+      uID = prefs.getString("UID");
     });
     getMyOrders();
     wishListGet();
@@ -46,7 +45,7 @@ class _HomePageState extends State<HomePage> {
 
   ///BannerList
   Map? banner;
-  List? BannerList;
+  List? bannerList;
 
   ///Our Product List
   Map? products;
@@ -62,29 +61,29 @@ class _HomePageState extends State<HomePage> {
   List? orderList;
 
   ///CategoryList
-  List? categorylist;
+  List? categoryList;
 
   ///ProductList
   String? data;
-  Map? productlist;
-  Map? productlist1;
-  List? Finalproductlist;
-  List? RelatedPrdctList;
+  Map? productList;
+  Map? productList1;
+  List? finalProductList;
+  List? relatedProductList;
 
   ///PopularProductList
-  Map? popularlist;
-  Map? popularlist1;
-  List? Finalpopularlist;
+  Map? popularList;
+  Map? popularList1;
+  List? finalPopularList;
   int index = 0;
 
 
-  Map? prlist;
-  Map? prlist1;
-  List? Prlist;
+  Map? prList;
+  Map? prList1;
+  List? finalPrList;
 
   Future<void> wishListGet() async {
     var response = await ApiHelper().post(endpoint: "wishList/get", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
 
     setState(() {
@@ -94,10 +93,10 @@ class _HomePageState extends State<HomePage> {
     if (response != null) {
       setState(() {
         debugPrint('wishlist api successful:');
-        prlist = jsonDecode(response);
-        prlist1 = prlist!["pagination"];
-        Prlist = prlist1!["pageData"];
-        print(Prlist);
+        prList = jsonDecode(response);
+        prList1 = prList!["pagination"];
+        finalPrList = prList1!["pageData"];
+
       });
     } else {
       debugPrint('api failed:');
@@ -106,7 +105,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getMyOrders() async {
     var response = await ApiHelper().post(endpoint: "common/getMyOrders", body: {
-      "userid": UID,
+      "userid": uID,
       "offset": "0",
       "pageLimit": "1",
     }).catchError((err) {});
@@ -134,7 +133,7 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  ApiForCategory() async {
+  apiForCategory() async {
 
     var response = await ApiHelper()
         .post(endpoint: "categories", body: {}).catchError((err) {});
@@ -147,14 +146,14 @@ class _HomePageState extends State<HomePage> {
     if (response != null) {
       setState(() {
         debugPrint('get products api successful:');
-        categorylist = jsonDecode(response);
+        categoryList = jsonDecode(response);
       });
     } else {
       debugPrint('api failed:');
     }
   }
 
-  ApiforAllProducts() async {
+  apiForAllProducts() async {
 
     var response =
     await ApiHelper().post(endpoint: "products/ByCombination", body: {
@@ -170,17 +169,17 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         debugPrint('get products api successful:');
         data = response.toString();
-        productlist = jsonDecode(response);
-        productlist1 = productlist!["pagination"];
-        Finalproductlist = productlist1!["pageData"];
-        RelatedPrdctList = Finalproductlist![0]["relatedProduct"];
+        productList = jsonDecode(response);
+        productList1 = productList!["pagination"];
+        finalProductList = productList1!["pageData"];
+        relatedProductList = finalProductList![0]["relatedProduct"];
       });
     } else {
       debugPrint('api failed:');
     }
   }
 
-  ApiforBanner() async {
+  apiForBanner() async {
 
     var response = await ApiHelper()
         .post(endpoint: "banner/getOfferBanner", body: {}).catchError((err) {});
@@ -194,7 +193,7 @@ class _HomePageState extends State<HomePage> {
         debugPrint('Banner api successful:');
         data = response.toString();
         banner = jsonDecode(response);
-        BannerList = banner!["banner"];
+        bannerList = banner!["banner"];
       });
     } else {
       debugPrint('api failed:');
@@ -227,7 +226,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  apiForDealofTheDAy() async {
+  apiForDealOfTheDAy() async {
 
     var response = await ApiHelper().post(
         endpoint: "product/dealOfTheDayLimit",
@@ -253,7 +252,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  ApiforPopularProducts() async {
+  apiForPopularProducts() async {
 
     var response =
     await ApiHelper().post(endpoint: "products/ByCombination", body: {
@@ -269,9 +268,9 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         debugPrint('get products api successful:');
         data = response.toString();
-        popularlist = jsonDecode(response);
-        popularlist1 = popularlist!["pagination"];
-        Finalpopularlist = popularlist1!["pageData"];
+        popularList = jsonDecode(response);
+        popularList1 = popularList!["pagination"];
+        finalPopularList = popularList1!["pageData"];
       });
     } else {
       debugPrint('api failed:');
@@ -279,9 +278,9 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  Future<void> addTowishtist(String id, String combination, String amount, BuildContext context) async {
-    if (UID == null) {
-      // User is not logged in, show Snackbar and navigate to login page
+  Future<void> addToWishList(String id, String combination, String amount, BuildContext context) async {
+    if (uID == null) {
+      // User is not logged in, show Snack bar and navigate to login page
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -306,7 +305,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     var response = await ApiHelper().post(endpoint: "wishList/add", body: {
-      "userid": UID,
+      "userid": uID,
       "productid": id,
       "combination": combination,
       "amount": amount,
@@ -333,7 +332,7 @@ class _HomePageState extends State<HomePage> {
 
    removeFromWishList(String id) async {
     var response = await ApiHelper().post(endpoint: "wishList/removeByCombination", body: {
-      "userid": UID,
+      "userid": uID,
       "product_id": id,
 
     }).catchError((err) {});
@@ -359,11 +358,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     setState(() {
-      ApiforPopularProducts();
-      ApiForCategory();
-      ApiforBanner();
-      ApiforAllProducts();
-      apiForDealofTheDAy();
+      apiForPopularProducts();
+      apiForCategory();
+      apiForBanner();
+      apiForAllProducts();
+      apiForDealOfTheDAy();
       apiForOurProducts();
       checkUser();
     });
@@ -378,21 +377,21 @@ class _HomePageState extends State<HomePage> {
         title: Image.asset(
           "assets/logo1.png", height: 36, color: Colors.white,
         ),
-        actions: [
-          IconButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(
-                builder: (context) {
-                  return Notifications();
-                },
-              )),
-              icon: Icon(
-                Icons.notifications_outlined,
-                color: Colors.white,
-              )),
-          SizedBox(
-            width: 15,
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //       onPressed: () => Navigator.push(context, MaterialPageRoute(
+        //         builder: (context) {
+        //           return Notifications();
+        //         },
+        //       )),
+        //       icon: Icon(
+        //         Icons.notifications_outlined,
+        //         color: Colors.white,
+        //       )),
+        //   SizedBox(
+        //     width: 15,
+        //   ),
+        // ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -450,7 +449,7 @@ class _HomePageState extends State<HomePage> {
               height: 15,
             ),
             Container(
-                child: BannerList != null && BannerList!.isNotEmpty ?
+                child: bannerList != null && bannerList!.isNotEmpty ?
                 isLoading
                     ?
                 Shimmer.fromColors(
@@ -458,7 +457,7 @@ class _HomePageState extends State<HomePage> {
                   highlightColor: Colors.grey[100]!,
                   child: CarouselSlider.builder(
                     itemCount:
-                    BannerList == null ? 0 : BannerList?.length,
+                    bannerList == null ? 0 : bannerList?.length,
                     itemBuilder: (context, index, realIndex) {
                       return getBanner(index);
                     },
@@ -481,7 +480,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 )
                     : CarouselSlider.builder(
-                  itemCount: BannerList == null ? 0 : BannerList?.length,
+                  itemCount: bannerList == null ? 0 : bannerList?.length,
                   itemBuilder: (context, index, realIndex) {
                     return getBanner(index);
                   },
@@ -506,7 +505,7 @@ class _HomePageState extends State<HomePage> {
                   highlightColor: Colors.grey[100]!,
                   child: CarouselSlider.builder(
                     itemCount:
-                    BannerList == null ? 0 : BannerList?.length,
+                    bannerList == null ? 0 : bannerList?.length,
                     itemBuilder: (context, index, realIndex) {
                       return getBanner(index);
                     },
@@ -569,7 +568,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     Visibility(
-                      visible: UID == null,
+                      visible: uID == null,
                       child: SizedBox(),
                     ),
                   ],
@@ -612,19 +611,19 @@ class _HomePageState extends State<HomePage> {
                   childAspectRatio: .95,
                 ),
                 itemCount:
-                categorylist == null ? 0 : categorylist?.length,
+                categoryList == null ? 0 : categoryList?.length,
                 itemBuilder: (context, index) => getCategoryRow(index),
               ),
             ),
             Heading(text: "Top Picks For You"),
             Container(
-              child: categorylist != null && categorylist!.isNotEmpty
+              child: categoryList != null && categoryList!.isNotEmpty
                   ? isLoading
                   ? Shimmer.fromColors(
                 baseColor: Colors.grey[300]!,
                 highlightColor: Colors.grey[100]!,
                 child: CarouselSlider.builder(
-                  itemCount: categorylist!.length,
+                  itemCount: categoryList!.length,
                   itemBuilder: (context, index, realIndex) {
                     return getCategoryImage(index);
                   },
@@ -646,7 +645,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               )
                   : CarouselSlider.builder(
-                itemCount: categorylist!.length,
+                itemCount: categoryList!.length,
                 itemBuilder: (context, index, realIndex) {
                   return getCategoryImage(index);
                 },
@@ -778,9 +777,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               )
                   : CarouselSlider.builder(
-                itemCount: Finalpopularlist == null
+                itemCount: finalPopularList == null
                     ? 0
-                    : Finalpopularlist?.length,
+                    : finalPopularList?.length,
                 itemBuilder: (context, index, realIndex) {
                   return getPopularRow(index);
                 },
@@ -836,9 +835,9 @@ class _HomePageState extends State<HomePage> {
                   crossAxisCount: 2,
                   childAspectRatio: .65,
                 ),
-                itemCount: Finalproductlist == null
+                itemCount: finalProductList == null
                     ? 0
-                    : Finalproductlist?.length,
+                    : finalProductList?.length,
                 itemBuilder: (context, index) => getProducts(index),
               ),
             ),
@@ -849,62 +848,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getPopularRow(int index) {
-    if (Finalpopularlist == null || Finalpopularlist![index] == null) {
+    if (finalPopularList == null || finalPopularList![index] == null) {
       return Container();
     }
-    var image = UrlConstants.base + (Finalpopularlist![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (finalPopularList![index]["image"] ?? "").toString();
     var itemName =
-    (Finalpopularlist![index]["combinationName"] ?? "").toString();
+    (finalPopularList![index]["combinationName"] ?? "").toString();
     return PopularCard(
-        ImagePath: image,
+        imagePath: image,
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
-                serveCapacity: Finalpopularlist![index]["serving_cupacity"].toString(),
-                noOfPiece: Finalpopularlist![index]["no_of_piece"].toString(),
-                stock: Finalpopularlist![index]["stock"].toString(),
-                recipe: Finalpopularlist![index]["hint"].toString(),
+                serveCapacity: finalPopularList![index]["serving_cupacity"].toString(),
+                noOfPiece: finalPopularList![index]["no_of_piece"].toString(),
+                stock: finalPopularList![index]["stock"].toString(),
+                recipe: finalPopularList![index]["hint"].toString(),
                 position: index,
-                id: Finalpopularlist![index]["id"].toString(),
-                productname:
-                Finalpopularlist![index]["combinationName"].toString(),
+                id: finalPopularList![index]["id"].toString(),
+                productName:
+                finalPopularList![index]["combinationName"].toString(),
                 url: image,
-                description: Finalpopularlist![index]["description"].toString(),
-                amount: Finalpopularlist![index]["offerPrice"].toString(),
+                description: finalPopularList![index]["description"].toString(),
+                amount: finalPopularList![index]["offerPrice"].toString(),
                 combinationId:
-                Finalpopularlist![index]["combinationId"].toString(),
-                psize: Finalpopularlist![index]["size_attribute_name"].toString(),
+                finalPopularList![index]["combinationId"].toString(),
+                pSize: finalPopularList![index]["size_attribute_name"].toString(),
               ),
             ),
           );
         },
-        ItemName: itemName);
+        itemName: itemName);
   }
 
   Widget getCategoryImage(int index) {
-    if (categorylist == null) {
+    if (categoryList == null) {
       return Shimmer.fromColors(
         baseColor: Colors.grey[300]!,
         highlightColor: Colors.grey[100]!,
         child: Container(),
       );
     }
-    var image = UrlConstants.base + (categorylist![index]["image"] ?? "").toString();
+    var image = UrlConstants.base + (categoryList![index]["image"] ?? "").toString();
 
     return TopPicksCard(
-      ImagePath: image,
+      imagePath: image,
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Category_View(
-              // url: image,
-              itemname: categorylist![index]["name"].toString(),
-              // description: categorylist![index]["description"].toString(),
-              // price: categorylist![index]["price"].toString(),
-              id: categorylist![index]["id"],
+            builder: (context) => CategoryView(
+              itemName: categoryList![index]["name"].toString(),
+              id: categoryList![index]["id"],
             ),
           ),
         );
@@ -913,12 +909,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getBanner(int index) {
-    if (BannerList == null || BannerList!.isEmpty ) {
+    if (bannerList == null || bannerList!.isEmpty ) {
       return Center(
         child: CircularProgressIndicator(color: Colors.teal[900],),
       );
     }
-    var image = UrlConstants.base + BannerList![index]["image"];
+    var image = UrlConstants.base + bannerList![index]["image"];
 
     return Container(
       height: MediaQuery.of(context).size.height / 6,
@@ -933,8 +929,8 @@ class _HomePageState extends State<HomePage> {
   Widget getOrderList(int index) {
     var image = UrlConstants.base + orderList![index]["image"].toString();
     return OrderCard(
-      CartName: orderList![index]["cartName"].toString(),
-      ImagePath: image,
+      cartName: orderList![index]["cartName"].toString(),
+      imagePath: image,
       onTap: () {
         Navigator.push(
           context,
@@ -949,25 +945,25 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget getCategoryRow(int index) {
-    if (categorylist == null) {
-      return Container(); // Handle the case when categorylist is null
+    if (categoryList == null) {
+      return Container(); // Handle the case when category-list is null
     }
-    var image = UrlConstants.base + (categorylist![index]["image"] ?? "").toString();
-    var itemName = categorylist![index]["name"].toString();
+    var image = UrlConstants.base + (categoryList![index]["image"] ?? "").toString();
+    var itemName = categoryList![index]["name"].toString();
 
     return CategoryCard(
-      ItemName: itemName,
-      ImagePath: image,
+      itemName: itemName,
+      imagePath: image,
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => Category_View(
+            builder: (context) => CategoryView(
               // url: image,
-              itemname: categorylist![index]["name"].toString(),
-              // description: categorylist![index]["description"].toString(),
-              // price: categorylist![index]["price"].toString(),
-              id: categorylist![index]["id"],
+              itemName: categoryList![index]["name"].toString(),
+              // description: categoryList![index]["description"].toString(),
+              // price: categoryList![index]["price"].toString(),
+              id: categoryList![index]["id"],
             ),
           ),
         );
@@ -977,16 +973,16 @@ class _HomePageState extends State<HomePage> {
 
   Widget getProducts(int index1) {
 
-    if (Finalproductlist == null || Finalproductlist![index1] == null) {
+    if (finalProductList == null || finalProductList![index1] == null) {
       return Container();
     }
-    var image = UrlConstants.base + (Finalproductlist![index1]["image"] ?? "").toString();
-    var price = "₹${Finalproductlist![index1]["totalPrice"] ?? ""}";
-    var offerPrice = Finalproductlist![index1]["offerPrice"].toString() ?? "";
-    var PID = (Finalproductlist![index1]["id"] ?? "").toString();
-    var CombID = (Finalproductlist![index1]["combinationId"] ?? "").toString();
+    var image = UrlConstants.base + (finalProductList![index1]["image"] ?? "").toString();
+    var price = "₹${finalProductList![index1]["totalPrice"] ?? ""}";
+    var offerPrice = (finalProductList![index1]["offerPrice"] ?? "").toString();
+    var pId = (finalProductList![index1]["id"] ?? "").toString();
+    var combID = (finalProductList![index1]["combinationId"] ?? "").toString();
 
-    bool isInWishlist = Prlist != null && Prlist!.any((item) => item['combinationId'].toString() == CombID);
+    bool isInWishlist = finalPrList != null && finalPrList!.any((item) => item['combinationId'].toString() == combID);
 
     return
       Padding(
@@ -1002,19 +998,19 @@ class _HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => ProductView(
-                    serveCapacity: Finalpopularlist![index]["serving_cupacity"].toString(),
-                    noOfPiece: Finalpopularlist![index]["no_of_piece"].toString(),
-                    stock: Finalproductlist![index1]["stock"].toString(),
-                    recipe: Finalproductlist![index1]["hint"].toString(),
+                    serveCapacity: finalProductList![index]["serving_cupacity"].toString(),
+                    noOfPiece: finalProductList![index]["no_of_piece"].toString(),
+                    stock: finalProductList![index1]["stock"].toString(),
+                    recipe: finalProductList![index1]["hint"].toString(),
                     position: index1,
-                    id: PID,
-                    productname:
-                    Finalproductlist![index1]["combinationName"].toString(),
+                    id: pId,
+                    productName:
+                    finalProductList![index1]["combinationName"].toString(),
                     url: image,
-                    description: Finalproductlist![index1]["description"].toString(),
-                    amount: Finalproductlist![index1]["offerPrice"].toString(),
-                    combinationId: CombID,
-                    psize: Finalproductlist![index1]["size_attribute_name"].toString(),
+                    description: finalProductList![index1]["description"].toString(),
+                    amount: finalProductList![index1]["offerPrice"].toString(),
+                    combinationId: combID,
+                    pSize: finalProductList![index1]["size_attribute_name"].toString(),
                   ),
                 ),
               );
@@ -1055,11 +1051,11 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       TextConst(
-                          text: Finalproductlist![index1]["combinationName"].toString(),),
+                          text: finalProductList![index1]["combinationName"].toString(),),
                       SizedBox(
                         height: 10,
                       ),
-                      Text(Finalproductlist![index1]["description"].toString(),
+                      Text(finalProductList![index1]["description"].toString(),
                           maxLines: 2,
                           style: TextStyle(
                               fontSize: 12,
@@ -1081,7 +1077,7 @@ class _HomePageState extends State<HomePage> {
                             width: 8,
                           ),
                           Text(
-                            "₹"+ offerPrice,
+                            "₹$offerPrice",
                             // WID,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
@@ -1105,10 +1101,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   onPressed: () {
                     if (isInWishlist) {
-                      removeFromWishList(CombID);
+                      removeFromWishList(combID);
                       wishListGet();
                     } else {
-                      addTowishtist(PID, CombID, offerPrice, context);
+                      addToWishList(pId, combID, offerPrice, context);
                       wishListGet();
                     }
                   },
@@ -1127,10 +1123,10 @@ class _HomePageState extends State<HomePage> {
     var image = UrlConstants.base + (dealOfTheDayList![index]["image"] ?? "").toString();
     var price = "₹${dealOfTheDayList![index]["totalPrice"] ?? ""}";
     var offerPrice = (dealOfTheDayList![index]["offerPrice"] ?? "" ).toString() ;
-    var PID = (dealOfTheDayList![index]["id"] ?? "").toString();
-    var CombID = (dealOfTheDayList![index]["combinationId"] ?? "").toString();
+    var pId = (dealOfTheDayList![index]["id"] ?? "").toString();
+    var combID = (dealOfTheDayList![index]["combinationId"] ?? "").toString();
 
-    bool isInWishlist = Prlist != null && Prlist!.any((item) => item['combinationId'].toString() == CombID);
+    bool isInWishlist = finalPrList != null && finalPrList!.any((item) => item['combinationId'].toString() == combID);
 
 
     return
@@ -1152,13 +1148,13 @@ class _HomePageState extends State<HomePage> {
                     stock: dealOfTheDayList![index]["stock"].toString(),
                     recipe: "Recipe not available for this product",
                     position: index,
-                    id: PID,
-                    productname: dealOfTheDayList![index]["name"].toString(),
+                    id: pId,
+                    productName: dealOfTheDayList![index]["name"].toString(),
                     url: image,
                     description: dealOfTheDayList![index]["description"].toString(),
                     amount: dealOfTheDayList![index]["offerPrice"].toString(),
-                    combinationId: CombID,
-                    psize: dealOfTheDayList![index]["size_attribute_name"].toString(),
+                    combinationId: combID,
+                    pSize: dealOfTheDayList![index]["size_attribute_name"].toString(),
                   ),
                 ),
               );
@@ -1237,11 +1233,11 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () {
                               if (isInWishlist) {
                                 // The item is in the wishlist, you may want to remove it.
-                                removeFromWishList(CombID);
+                                removeFromWishList(combID);
                                 wishListGet();
                               } else {
                                 // The item is not in the wishlist, you may want to add it.
-                                addTowishtist(PID, CombID, offerPrice, context);
+                                addToWishList(pId, combID, offerPrice, context);
                                 wishListGet();
                               }
                             },
@@ -1279,10 +1275,10 @@ class _HomePageState extends State<HomePage> {
     var image = UrlConstants.base + (ourProductList![index2]["image"] ?? "").toString();
     var price = "₹${ourProductList![index2]["totalPrice"] ?? ""}";
     var offerPrice = (ourProductList![index2]["offerPrice"]  ?? "").toString();
-    var PID = (ourProductList![index2]["id"] ?? "").toString();
-    var CombID = (ourProductList![index2]["combinationId"] ?? "").toString();
+    var pId = (ourProductList![index2]["id"] ?? "").toString();
+    var combID = (ourProductList![index2]["combinationId"] ?? "").toString();
 
-    bool isInWishlist = Prlist != null && Prlist!.any((item) => item['combinationId'].toString() == CombID);
+    bool isInWishlist = finalPrList != null && finalPrList!.any((item) => item['combinationId'].toString() == combID);
 
 
     return
@@ -1304,13 +1300,13 @@ class _HomePageState extends State<HomePage> {
                     stock: ourProductList![index2]["stock"].toString(),
                     recipe: "Recipe not available for this item",
                     position: index2,
-                    id: PID,
-                    productname: ourProductList![index2]["name"].toString(),
+                    id: pId,
+                    productName: ourProductList![index2]["name"].toString(),
                     url: image,
                     description: ourProductList![index2]["description"].toString(),
                     amount: ourProductList![index2]["offerPrice"].toString(),
-                    combinationId: CombID,
-                    psize: ourProductList![index2]["size_attribute_name"].toString(),
+                    combinationId: combID,
+                    pSize: ourProductList![index2]["size_attribute_name"].toString(),
                   ),
                 ),
               );
@@ -1398,11 +1394,11 @@ class _HomePageState extends State<HomePage> {
                             ),
                             onPressed: () {
                               if (isInWishlist) {
-                                removeFromWishList(CombID);
+                                removeFromWishList(combID);
                                 wishListGet();
                               } else {
                                 // The item is not in the wishlist, you may want to add it.
-                                addTowishtist(PID, CombID, offerPrice, context);
+                                addToWishList(pId, combID, offerPrice, context);
                                 wishListGet();
                               }
                             },

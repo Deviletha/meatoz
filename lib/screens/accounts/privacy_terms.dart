@@ -4,7 +4,7 @@ import '../../Components/appbar_text.dart';
 import 'privacy_policy.dart';
 import 'refund_policy.dart';
 import 'terms&conditions.dart';
-import 'widgets/AccountsCustomCard.dart';
+import 'widgets/accounts_custom_card.dart';
 
 class Privacy extends StatefulWidget {
   const Privacy({Key? key}) : super(key: key);
@@ -14,8 +14,6 @@ class Privacy extends StatefulWidget {
 }
 
 class _PrivacyState extends State<Privacy> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,26 +25,25 @@ class _PrivacyState extends State<Privacy> {
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              colors: [
-                Colors.grey.shade400,
-                Colors.grey.shade200,
-                Colors.grey.shade50,
-                Colors.grey.shade200,
-                Colors.grey.shade400,
-              ],
-            )),
-        child
-            : ListView(
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+          colors: [
+            Colors.grey.shade400,
+            Colors.grey.shade200,
+            Colors.grey.shade50,
+            Colors.grey.shade200,
+            Colors.grey.shade400,
+          ],
+        )),
+        child: ListView(
           children: [
             AccountCustomTile(
               title: "Privacy Policy",
               icon: Iconsax.security,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return PrivacyPolicy();
-                  })),
+                return PrivacyPolicy();
+              })),
             ),
             Divider(),
             AccountCustomTile(
@@ -54,8 +51,8 @@ class _PrivacyState extends State<Privacy> {
               icon: Iconsax.security_time,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return TermsAndConditions();
-                  })),
+                return TermsAndConditions();
+              })),
             ),
             Divider(),
             AccountCustomTile(
@@ -63,11 +60,11 @@ class _PrivacyState extends State<Privacy> {
               icon: Iconsax.security_card,
               onTap: () =>
                   Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return RefundPolicy();
-                  })),
+                return RefundPolicy();
+              })),
             ),
             Divider(),
-            ],
+          ],
         ),
       ),
     );

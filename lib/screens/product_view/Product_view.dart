@@ -6,15 +6,15 @@ import 'package:meatoz/screens/product_view/widget/productCard.dart';
 import 'package:meatoz/screens/product_view/widget/relatedItemsCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../Components/Alertbox_text.dart';
-import '../../Components/Title_widget.dart';
+import '../../Components/alertbox_text.dart';
+import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
 
 class ProductView extends StatefulWidget {
-  final String productname;
+  final String productName;
   final String noOfPiece;
   final String serveCapacity;
   final String url;
@@ -22,20 +22,20 @@ class ProductView extends StatefulWidget {
   final String amount;
   final String id;
   final String combinationId;
-  final String psize;
+  final String pSize;
   final int position;
   final String recipe;
   final String stock;
 
-  ProductView(
+  const ProductView(
       {Key? key,
-      required this.productname,
+      required this.productName,
       required this.url,
       required this.description,
       required this.amount,
       required this.id,
       required this.combinationId,
-      required this.psize,
+      required this.pSize,
       required this.position,
       required this.stock,
       required this.recipe, required this.noOfPiece, required this.serveCapacity})
@@ -49,53 +49,48 @@ class _ProductViewState extends State<ProductView> {
 
   ///ProductList
   String? data;
-  Map? productlist;
-  Map? productlist1;
-  List? Finalproductlist;
-  List? RelatedPrdctList;
+  Map? productList;
+  Map? productList1;
+  List? finalProductList;
+  List? relatedProductList;
 
-  bool isLoading = false;
-  bool isLoadingProducts = true;
+  bool isLoading = true;
 
   int index = 0;
-  Map? clist;
-  List? CartList;
-  String? UID;
-  String? PRODUCTID;
-  String? PRODUCTNAME;
-  String? PRICE;
-  String? PSIZE;
-  String? COMBINATIONID;
-  String? STOCK;
+
+  String? uID;
+  String? productID;
+  String? productName;
+  String? offerPrice;
+  String? pSize;
+  String? combinationId;
 
   @override
   void initState() {
     checkUser();
-    ApiforAllProducts();
+    apiForAllProducts();
     super.initState();
   }
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
+    uID = prefs.getString("UID");
   }
 
-  addToCart(String PrID, String PrName, String PrPrice, String Psize,
-      String CombID) async {
+  addToCart(String prID, String prName, String prPrice, String pSize,
+      String combID) async {
     var response = await ApiHelper().post(endpoint: "cart/add", body: {
-      "userid": UID,
-      "productid": PrID,
-      "product": PrName,
-      "price": PrPrice,
+      "userid": uID,
+      "productid": prID,
+      "product": prName,
+      "price": prPrice,
       "quantity": "1",
-      "psize": Psize,
-      "combination_id": CombID
+      "psize": pSize,
+      "combination_id": combID
     }).catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('cartpage successful:');
-        // clist = jsonDecode(response);
-        // CartList = clist!["cart"];
+        debugPrint('cart page successful:');
 
         Fluttertoast.showToast(
           msg: "Item added to Cart",
@@ -119,19 +114,18 @@ class _ProductViewState extends State<ProductView> {
     if (loginId != null && loginId.isNotEmpty) {
       // User is logged in, proceed with adding to cart
       var response = await ApiHelper().post(endpoint: "cart/add", body: {
-        "userid": UID,
+        "userid": uID,
         "productid": widget.id.toString(),
-        "product": widget.productname.toString(),
+        "product": widget.productName.toString(),
         "price": widget.amount.toString(),
         "quantity": "1",
-        "psize": widget.psize.toString(),
+        "psize": widget.pSize.toString(),
         "combination_id": widget.combinationId.toString()
       }).catchError((err) {});
       if (response != null) {
         setState(() {
-          debugPrint('cartpage successful:');
-          // clist = jsonDecode(response);
-          // CartList = clist!["cart"];
+          debugPrint('cart page successful:');
+
 
           var stock = widget.stock.toString();
           bool isStockAvailable = int.parse(stock) > 0;
@@ -187,11 +181,7 @@ class _ProductViewState extends State<ProductView> {
     );
   }
 
-  ApiforAllProducts() async {
-    setState(() {
-      isLoading = true;
-    });
-
+  apiForAllProducts() async {
     var response =
         await ApiHelper().post(endpoint: "products/ByCombination", body: {
       "offset": "0",
@@ -206,11 +196,11 @@ class _ProductViewState extends State<ProductView> {
       setState(() {
         debugPrint('get products api successful:');
         data = response.toString();
-        productlist = jsonDecode(response);
-        productlist1 = productlist!["pagination"];
-        Finalproductlist = productlist1!["pageData"];
-        RelatedPrdctList = Finalproductlist![widget.position]["relatedProduct"];
-        print(RelatedPrdctList);
+        productList = jsonDecode(response);
+        productList1 = productList!["pagination"];
+        finalProductList = productList1!["pageData"];
+        relatedProductList = finalProductList![widget.position]["relatedProduct"];
+
       });
     } else {
       debugPrint('api failed:');
@@ -223,7 +213,7 @@ class _ProductViewState extends State<ProductView> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: widget.productname,
+          text: widget.productName,
         ),
         actions: [
           IconButton(
@@ -248,14 +238,14 @@ class _ProductViewState extends State<ProductView> {
           children: [
             ProductViewTile(
                 noOfPiece: widget.noOfPiece,
-                servingCaapcity: widget.serveCapacity,
-                ItemName: widget.productname.toString(),
-                ImagePath: widget.url,
+                servingCapacity: widget.serveCapacity,
+                itemName: widget.productName.toString(),
+                imagePath: widget.url,
                 onPressed: () {
                   checkLoggedIn(context);
                 },
-                Price: widget.amount,
-                Description: widget.description.toString()),
+                price: widget.amount,
+                description: widget.description.toString()),
             Heading(
               text: "Related Products",
             ),
@@ -264,9 +254,9 @@ class _ProductViewState extends State<ProductView> {
                     baseColor: Colors.grey[300]!,
                     highlightColor: Colors.grey[100]!,
                     child: CarouselSlider.builder(
-                      itemCount: RelatedPrdctList == null
+                      itemCount: relatedProductList == null
                           ? 0
-                          : RelatedPrdctList?.length,
+                          : relatedProductList?.length,
                       itemBuilder: (context, index, realIndex) {
                         return getProducts(index);
                       },
@@ -289,7 +279,7 @@ class _ProductViewState extends State<ProductView> {
                   )
                 : CarouselSlider.builder(
                     itemCount:
-                        RelatedPrdctList == null ? 0 : RelatedPrdctList?.length,
+                    relatedProductList == null ? 0 : relatedProductList?.length,
                     itemBuilder: (context, index, realIndex) {
                       return getProducts(index);
                     },
@@ -316,26 +306,26 @@ class _ProductViewState extends State<ProductView> {
   }
 
   Widget getProducts(int index) {
-    if (RelatedPrdctList == null || RelatedPrdctList![index] == null) {
+    if (relatedProductList == null || relatedProductList![index] == null) {
       return Container();
     }
-    var image = UrlConstants.base + (RelatedPrdctList![index]["image"] ?? "").toString();
-    var price = "₹${RelatedPrdctList![index]["offerPrice"] ?? ""}";
+    var image = UrlConstants.base + (relatedProductList![index]["image"] ?? "").toString();
+    var price = "₹${relatedProductList![index]["offerPrice"] ?? ""}";
 
-    var stock = RelatedPrdctList![index]["stock"];
+    var stock = relatedProductList![index]["stock"];
     bool isStockAvailable = stock != null && int.parse(stock.toString()) > 0;
 
     return RelatedItemTile(
-        ItemName: RelatedPrdctList![index]["name"].toString(),
-        ImagePath: image,
+      itemName: relatedProductList![index]["name"].toString(),
+      imagePath: image,
         onPressed: () {
           if (isStockAvailable) {
-            PRODUCTID = RelatedPrdctList![index]["productID"].toString();
-            PRODUCTNAME = RelatedPrdctList![index]["name"].toString();
-            PRICE = RelatedPrdctList![index]["offerPrice"].toString();
-            PSIZE = RelatedPrdctList![index]["size_attribute_name"].toString();
-            COMBINATIONID = RelatedPrdctList![index]["combinationid"].toString();
-            addToCart(PRODUCTID!, PRODUCTNAME!, PRICE!, PSIZE!, COMBINATIONID!);
+            productID = relatedProductList![index]["productID"].toString();
+            productName = relatedProductList![index]["name"].toString();
+            offerPrice = relatedProductList![index]["offerPrice"].toString();
+            pSize = relatedProductList![index]["size_attribute_name"].toString();
+            combinationId = relatedProductList![index]["combinationid"].toString();
+            addToCart(productID!, productName!, offerPrice!, pSize!, combinationId!);
           } else {
             Fluttertoast.showToast(
                 msg: "Product is out of stock!",
@@ -346,7 +336,7 @@ class _ProductViewState extends State<ProductView> {
                 fontSize: 16.0);
           }
         },
-        Price: price,
+      price: price,
         );
   }
 }

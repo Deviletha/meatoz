@@ -5,9 +5,9 @@ class OfferCard extends StatelessWidget {
   final String description;
   final String image;
   final bool isApplied;
-  void Function()? onPressed;
+  final void Function()? onPressed;
 
-  OfferCard({
+  const OfferCard({
     Key? key,
     required this.title,
     required this.description,

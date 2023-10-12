@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../../../Components/appbar_text.dart';
-import '../../../Config/ApiHelper.dart';
+import '../../../Config/api_helper.dart';
 
 class PrivacyPolicy extends StatefulWidget {
   const PrivacyPolicy({Key? key}) : super(key: key);
@@ -13,7 +13,7 @@ class PrivacyPolicy extends StatefulWidget {
 
 class _PrivacyPolicyState extends State<PrivacyPolicy> {
   Map? list;
-  List? genralList;
+  List? generalList;
   int index = 0;
   bool isLoading = true;
 
@@ -29,9 +29,9 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
         .catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('general detailsapi successful:');
+        debugPrint('general details api successful:');
         list = jsonDecode(response);
-        genralList = list!["general_info"];
+        generalList = list!["general_info"];
       });
     } else {
       debugPrint('api failed:');
@@ -66,10 +66,10 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
             ? Center(child: CircularProgressIndicator()) // Show a CircularProgressIndicator while loading
             : ListView(
           children: [
-            if (genralList != null) ...[
+            if (generalList != null) ...[
               Padding(
                 padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-                child: HtmlWidget(genralList![index]["privacy_policy"]),
+                child: HtmlWidget(generalList![index]["privacy_policy"]),
               ),
             ],
           ],

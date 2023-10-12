@@ -6,21 +6,21 @@ import 'package:meatoz/screens/placeOrder/widget/offer_card.dart';
 import 'package:meatoz/screens/placeOrder/widget/subscription_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../Components/Amount_Row.dart';
-import '../../Components/CustomRow.dart';
-import '../../Components/Title_widget.dart';
+import '../../Components/amount_row.dart';
+import '../../Components/custom_row.dart';
+import '../../Components/title_widget.dart';
 import '../../Components/text_widget.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../orders/Orders_page.dart';
 
 class PlaceOrder extends StatefulWidget {
   final String id;
-  final String picode;
+  final String pinCode;
 
   const PlaceOrder({
     Key? key,
     required this.id,
-    required this.picode,
+    required this.pinCode,
   }) : super(key: key);
 
   @override
@@ -29,58 +29,55 @@ class PlaceOrder extends StatefulWidget {
 
 class _PlaceOrderState extends State<PlaceOrder> {
   bool isContactless = false;
-  String? CONTACTLESS;
-  String? UID;
+  String? contactLess;
+  String? uID;
   int index = 0;
 
   final couponController = TextEditingController();
 
-  ///OrderList
-  Map? order;
-  Map? orderlist;
-  List? FinalOrderlist;
+  // ///OrderList
+  // Map? order;
+  // Map? orderList;
+  // List? FinalOrderList;
 
   ///Delivery slot List
   Map? slot;
-  Map? slotlist;
+  Map? slotList;
   List? todaySlotList;
   List? tomorrowSlotList;
 
   ///General data's list
-  String? SLOTID;
-  String? SLOTDATE;
-  String? SHIPPINGCHARGE;
-  String? TOTALSHIPPINGCHARGE;
-  String? PACKINGCHARGE;
-  String? SUBTOTAL;
-  String? SUBTOTALFORAPI;
-  String? CARTTOTAL;
-  String? GRANDTOTAL;
-  String? WALLET_AMOUNT_VALUE;
-  String? DISCOUNTID;
-  String? PRODUCTID;
-  String? SUBTOTALFIRSTPURCHASE;
+  String? slotId;
+  String? slotDate;
+  String? shipCharge;
+  String? totalShippingCharge;
+  String? packingCharge;
+  String? subTotal;
+  String? subTotalForApi;
+  String? grandTotal;
+  String? discountId;
+  String? subTotalFirstPurchase;
 
-  int GRNDAMNT = 0;
-  double DSCOUNTAMOUNT = 0;
-  String? DiscountAmountTotal;
-  double NETPAYABLEAFTERDISCOUNT = 0;
-  double WALLET_AMOUNT = 0;
-  double WALLET_AMOUNT_L = 0;
+  int grandAmount = 0;
+  double discountAmount1 = 0;
+  String? discountAmountTotal;
+  double netPayableAfterDiscount = 0;
+  double walletAmount = 0;
+  double walletAmountL = 0;
 
   String? expressDeliveryAvailable;
   String? expressDeliveryStatus;
 
   Map? list;
-  List? genralList;
+  List? generalList;
 
   ///CartList
-  Map? clist;
-  List? CartList;
+  Map? cartList;
+  List? finalCartList;
   List? cartDiscountList;
   List? cartDiscountAppliedList;
 
-  String? CARTID;
+  String? cartId;
 
   String? discountType;
   String? discountType1;
@@ -98,13 +95,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
   List? walletList;
 
   ///Pin codeList
-  Map? pincode;
-  List? pincodeList;
+  Map? pinCode;
+  List? pinCodeList;
 
   double subtotal = 0;
   double subtotal1 = 0;
 
-  late double subtotalfrmfirstpuchase;
+  late double subtotalFromFirstPurchase;
 
   int discountAmount = 0;
 
@@ -126,12 +123,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
 
   Map? sub1;
-  List? SubdetailList;
+  List? subDetailList;
 
-  getSubscriptionplan() async {
+  getSubscriptionPlan() async {
     var response = await ApiHelper().post(
         endpoint: "subscriptionPlan/getUserPlan",
-        body: {"userid": UID}).catchError((err) {});
+        body: {"userid": uID}).catchError((err) {});
 
     setState(() {
       isLoading = false;
@@ -140,43 +137,42 @@ class _PlaceOrderState extends State<PlaceOrder> {
       setState(() {
         debugPrint('Subscription detail api successful:');
         sub1 = jsonDecode(response);
-        SubdetailList = sub1!["planDetails"];
-        print("subs plan: "+response);
+        subDetailList = sub1!["planDetails"];
+
       });
     } else {
       debugPrint('api failed:');
     }
   }
-  checkPincode() async {
+  checkPinCode() async {
     var response = await ApiHelper().post(
       endpoint: "postal/checkAvailabilityAtCheckout",
       body: {
-        "userid": UID,
-        "pincode": widget.picode,
+        "userid": uID,
+        "pincode": widget.pinCode,
       },
     ).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('check pin code api successful:');
-        pincode = json.decode(response);
-        pincodeList = pincode!["orderData"];
-        print(pincodeList);
+        pinCode = json.decode(response);
+        pinCodeList = pinCode!["orderData"];
+        // print(pinCodeList);
 
-        discountAmount = pincodeList![0]["first_purchase_discount"];
-        print(discountAmount);
-        // apiForCart();
+        discountAmount = pinCodeList![0]["first_purchase_discount"];
+        // print(discountAmount);
 
-        int pincodeAvailability = pincodeList![0]["pincode_availability"];
-        if (pincodeAvailability == 0) {
+        int pinCodeAvailability = pinCodeList![0]["pincode_availability"];
+        if (pinCodeAvailability == 0) {
           hidePlaceOrderButton = true;
           showCustomSnackBar(context);
         }
 
         expressDeliveryAvailable =
-            pincodeList![0]["express_delivery_available"];
+        pinCodeList![0]["express_delivery_available"];
 
         if (expressDeliveryAvailable == "available") {
-          int expressDelivery = pincodeList![0]["express_delivery"];
+          int expressDelivery = pinCodeList![0]["express_delivery"];
           if (expressDelivery == 1) {
             expressDeliveryStatus = "available";
           } else {
@@ -196,29 +192,27 @@ class _PlaceOrderState extends State<PlaceOrder> {
       SnackBar(
         backgroundColor: Colors.red[400],
         duration: Duration(seconds: 5),
-        content: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                "Delivery is not available in this pincode.",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text(
+              "Delivery is not available in this pincode.",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 4),
-              Text(
-                "Please use another address.",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              "Please use another address.",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -260,22 +254,22 @@ class _PlaceOrderState extends State<PlaceOrder> {
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
+      uID = prefs.getString("UID");
     });
     deliverySlotApi();
     setVisibilityFlags();
     generalDetailsApi();
     apiForWalletAmount();
-    apiForCheckplan();
-    checkPincode();
-    getSubscriptionplan();
+    apiForCheckPlan();
+    checkPinCode();
+    getSubscriptionPlan();
     apiForCart();
   }
 
   apiForCart() async {
-    if (UID != null) {
+    if (uID != null) {
       var response = await ApiHelper().post(endpoint: "cart/get", body: {
-        "userid": UID,
+        "userid": uID,
       }).catchError((err) {});
 
       setState(() {
@@ -284,18 +278,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
       if (response != null) {
         setState(() {
-          debugPrint('cartpage successful:');
-          clist = jsonDecode(response);
-          CartList = clist!["cart"];
-          cartDiscountList = clist!["cartDiscountForAllProduct"];
-          cartDiscountAppliedList = clist!["cartAppliedDiscounts"];
+          debugPrint('cart page successful:');
+          cartList = jsonDecode(response);
+          finalCartList = cartList!["cart"];
+          cartDiscountList = cartList!["cartDiscountForAllProduct"];
+          cartDiscountAppliedList = cartList!["cartAppliedDiscounts"];
 
 
           if (cartDiscountAppliedList != null && cartDiscountAppliedList!.isNotEmpty) {
-            CARTID = cartDiscountAppliedList![0]["cartID"].toString();
-            DSCOUNTAMOUNT = cartDiscountAppliedList![0]["discountAmount"].toDouble();
-            print("dscnt amount: $DSCOUNTAMOUNT");
-            DiscountAmountTotal  = DSCOUNTAMOUNT.toString();
+            cartId = cartDiscountAppliedList![0]["cartID"].toString();
+            discountAmount1 = cartDiscountAppliedList![0]["discountAmount"].toDouble();
+            // print("discount amount: $discountAmount1");
+            discountAmountTotal  = discountAmount1.toString();
 
           }
 
@@ -308,35 +302,35 @@ class _PlaceOrderState extends State<PlaceOrder> {
             }
           }
 
-          if (CartList != null && CartList!.isNotEmpty) {
+          if (finalCartList != null && finalCartList!.isNotEmpty) {
             if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
-              DISCOUNTID = cartDiscountList![index]["id"].toString();
+              discountId = cartDiscountList![index]["id"].toString();
             } else {
-              DISCOUNTID = "0";
+              discountId = "0";
             }
 
           }
 
 
-          if (CartList != null && CartList!.isNotEmpty) {
-            for (int i = 0; i < CartList!.length; i++) {
-              int price = CartList![i]["price"];
+          if (finalCartList != null && finalCartList!.isNotEmpty) {
+            for (int i = 0; i < finalCartList!.length; i++) {
+              int price = finalCartList![i]["price"];
               subtotal1 = subtotal1 + price;
             }
           }
 
-          subtotalfrmfirstpuchase = discountAmount.toDouble();
-          print(subtotalfrmfirstpuchase);
-          SUBTOTALFIRSTPURCHASE = subtotalfrmfirstpuchase.toString();
-          subtotal = subtotal1 - WALLET_AMOUNT - subtotalfrmfirstpuchase;
-          SUBTOTAL = subtotal.toString();
-          SUBTOTALFORAPI = subtotal1.toString();
-          print("sub total from cart: "+SUBTOTALFORAPI!);
+          subtotalFromFirstPurchase = discountAmount.toDouble();
+          // print(subtotalFromFirstPurchase);
+          subTotalFirstPurchase = subtotalFromFirstPurchase.toString();
+          subtotal = subtotal1 - walletAmount - subtotalFromFirstPurchase;
+          subTotal = subtotal.toString();
+          subTotalForApi = subtotal1.toString();
+          // print("sub total from cart: ${subTotalForApi!}");
 
-          if (subtotalfrmfirstpuchase != 0) {
+          if (subtotalFromFirstPurchase != 0) {
             Fluttertoast.showToast(
               msg:
-                  "First Purchase Offer Discount Applied Rs. $subtotalfrmfirstpuchase",
+                  "First Purchase Offer Discount Applied Rs. $subtotalFromFirstPurchase",
               toastLength: Toast.LENGTH_LONG,
               gravity: ToastGravity.BOTTOM,
             );
@@ -352,9 +346,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
     var responseDiscount = await ApiHelper().post(
         endpoint: "discount/applyDiscountAtCheckout",
         body: {
-          "user_id": UID,
-          "discount_id": DISCOUNTID,
-          "total_amount": SUBTOTALFORAPI
+          "user_id": uID,
+          "discount_id": discountId,
+          "total_amount": subTotalForApi
         }).catchError((err) {});
 
     setState(() {
@@ -366,24 +360,21 @@ class _PlaceOrderState extends State<PlaceOrder> {
         discount = jsonDecode(responseDiscount);
         discountList = discount!["discountAmount"];
 
-        DSCOUNTAMOUNT = discountList!["discountAmount"].toDouble();
-        print("dscnt amount: $DSCOUNTAMOUNT");
-        DiscountAmountTotal  = DSCOUNTAMOUNT.toString();
+        discountAmount1 = discountList!["discountAmount"].toDouble();
+        // print("discount amount: $discountAmount1");
+        discountAmountTotal  = discountAmount1.toString();
 
 
-        NETPAYABLEAFTERDISCOUNT = (GRNDAMNT - DSCOUNTAMOUNT) as double;
-        print("netpayable after discount$NETPAYABLEAFTERDISCOUNT");
-        GRANDTOTAL = NETPAYABLEAFTERDISCOUNT.toString();
-        print("discount response: "+responseDiscount);
+        netPayableAfterDiscount = (grandAmount - discountAmount1);
+        // print("net payable after discount$netPayableAfterDiscount");
+        grandTotal = netPayableAfterDiscount.toString();
+        // print("discount response: "+responseDiscount);
 
         Fluttertoast.showToast(
-          msg: "Discount Applied Amount Rs."+DiscountAmountTotal.toString(),
+          msg: "Discount Applied Amount Rs.$discountAmountTotal",
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           timeInSecForIosWeb: 3,
-          // backgroundColor: Colors.black,
-          // textColor: Colors.white,
-          // fontSize: 16.0,
         );
 
         Map<String, dynamic> responseData = json.decode(responseDiscount);
@@ -414,19 +405,19 @@ class _PlaceOrderState extends State<PlaceOrder> {
     var responseDiscount = await ApiHelper().post(
       endpoint: "cart/removeDiscountId",
       body: {
-        "cart_id": CARTID,
+        "cart_id": cartId,
       },
     ).catchError((err) {});
 
     if (responseDiscount != null) {
       setState(() {
         debugPrint('remove discount api successful:');
-        print("remove discount response: " + responseDiscount);
+        // print("remove discount response: " + responseDiscount);
 
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => PlaceOrder(id: widget.id, picode: widget.picode,),
+            builder: (context) => PlaceOrder(id: widget.id, pinCode: widget.pinCode,),
           ),
         );
         // Trigger a rebuild of the widget tree
@@ -438,43 +429,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
 
-  // apiForFirstPurchaseOffer() async {
-  //   var response = await ApiHelper().post(
-  //     endpoint: "discount/getFirstPurchaseOffer",
-  //     body: {
-  //       "user_id": UID,
-  //       "total_amount": subtotal1.toString(),
-  //     },
-  //   ).catchError((err) {});
-  //
-  //   setState(() {
-  //     isLoading = false;
-  //   });
-  //
-  //   if (response != null) {
-  //     setState(() {
-  //       debugPrint('Apply first purchase api successful:');
-  //       firstPurchase = json.decode(response);
-  //       finalFirstPurchase = firstPurchase!["firstPurchaseOffer"];
-  //       print(response);
-  //
-  //       bool status = finalFirstPurchase!["status"];
-  //       if (status) {
-  //         discountAmount = finalFirstPurchase!["discountAmount"];
-  //         print(discountAmount);
-  //         subtotalfrmfirstpuchase = (subtotal2 - discountAmount);
-  //         SUBTOTALFIRSTPURCHASE = subtotalfrmfirstpuchase.toString();
-  //         print("subtotal after first purchase offer: ${SUBTOTALFIRSTPURCHASE!}");
-  //       }
-  //     });
-  //   } else {
-  //     debugPrint('first purchase api failed:');
-  //   }
-  // }
-
   apiForWalletAmount() async {
     var responseWallet = await ApiHelper().post(endpoint: "wallet", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
 
     setState(() {
@@ -482,25 +439,25 @@ class _PlaceOrderState extends State<PlaceOrder> {
     });
     if (responseWallet != null) {
       setState(() {
-        debugPrint('Wallet successful:');
+        debugPrint('Wallet api successful:');
         wallet = jsonDecode(responseWallet);
         walletList = wallet!["walletAmount"];
 
         if (walletList != null && walletList!.isNotEmpty) {
-          WALLET_AMOUNT_L = walletList![index]["wallet_amount"].toDouble();
-          WALLET_AMOUNT = WALLET_AMOUNT_L;
+          walletAmountL = walletList![index]["wallet_amount"].toDouble();
+          walletAmount = walletAmountL;
         }
-        print("API Response: $responseWallet");
+        // print("API Response: $responseWallet");
       });
     } else {
       debugPrint('wallet api failed:');
     }
   }
 
-  apiForCheckplan() async {
+  apiForCheckPlan() async {
     var response =
         await ApiHelper().post(endpoint: "subscriptionPlan/PaidOrNot", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
 
     setState(() {
@@ -512,7 +469,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         debugPrint('Plan check api successful:');
         plan = jsonDecode(response);
         planList = plan!["planDetails"];
-        print("plan amount " + response);
+        // print("plan amount " + response);
 
         // Check if the plan is unpaid and store the plan amount in the variable.
         if (planList != null &&
@@ -536,16 +493,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
       setState(() {
         debugPrint('slot api successful:');
         slot = jsonDecode(response);
-        slotlist = slot!["slots"];
-        todaySlotList = slotlist?["today"]; // Add null check
-        tomorrowSlotList = slotlist?["tomorrow"];
+        slotList = slot!["slots"];
+        todaySlotList = slotList?["today"]; // Add null check
+        tomorrowSlotList = slotList?["tomorrow"];
 
-        todaySlotList = slotlist?["today"] ?? [];
-        tomorrowSlotList = slotlist?["tomorrow"] ?? [];
+        todaySlotList = slotList?["today"] ?? [];
+        tomorrowSlotList = slotList?["tomorrow"] ?? [];
 
-        // Add null check
-        // print("slotid" + SLOTID!);
-        // print("slotdate" + SLOTDATE!);
       });
     } else {
       apiForWalletAmount();
@@ -561,45 +515,45 @@ class _PlaceOrderState extends State<PlaceOrder> {
     var response = await ApiHelper().post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
     if (response != null) {
       setState(() {
-        debugPrint('general detailsapi successful:');
+        debugPrint('general details api successful:');
         list = jsonDecode(response);
-        genralList = list!["general_info"];
+        generalList = list!["general_info"];
 
-        // Check if SubdetailList is not empty and set SHIPPINGCHARGE and PACKINGCHARGE to "0"
-        if (SubdetailList != null && SubdetailList!.isNotEmpty) {
-          SHIPPINGCHARGE = "0";
-          PACKINGCHARGE = "0";
+        // Check if subDetailList is not empty and set packingCharge and shipCharge to "0"
+        if (subDetailList != null && subDetailList!.isNotEmpty) {
+          shipCharge = "0";
+          packingCharge = "0";
         }
 
-        SHIPPINGCHARGE ??= genralList![index]["delivery_charge"]?.toString() ?? "0";
-        PACKINGCHARGE ??= genralList![index]["packing_charge"]?.toString() ?? "0";
+        shipCharge ??= generalList![index]["delivery_charge"]?.toString() ?? "0";
+        packingCharge ??= generalList![index]["packing_charge"]?.toString() ?? "0";
 
         int shippingCharge = 0;
 
-        shippingCharge = int.parse(SHIPPINGCHARGE!);
+        shippingCharge = int.parse(shipCharge!);
 
         double expressDeliveryCharge = 0.0;
 
-        if (isExpressDeliverySelected && genralList != null) {
+        if (isExpressDeliverySelected && generalList != null) {
           expressDeliveryCharge = double.parse(
-              genralList![index]["express_delivery_charge"].toString());
+              generalList![index]["express_delivery_charge"].toString());
         }
 
         double finalShippingCharge = shippingCharge + expressDeliveryCharge;
 
-        TOTALSHIPPINGCHARGE = finalShippingCharge.toString();
-        print("total shipping charge : "+TOTALSHIPPINGCHARGE!);
+        totalShippingCharge = finalShippingCharge.toString();
+        // print("total shipping charge : ${totalShippingCharge!}");
 
-        double AMOUNT = subtotal +
-            double.parse(PACKINGCHARGE!) +
-            double.parse(SHIPPINGCHARGE!) +
+        double amount = subtotal +
+            double.parse(packingCharge!) +
+            double.parse(shipCharge!) +
             subscriptionPlanAmount +
             expressDeliveryCharge -
-            DSCOUNTAMOUNT -
-            WALLET_AMOUNT;
+            discountAmount1 -
+            walletAmount;
 
-        GRNDAMNT = AMOUNT.toInt();
-        GRANDTOTAL = GRNDAMNT.toString() ?? "0";
+        grandAmount = amount.toInt();
+        grandTotal = grandAmount.toString() ;
       });
     } else {
       debugPrint('api failed:');
@@ -609,29 +563,29 @@ class _PlaceOrderState extends State<PlaceOrder> {
     });
   }
 
-  PlaceOrderApi() async {
+  placeOrderApi() async {
     var response = await ApiHelper().post(endpoint: "cart/addCODOrder", body: {
-      "id": UID.toString(),
+      "id": uID.toString(),
       "address": widget.id.toString(),
-      "delivery_time": isExpressDeliverySelected ? "express_delivery" : SLOTID.toString(),
-      "delivery_date": isExpressDeliverySelected ? DateTime.now().toString() : SLOTDATE.toString(),
-      "totalAmount": SUBTOTALFORAPI.toString(),
-      "amount": GRANDTOTAL.toString(),
-      "discountAmount": DSCOUNTAMOUNT.toString(),
-      "shippingCharge": TOTALSHIPPINGCHARGE.toString(),
+      "delivery_time": isExpressDeliverySelected ? "express_delivery" : slotId.toString(),
+      "delivery_date": isExpressDeliverySelected ? DateTime.now().toString() : slotDate.toString(),
+      "totalAmount": subTotalForApi.toString(),
+      "amount": grandTotal.toString(),
+      "discountAmount": discountAmount1.toString(),
+      "shippingCharge": totalShippingCharge.toString(),
       "paymentType": "COD",
-      "contactless": CONTACTLESS.toString(),
+      "contactless": contactLess.toString(),
       "delivery_note": noteController.text.toString(),
       "tip": tipController.text.toString(),
       "paid": "1",
       "subscriptionPlanAmount": subscriptionPlanAmount.toString(),
-      "walletAppliedAmounts": WALLET_AMOUNT.toString()
+      "walletAppliedAmounts": walletAmount.toString()
     }).catchError((err) {});
 
     if (response != null) {
       setState(() {
         debugPrint('place order api successful:');
-        print("placeorder api response: " + response);
+        // print( "place order api response: " + response);
 
         Navigator.pushReplacement(
           context,
@@ -650,7 +604,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
       );
     } else {
       debugPrint('place order api failed:');
-      print(response);
+      // print(response);
     }
     setState(() {
       isLoading = false;
@@ -659,7 +613,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   @override
   Widget build(BuildContext context) {
-    if (CartList == null || CartList![index] == null) {
+    if (finalCartList == null || finalCartList![index] == null) {
       return Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -858,36 +812,35 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     walletList == null
                                         ? Text("0")
                                         : Text(
-                                            "Wallet Amount Rs.$WALLET_AMOUNT_L",
+                                            "Wallet Amount Rs.$walletAmountL",
                                             textAlign: TextAlign.start,
                                           ),
                                     SizedBox(height: 20),
                                     Text(
-                                      "Applied Amount:${WALLET_AMOUNT.toInt()}",
+                                      "Applied Amount:${walletAmount.toInt()}",
                                       textAlign: TextAlign.start,
                                     ),
                                     Slider(
                                       mouseCursor: MouseCursor.uncontrolled,
                                       activeColor: Colors.teal[900],
                                       inactiveColor: Colors.teal[500],
-                                      value: WALLET_AMOUNT,
+                                      value: walletAmount,
                                       min: 0,
-                                      max: WALLET_AMOUNT_L,
+                                      max: walletAmountL,
                                       onChanged: (double value) {
                                         setState(() {
                                           // Ensure that WALLET_AMOUNT does not exceed WALLET_AMOUNT_L
-                                          WALLET_AMOUNT =
-                                              value.clamp(0, WALLET_AMOUNT_L);
-                                          // Calculate the new GRANDTOTAL and update other values accordingly
-                                          double AMOUNT = subtotal +
-                                              double.parse(PACKINGCHARGE!) +
-                                              double.parse(SHIPPINGCHARGE!) -
-                                              WALLET_AMOUNT;
-                                          GRNDAMNT = AMOUNT.toInt();
-                                          GRANDTOTAL = GRNDAMNT.toString();
-                                          print(
-                                              "CHECK AMOUNT = ${WALLET_AMOUNT.toInt()}");
-                                          print("GRAND TOTAL = $GRANDTOTAL");
+                                          walletAmount =
+                                              value.clamp(0, walletAmountL);
+                                          // Calculate the new GrandTotal and update other values accordingly
+                                          double amount = subtotal +
+                                              double.parse(packingCharge!) +
+                                              double.parse(shipCharge!) -
+                                              walletAmount;
+                                          grandAmount = amount.toInt();
+                                          grandTotal = grandAmount.toString();
+                                          // print("CHECK AMOUNT = ${walletAmount.toInt()}");
+                                          // print("GRAND TOTAL = $grandTotal");
                                         });
                                       },
                                     ),
@@ -896,7 +849,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               ),
                             ),
                             Heading(text: "SUBSCRIPTION"),
-                            MeatosPlan(),
+                            MeatozPlan(),
                             Heading(text: "BILL SUMMARY"),
                             Container(
                               decoration: BoxDecoration(
@@ -906,24 +859,24 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 children: [
                                   AmountRow(
                                     text: "Subtotal",
-                                    subtext: "Rs.${SUBTOTALFORAPI ?? "0"}" ,
+                                    subtext: "Rs.${subTotalForApi ?? "0"}" ,
                                   ),
                                   CustomRow(
                                     text: "Delivery Charges",
-                                    subtext: "Rs.${SHIPPINGCHARGE ?? '0'}",
+                                    subtext: "Rs.${shipCharge ?? '0'}",
                                   ),
                                   // CustomRow(
                                   //   text: "Packing Charges",
                                   //   subtext:
-                                  //       "Rs.${PACKINGCHARGE ?? '0'}", // Add null check
+                                  //       "Rs.${packingCharge ?? '0'}", // Add null check
                                   // ),
 
                                   if (isExpressDeliverySelected &&
-                                      genralList != null)
+                                      generalList != null)
                                     CustomRow(
                                       text: "Express Delivery Charge",
                                       subtext:
-                                          "Rs.${genralList![index]["express_delivery_charge"]}",
+                                          "Rs.${generalList![index]["express_delivery_charge"]}",
                                     ),
                                   if (planList != null &&
                                       planList!.isNotEmpty &&
@@ -938,21 +891,21 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     CustomRow(
                                       text: "Discount Applied Amount",
                                       subtext:
-                                      "Rs.${DiscountAmountTotal ?? '0'}",
+                                      "Rs.${discountAmountTotal ?? '0'}",
                                     ),
                                   CustomRow(
                                     text: "First time Purchase Discount",
-                                    subtext: "Rs.${SUBTOTALFIRSTPURCHASE ?? '0'}",
+                                    subtext: "Rs.${subTotalFirstPurchase ?? '0'}",
                                   ),
                                   CustomRow(
                                     text: "Grand Total",
                                     subtext:
-                                        "Rs.${GRANDTOTAL ?? '0'}", // Add null check
+                                        "Rs.${grandTotal ?? '0'}", // Add null check
                                   ),
                                   Divider(thickness: 2),
                                   AmountRow(
                                     text: "Net Payable",
-                                    subtext: "Rs.${GRANDTOTAL ?? '0'}",
+                                    subtext: "Rs.${grandTotal ?? '0'}",
                                   ),
                                 ],
                               ),
@@ -1015,7 +968,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     onChanged: (value) {
                                       setState(() {
                                         isContactless = value!;
-                                        CONTACTLESS = value
+                                        contactLess = value
                                             ? "Contactless_Delivery"
                                             : "";
                                       });
@@ -1074,7 +1027,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               height: 50,
                               child:ElevatedButton(
                                 onPressed: hidePlaceOrderButton ? null : () async {
-                                  await PlaceOrderApi();
+                                  await placeOrderApi();
                                   // Wait for 3 seconds before navigating to MyOrders
                                 },
                                 style: ElevatedButton.styleFrom(
@@ -1101,11 +1054,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
     return InkWell(
       onTap: () {
         setState(() {
-          SLOTID = todaySlotList![index]["id"].toString();
-          SLOTDATE = todaySlotList![index]["today"].toString();
+          slotId = todaySlotList![index]["id"].toString();
+          slotDate = todaySlotList![index]["today"].toString();
           selectedTodaySlotIndex = index;
-          print("SLOTID" + todaySlotList![index]["id"].toString());
-          print("SLOTDate" + todaySlotList![index]["today"].toString());
+          // print("slotId${todaySlotList![index]["id"]}");
+          // print("slotDate${todaySlotList![index]["today"]}");
         });
       },
       child: Padding(
@@ -1128,11 +1081,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
     return InkWell(
       onTap: () {
         setState(() {
-          SLOTID = tomorrowSlotList![index]["id"].toString();
-          SLOTDATE = tomorrowSlotList![index]["tomorrow"].toString();
+          slotId = tomorrowSlotList![index]["id"].toString();
+          slotDate = tomorrowSlotList![index]["tomorrow"].toString();
           selectedTomorrowSlotIndex = index;
-          print("SLOTID" + tomorrowSlotList![index]["id"].toString());
-          print("SLOTDate" + tomorrowSlotList![index]["tomorrow"].toString());
+          // print("slotId: {tomorrowSlotList![index]["id"]}");
+          // print("slotDate: {tomorrowSlotList![index]["tomorrow"]}");
         });
       },
       child: Card(
@@ -1148,6 +1101,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
 }
 
 class ShimmerLoading extends StatelessWidget {
+  const ShimmerLoading({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Shimmer.fromColors(

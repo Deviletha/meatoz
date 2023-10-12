@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../Config/ApiHelper.dart';
-import 'FAQ_page.dart';
+import '../../Config/api_helper.dart';
+import 'faq_page.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key}) : super(key: key);
@@ -14,12 +14,12 @@ class AddAddress extends StatefulWidget {
 
 class _AddAddressState extends State<AddAddress> {
 
-  String? UID;
+  String? uID;
 
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
+      uID = prefs.getString("UID");
     });
   }
 
@@ -32,7 +32,7 @@ class _AddAddressState extends State<AddAddress> {
   final stateController = TextEditingController();
 
 
-  Future<void> AddAddress() async {
+  Future<void> addAddress() async {
     try {
       LocationPermission permission = await Geolocator.requestPermission();
 
@@ -47,8 +47,8 @@ class _AddAddressState extends State<AddAddress> {
       double latitude = position.latitude;
       double longitude = position.longitude;
 
-      print(latitude);
-      print(longitude);
+      // print(latitude);
+      // print(longitude);
 
       var response = await ApiHelper().post(endpoint: "user/saveAddress", body: {
         "name": nameController.text.toString(),
@@ -60,12 +60,12 @@ class _AddAddressState extends State<AddAddress> {
         "state" : stateController.text.toString(),
         "latitude": latitude.toString(),
         "longitude": longitude.toString(),
-        "userid" : UID
+        "userid" : uID
       });
       if (response != null) {
         setState(() {
           debugPrint('add address api successful:');
-          print(response);
+          // print(response);
 
         });
       }
@@ -77,6 +77,7 @@ class _AddAddressState extends State<AddAddress> {
       debugPrint('An error occurred: $err');
     }
   }
+
   @override
   void initState() {
    checkUser();
@@ -251,7 +252,7 @@ class _AddAddressState extends State<AddAddress> {
               padding: const EdgeInsets.only(left: 35, right: 35),
               child: ElevatedButton(
                 onPressed: () {
-                  AddAddress();
+                  addAddress();
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.teal[900],

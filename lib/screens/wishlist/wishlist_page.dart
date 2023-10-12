@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:meatoz/screens/wishlist/wishListCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../Components/Title_widget.dart';
+import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
 import '../product_view/Product_view.dart';
@@ -18,7 +19,7 @@ class Wishlist extends StatefulWidget {
 }
 
 class _WishlistState extends State<Wishlist> {
-  String? UID;
+  String? uID;
   bool isLoading = true;
   bool isLoggedIn = true;
 
@@ -30,10 +31,12 @@ class _WishlistState extends State<Wishlist> {
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
+    uID = prefs.getString("UID");
     setState(() {
-      isLoggedIn = UID != null;
-      print(UID);
+      isLoggedIn = uID != null;
+      if (kDebugMode) {
+        print(uID);
+      }
     });
     if (isLoggedIn) {
       wishListGet();
@@ -44,17 +47,14 @@ class _WishlistState extends State<Wishlist> {
     }
   }
 
-  Map? wslist;
-  List? WsList;
-
-  Map? prlist;
-  Map? prlist1;
-  List? Prlist;
+  Map? prList;
+  Map? prList1;
+  List? finalPrList;
 
 
   Future<void> wishListGet() async {
     var response = await ApiHelper().post(endpoint: "wishList/get", body: {
-      "userid": UID,
+      "userid": uID,
     }).catchError((err) {});
 
     setState(() {
@@ -64,23 +64,22 @@ class _WishlistState extends State<Wishlist> {
     if (response != null) {
       setState(() {
         debugPrint('wishlist api successful:');
-        prlist = jsonDecode(response);
-        prlist1 = prlist!["pagination"];
-        Prlist = prlist1!["pageData"];
+        prList = jsonDecode(response);
+        prList1 = prList!["pagination"];
+        finalPrList = prList1!["pageData"];
       });
     } else {
       debugPrint('api failed:');
     }
   }
 
-  Future<void> removeFromWishtist(String id) async {
+  Future<void> removeFromWishList(String id) async {
     var response = await ApiHelper().post(endpoint: "wishList/remove", body: {
       "id": id
     }).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('Remove api successful:');
-        prlist = jsonDecode(response);
 
         wishListGet();
         Fluttertoast.showToast(
@@ -123,7 +122,7 @@ class _WishlistState extends State<Wishlist> {
             ? Center(
           child: CircularProgressIndicator(color: Colors.teal[900]),
         )
-            : Prlist == null || Prlist!.isEmpty
+            : finalPrList == null || finalPrList!.isEmpty
             ? Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -133,7 +132,7 @@ class _WishlistState extends State<Wishlist> {
           ),
         )
             : ListView.builder(
-              itemCount: Prlist == null ? 0 : Prlist?.length ?? 0,
+              itemCount: finalPrList == null ? 0 : finalPrList?.length ?? 0,
               itemBuilder: (context, index) => getWishlist(index),
             )
             : Center(
@@ -163,40 +162,42 @@ class _WishlistState extends State<Wishlist> {
   }
 
   Widget getWishlist(int index) {
-    var image = UrlConstants.base + Prlist![index]["image"].toString();
-    var price = "₹ " + Prlist![index]["offerPrice"].toString();
-    var PID = (Prlist![index]["id"] ?? "").toString();
-    var CombID = (Prlist![index]["combinationId"] ?? "").toString();
+    var image = UrlConstants.base + finalPrList![index]["image"].toString();
+    var price = "₹ ${finalPrList![index]["offerPrice"]}";
+    var pId = (finalPrList![index]["id"] ?? "").toString();
+    var combID = (finalPrList![index]["combinationId"] ?? "").toString();
     return WishlistTile(
-        ItemName: Prlist![index]["name"].toString(),
-        ImagePath: image,
+        itemName: finalPrList![index]["name"].toString(),
+        imagePath: image,
         onPressed: () {
-              removeFromWishtist(Prlist![index]["wishlistId"].toString());
-              print(Prlist![index]["wishlistId"].toString(),);
+          removeFromWishList(finalPrList![index]["wishlistId"].toString());
+              if (kDebugMode) {
+                print(finalPrList![index]["wishlistId"].toString(),);
+              }
             },
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => ProductView(
-                serveCapacity: Prlist![index]["serving_cupacity"].toString(),
-                noOfPiece: Prlist![index]["no_of_piece"].toString(),
-                stock: Prlist![index]["stock"].toString(),
+                serveCapacity: finalPrList![index]["serving_cupacity"].toString(),
+                noOfPiece: finalPrList![index]["no_of_piece"].toString(),
+                stock: finalPrList![index]["stock"].toString(),
                 recipe: "Recipe not available for this item",
                 position: index,
-                id: PID,
-                productname:
-                Prlist![index]["name"].toString(),
+                id: pId,
+                productName:
+                finalPrList![index]["name"].toString(),
                 url: image,
-                description: Prlist![index]["description"].toString(),
-                amount: Prlist![index]["offerPrice"].toString(),
-                combinationId: CombID,
-                psize: "0",
+                description: finalPrList![index]["description"].toString(),
+                amount: finalPrList![index]["offerPrice"].toString(),
+                combinationId: combID,
+                pSize: "0",
               ),
             ),
           );
         },
-        TotalPrice: price,
-        Description: Prlist![index]["description"].toString());
+        totalPrice: price,
+        description: finalPrList![index]["description"].toString());
   }
 }

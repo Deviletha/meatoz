@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:meatoz/Components/Alertbox_text.dart';
-import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
+import 'package:meatoz/Components/alertbox_text.dart';
+import 'package:meatoz/screens/accounts/widgets/accounts_custom_card.dart';
 import 'package:meatoz/screens/accounts/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,17 +27,21 @@ class _SettingsState extends State<Settings> {
           // shape: OutlineInputBorder(
           //     borderRadius: BorderRadius.circular(20),gapPadding: 20
           // ),
-          title:  Text('Logout'),
-          content:  Text('Do you want to logout?'),
+          title: Text('Logout'),
+          content: Text('Do you want to logout?'),
           actions: <Widget>[
             TextButton(
-              child:  AlertText(text: 'Cancel',),
+              child: AlertText(
+                text: 'Cancel',
+              ),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: AlertText(text: 'Logout',),
+              child: AlertText(
+                text: 'Logout',
+              ),
               onPressed: () async {
                 Navigator.push(
                   context,

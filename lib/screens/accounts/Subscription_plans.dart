@@ -1,17 +1,18 @@
 import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../Components/Alertbox_text.dart';
+import '../../Components/alertbox_text.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
-import '../../Config/ApiHelper.dart';
-import 'FAQ_page.dart';
+import '../../Config/api_helper.dart';
+import 'faq_page.dart';
 
 
 class Subscription extends StatefulWidget {
-  Subscription({Key? key}) : super(key: key);
+  const Subscription({Key? key}) : super(key: key);
 
   @override
   State<Subscription> createState() => _SubscriptionState();
@@ -24,33 +25,32 @@ class _SubscriptionState extends State<Subscription> {
     "assets/premiumlogo.png"
   ];
 
-  List plancolors = [
+  List planColors = [
     Colors.green.shade50,
     Colors.indigo.shade50,
     Colors.pink.shade50,
   ];
 
-  String? PLANID;
-  String? UID;
+  String? uID;
   Map? sub;
-  List? SubscriptionList;
+  List? subscriptionList;
 
-  Map? Subscription;
+  Map? subscription;
 
   Map? sub1;
-  List? SubdetailList;
+  List? subDetailList;
 
   bool isLoading = true;
 
   Future<void> checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      UID = prefs.getString("UID");
+      uID = prefs.getString("UID");
     });
-    getSubscriptionplan();
+    getSubscriptionPlan();
   }
 
-  apiforSubscription() async {
+  apiForSubscription() async {
 
     var response = await ApiHelper()
         .post(endpoint: "subscriptionPlan/get", body: {}).catchError((err) {});
@@ -63,17 +63,17 @@ class _SubscriptionState extends State<Subscription> {
       setState(() {
         debugPrint('Subscription plan api successful:');
         sub = jsonDecode(response);
-        SubscriptionList = sub!["plans"];
+        subscriptionList = sub!["plans"];
       });
     } else {
       debugPrint('api failed:');
     }
   }
 
-  getSubscriptionplan() async {
+  getSubscriptionPlan() async {
     var response = await ApiHelper().post(
         endpoint: "subscriptionPlan/getUserPlan",
-        body: {"userid": UID}).catchError((err) {});
+        body: {"userid": uID}).catchError((err) {});
 
     setState(() {
       isLoading = false;
@@ -82,7 +82,7 @@ class _SubscriptionState extends State<Subscription> {
       setState(() {
         debugPrint('Subscription detail api successful:');
         sub1 = jsonDecode(response);
-        SubdetailList = sub1!["planDetails"];
+        subDetailList = sub1!["planDetails"];
       });
     } else {
       debugPrint('api failed:');
@@ -91,11 +91,11 @@ class _SubscriptionState extends State<Subscription> {
 
   chooseSubscriptionPlan(String planId, String paymentType) async {
 
-    if (SubscriptionList != null ) {
+    if (subscriptionList != null ) {
       var response = await ApiHelper().post(
           endpoint: "subscriptionPlan/subcription",
           body: {
-            "userid": UID,
+            "userid": uID,
             "plan_id": planId,
             "type": paymentType,
           }
@@ -108,17 +108,19 @@ class _SubscriptionState extends State<Subscription> {
       if (response != null) {
         setState(() {
           debugPrint('Subscription plan api successful:');
-          Subscription = jsonDecode(response);
-          print("plan id" + response);
+          subscription = jsonDecode(response);
+
         });
 
         // Refresh the subscription details
-        getSubscriptionplan();
+        getSubscriptionPlan();
       } else {
         debugPrint('api failed:');
       }
     } else {
-      print("Invalid index or SubscriptionList is null.");
+      if (kDebugMode) {
+        print("Invalid index or SubscriptionList is null.");
+      }
     }
   }
   void _showPlanConfirmationDialog(BuildContext context, String planId) {
@@ -157,7 +159,7 @@ class _SubscriptionState extends State<Subscription> {
   @override
   void initState() {
     checkUser();
-    apiforSubscription();
+    apiForSubscription();
     super.initState();
   }
 
@@ -236,17 +238,17 @@ class _SubscriptionState extends State<Subscription> {
                           isLoading
                               ? CircularProgressIndicator()
                               : Text(
-                                  SubdetailList == null || SubdetailList!.isEmpty
+                            subDetailList == null || subDetailList!.isEmpty
                                       ? 'Loading...'
-                                      : "${SubdetailList![0]["head"]} Plan",
+                                      : "${subDetailList![0]["head"]} Plan",
                                   style: TextStyle(
                                     fontSize: 18,fontWeight: FontWeight.bold
                                   ),
                                 ),
                           Text(
-                            SubdetailList == null || SubdetailList!.isEmpty
+                            subDetailList == null || subDetailList!.isEmpty
                                 ? 'Loading...'
-                                : SubdetailList![0]["to_date"].toString(),
+                                : subDetailList![0]["to_date"].toString(),
                             style: TextStyle(
                               fontSize: 15,
                             ),
@@ -290,9 +292,9 @@ class _SubscriptionState extends State<Subscription> {
                       ),
                     )
                   : CarouselSlider.builder(
-                      itemCount: SubscriptionList == null
+                      itemCount: subscriptionList == null
                           ? 0
-                          : SubscriptionList?.length,
+                          : subscriptionList?.length,
                       itemBuilder: (context, index, realIndex) {
                         return getSubscription(index);
                       },
@@ -326,21 +328,15 @@ class _SubscriptionState extends State<Subscription> {
 
   Widget getSubscription(int index1) {
 
-    // PLANID = SubscriptionList![index1]["id"].toString();
 
-    if (SubscriptionList == null) {
+    if (subscriptionList == null) {
       return Container();
     }
     final bool isPlanActivated =
-        SubdetailList != null &&
-            SubdetailList!.isNotEmpty &&
-            SubdetailList![0]["planID"].toString() == SubscriptionList![index1]["id"].toString();
+        subDetailList != null &&
+            subDetailList!.isNotEmpty &&
+            subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString();
 
-    // print("Plan ID: ${SubscriptionList![index1]["id"]}");
-    // print("Activated Plan ID: ${SubdetailList![0]["plan_id"]}");
-    // print("isPlanActivated: $isPlanActivated");
-
-    // PLANID = SubscriptionList![index1]["id"].toString();
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
@@ -359,7 +355,7 @@ class _SubscriptionState extends State<Subscription> {
               width: 330,
               height: 120,
               decoration: BoxDecoration(
-                  color: plancolors[index1],
+                  color: planColors[index1],
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(20),
                       topLeft: Radius.circular(20))),
@@ -378,14 +374,14 @@ class _SubscriptionState extends State<Subscription> {
                     Padding(
                       padding: const EdgeInsets.only(top: 10, bottom: 5),
                       child: Text(
-                        SubscriptionList![index1]["head"].toString(),
+                        subscriptionList![index1]["head"].toString(),
                         style: TextStyle(
                           fontSize: 20,
                         ),
                       ),
                     ),
                     Text(
-                      SubscriptionList![index1]["description"].toString(),
+                      subscriptionList![index1]["description"].toString(),
                       style: TextStyle(fontSize: 15, color: Colors.grey),
                     ),
                     Padding(
@@ -398,28 +394,28 @@ class _SubscriptionState extends State<Subscription> {
                       ),
                     ),
                     Text(
-                      "No of Orders - ${SubscriptionList![index1]["no_of_orders"]}"??" ",
+                      "No of Orders - ${subscriptionList![index1]["no_of_orders"] ??" "}",
                       style: TextStyle(fontSize: 15, color: Colors.grey),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                      "Duration - ${SubscriptionList![index1]["plan_duration"]}Month"?? " ",
+                      "Duration - ${subscriptionList![index1]["plan_duration"] ?? " "}Month",
                       style: TextStyle(fontSize: 15, color: Colors.grey),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                      "CashBack - ${SubscriptionList![index1]["cashback_percentage"]}%"??" ",
+                      "CashBack - ${subscriptionList![index1]["cashback_percentage"] ??" "}%",
                       style: TextStyle(fontSize: 15, color: Colors.grey),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                      "Rs.${SubscriptionList![index1]["amount"]}"?? "",
+                      "Rs.${subscriptionList![index1]["amount"] ?? ""}",
                       style: TextStyle(fontSize: 20, color: Colors.teal[900]),
                     ),
                   ],
@@ -431,7 +427,7 @@ class _SubscriptionState extends State<Subscription> {
               width: 330,
               decoration: BoxDecoration(
                 color: isPlanActivated &&
-                    SubdetailList![0]["planID"] == SubscriptionList![index1]["id"].toString()
+                    subDetailList![0]["planID"] == subscriptionList![index1]["id"].toString()
                     ? Colors.grey[400] // Disabled color
                     : Colors.grey[800],
                 borderRadius: BorderRadius.only(
@@ -441,17 +437,17 @@ class _SubscriptionState extends State<Subscription> {
               ),
               child: TextButton(
                 onPressed: isPlanActivated &&
-                    SubdetailList![0]["planID"] == SubscriptionList![index1]["id"].toString()
+                    subDetailList![0]["planID"] == subscriptionList![index1]["id"].toString()
                     ? null // Disable the button if plan is activated
                     : () {
                   _showPlanConfirmationDialog(
                     context,
-                    SubscriptionList![index1]["id"].toString(),
+                    subscriptionList![index1]["id"].toString(),
                   );
                 },
                 child: Text(
                   isPlanActivated &&
-                      SubdetailList![0]["planID"] == SubscriptionList![index1]["id"].toString()
+                      subDetailList![0]["planID"] == subscriptionList![index1]["id"].toString()
                       ? "Plan Activated"
                       : "Choose Plan",
                   style: TextStyle(fontSize: 15, color: Colors.white),

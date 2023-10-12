@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import '../splash_bottomNav/BottomNavBar.dart';
 import 'SignUp_page.dart';
 
@@ -16,17 +17,17 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   Map? user;
-  List? UserList;
-  String? UID;
-  bool showpass = true;
+  List? userList;
+  String? uID;
+  bool showPass = true;
 
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
-    print(UID);
+    uID = prefs.getString("UID");
+
   }
 
   apiForLogin() async {
@@ -57,11 +58,13 @@ class _LoginPageState extends State<LoginPage> {
             // Successful login
             setState(() {
               debugPrint('API successful:');
-              UserList = jsonResponse;
-              print(response);
+              userList = jsonResponse;
+              if (kDebugMode) {
+                print(response);
+              }
             });
             final prefs = await SharedPreferences.getInstance();
-            await prefs.setString("UID", UserList![0]["id"].toString());
+            await prefs.setString("UID", userList![0]["id"].toString());
             checkUser();
             Fluttertoast.showToast(
               msg: "Login success",
@@ -152,29 +155,29 @@ class _LoginPageState extends State<LoginPage> {
                     left: 35, right: 35, top: 10, bottom: 20),
                 child: TextFormField(cursorColor: Colors.teal[900],
                   controller: passwordController,
-                  obscureText: showpass,
+                  obscureText: showPass,
                   obscuringCharacter: "*",
                   decoration: InputDecoration(
                     suffixIcon: IconButton(
                         onPressed: () {
                           setState(() {
-                            if (showpass) {
-                              showpass = false;
+                            if (showPass) {
+                              showPass = false;
                             } else {
-                              showpass = true;
+                              showPass = true;
                             }
                           });
                         },
                         icon: Icon(
-                          showpass == true
+                          showPass == true
                               ? Icons.visibility_off
                               : Icons.visibility,
                         )),
                     labelText: "Password",
                   ),
                   textInputAction: TextInputAction.done,
-                  validator: (Password) {
-                    if (Password!.isEmpty || Password.length < 6) {
+                  validator: (password) {
+                    if (password!.isEmpty || password.length < 6) {
                       return "Enter a valid Password, length should be greater than 6";
                     } else {
                       return null;

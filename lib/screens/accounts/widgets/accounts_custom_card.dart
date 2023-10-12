@@ -4,9 +4,9 @@ class AccountCustomTile extends StatelessWidget {
   final String title;
   final IconData icon;
   final Color? color; // Nullable Color
-  void Function()? onTap;
+  final void Function()? onTap;
 
-  AccountCustomTile({
+  const AccountCustomTile({
     Key? key,
     required this.title,
     required this.icon,

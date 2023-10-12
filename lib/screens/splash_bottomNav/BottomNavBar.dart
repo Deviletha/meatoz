@@ -14,13 +14,13 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-  int selectindex = 0;
+  int selectIndex = 0;
 
-  List body = <Widget>[const HomePage(), Wishlist(),  Accounts(),Cart_page()];
+  List body = <Widget>[const HomePage(), Wishlist(),  Accounts(),CartPage()];
 
-  void onitemtapped(int index) {
+  void onItemTapped(int index) {
     setState(() {
-      selectindex = index;
+      selectIndex = index;
     });
   }
 
@@ -51,8 +51,8 @@ class _BottomNavState extends State<BottomNav> {
       child: Scaffold(
         extendBody: true,
         bottomNavigationBar: FloatingNavbar(
-          onTap: onitemtapped,
-          currentIndex: selectindex,
+          onTap: onItemTapped,
+          currentIndex: selectIndex,
           backgroundColor: Colors.teal[900],
           elevation: 0,
           items: [
@@ -62,7 +62,7 @@ class _BottomNavState extends State<BottomNav> {
             FloatingNavbarItem(icon: Iconsax.shopping_bag, title: "MY CART"),
           ],
         ),
-        body: body.elementAt(selectindex),
+        body: body.elementAt(selectIndex),
       ),
     );
   }

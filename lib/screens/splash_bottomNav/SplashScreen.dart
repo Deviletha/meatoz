@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'BottomNavBar.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
   State<StatefulWidget> createState() => _SplashScreenState();
 }

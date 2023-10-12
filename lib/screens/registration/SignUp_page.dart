@@ -1,10 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
-import '../../Config/ApiHelper.dart';
+import '../../Config/api_helper.dart';
 import 'Login_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -15,17 +16,19 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  String? UID;
-  Map? signuplist;
-  List? slist;
+  String? uID;
+  Map? signupList;
+
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
-    UID = prefs.getString("UID");
-    print(UID);
+    uID = prefs.getString("UID");
+    if (kDebugMode) {
+      print(uID);
+    }
   }
 
-  bool showpass = true;
+  bool showPass = true;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -35,8 +38,8 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _postalController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _latitudeController = TextEditingController();
-  final TextEditingController _longitudeController = TextEditingController();
+  // final TextEditingController _latitudeController = TextEditingController();
+  // final TextEditingController _longitudeController = TextEditingController();
 
   apiForSignup() async {
     try {
@@ -71,11 +74,11 @@ class _SignupPageState extends State<SignupPage> {
     if (response != null) {
       setState(() async {
         debugPrint('api successful:');
-        signuplist = jsonDecode(response);
+        signupList = jsonDecode(response);
 
         print(response);
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("UID", signuplist![0]["id"].toString());
+        await prefs.setString("UID", signupList![0]["id"].toString());
         checkUser();
         Fluttertoast.showToast(
           msg: "Signup success",
@@ -266,30 +269,30 @@ class _SignupPageState extends State<SignupPage> {
                         const EdgeInsets.only(left: 20, right: 20, bottom: 30),
                     child: TextFormField(
                       controller: _passwordController,
-                      obscureText: showpass,
+                      obscureText: showPass,
                       obscuringCharacter: "*",
                       decoration: InputDecoration(
                           isDense: true,
                           suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
-                                  if (showpass) {
-                                    showpass = false;
+                                  if (showPass) {
+                                    showPass = false;
                                   } else {
-                                    showpass = true;
+                                    showPass = true;
                                   }
                                 });
                               },
                               icon: Icon(
-                                showpass == true
+                                showPass == true
                                     ? Icons.visibility_off
                                     : Icons.visibility,
                               )),
                           labelText: "Password",
                        ),
                       textInputAction: TextInputAction.done,
-                      validator: (Password) {
-                        if (Password!.isEmpty || Password.length < 6) {
+                      validator: (password) {
+                        if (password!.isEmpty || password.length < 6) {
                           return "Enter a valid Password, length should be greater than 6";
                         } else {
                           return null;
