@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Config/image_url_const.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
-import 'package:meatoz/screens/accounts/widgets/accounts_custom_card.dart';
+import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/profile_pages.dart';
 import 'package:meatoz/screens/accounts/privacy_terms.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
@@ -15,6 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../Components/alertbox_text.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../splash_bottomNav/BottomNavBar.dart';
 import 'Add_address.dart';
 import 'faq_page.dart';
 import '../registration/Login_page.dart';
@@ -124,16 +125,19 @@ class _AccountsState extends State<Accounts> {
             content: Text("Are you sure"),
             actions: [
               TextButton(
-                child:  AlertText(text: 'No',),
+                child: AlertText(
+                  text: 'No',
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               TextButton(
-                child:  AlertText(text: 'Yes',),
+                child: AlertText(
+                  text: 'Yes',
+                ),
                 onPressed: () {
-                  launch(
-                      "mailto:customercare@meatoz.in?subject=  &body=  ");
+                  launch("mailto:customercare@meatoz.in?subject=  &body=  ");
                 },
               ),
             ],
@@ -145,11 +149,23 @@ class _AccountsState extends State<Accounts> {
 
   @override
   Widget build(BuildContext context) {
-    var image = UrlConstants.base + (dataList?[index]["image"] ?? "").toString();
+    var image =
+        UrlConstants.base + (dataList?[index]["image"] ?? "").toString();
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "ACCOUNT",
+          text: "Account",
+        ),
+        leading: IconButton(
+          onPressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return BottomNav();
+              }),
+            );
+          }, icon: Icon(Iconsax.arrow_left
+        ),
         ),
       ),
       body: Container(
@@ -166,241 +182,284 @@ class _AccountsState extends State<Accounts> {
             ])),
         child: isLoggedIn
             ? isLoading
-            ? Center(
-          child: CircularProgressIndicator(color: Colors.teal[900]),
-        )
-       : Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return Profile();
-                        }),
-                      ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            gradient: LinearGradient(
-                                begin: Alignment.centerRight,
-                                end: Alignment.centerLeft,
-                                colors: [
-                                  Colors.teal.shade800,
-                                  Colors.teal.shade900,
-                                ])),
-                        height: 100,
-                        child: Center(
-                          child: dataList == null
-                              ? Shimmer.fromColors(
-                                  baseColor: Colors.grey[300]!,
-                                  highlightColor: Colors.grey[100]!,
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      child: Text(
-                                        '',
-                                        style: TextStyle(fontSize: 20),
+                ? Center(
+                    child: CircularProgressIndicator(color: Colors.teal[900]),
+                  )
+                : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return Profile();
+                            }),
+                          ),
+                          child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                gradient: LinearGradient(
+                                    begin: Alignment.centerRight,
+                                    end: Alignment.centerLeft,
+                                    colors: [
+                                      Colors.teal.shade800,
+                                      Colors.teal.shade900,
+                                    ])),
+                            height: 100,
+                            child: Center(
+                              child: dataList == null
+                                  ? Shimmer.fromColors(
+                                      baseColor: Colors.grey[300]!,
+                                      highlightColor: Colors.grey[100]!,
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          child: Text(
+                                            '',
+                                            style: TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                        title: Text(
+                                          '',
+                                          style: TextStyle(fontSize: 35),
+                                        ),
+                                        subtitle: Text(''),
                                       ),
-                                    ),
-                                    title: Text(
-                                      '',
-                                      style: TextStyle(fontSize: 35),
-                                    ),
-                                    subtitle: Text(''),
-                                  ),
-                                )
-                              : ListTile(
-                                  leading: Container(
-                                    clipBehavior: Clip.antiAlias,
-                                    width: 60,
-                                    height:60,
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(180),),
-                                    ),
-                                    // Image border// Image radius
-                                    child: CachedNetworkImage(
-                                      imageUrl: image,
-                                      placeholder: (context, url) => Container(
-                                        color: Colors.grey[300],
-                                      ),
-                                      errorWidget: (context, url, error) => Container(
+                                    )
+                                  : ListTile(
+                                      leading: Container(
+                                        clipBehavior: Clip.antiAlias,
+                                        width: 60,
+                                        height: 60,
                                         decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image: AssetImage("assets/noItem.png"))),
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(180),
+                                          ),
+                                        ),
+                                        // Image border// Image radius
+                                        child: CachedNetworkImage(
+                                          imageUrl: image,
+                                          placeholder: (context, url) =>
+                                              Container(
+                                            color: Colors.grey[300],
+                                          ),
+                                          errorWidget: (context, url, error) =>
+                                              Container(
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        "assets/noItem.png"))),
+                                          ),
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
-                                      fit: BoxFit.cover,
+                                      //   radius: 30,
+                                      //   backgroundImage: NetworkImage(image),
+                                      // ),
+                                      title: Text(
+                                        dataList![index]["first_name"]
+                                            .toString(),
+                                        style: TextStyle(
+                                            fontSize: 35,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w400),
+                                      ),
+                                      subtitle: Text(
+                                        dataList![index]["email"].toString(),
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 15),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15),
+                              ),
+                              color: Colors.white),
+                          child: Row(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AccountCustomTile(
+                                    title: "My Orders",
+                                    icon: Iconsax.note_21,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return MyOrders();
+                                      }),
                                     ),
                                   ),
-                                  //   radius: 30,
-                                  //   backgroundImage: NetworkImage(image),
-                                  // ),
-                                  title: Text(
-                                    dataList![index]["first_name"].toString(),
-                                    style: TextStyle(
-                                        fontSize: 35,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w400),
+                                  AccountCustomTile(
+                                    title: "Wallet",
+                                    icon: Iconsax.wallet_3,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return WalletPage();
+                                      }),
+                                    ),
                                   ),
-                                  subtitle: Text(
-                                    dataList![index]["email"].toString(),
-                                    style: TextStyle(color: Colors.white),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                              Column(
+                                children: [
+                                  Container(
+                                    height: 20,
+                                    width: 1,
+                                    color: Colors.grey.shade500,
                                   ),
-                                ),
+                                  SizedBox(
+                                    height: 50,
+                                  ),
+                                  Container(
+                                    height: 20,
+                                    width: 1,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  AccountCustomTile(
+                                    title: "Wishlist",
+                                    icon: Iconsax.archive_tick,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return Wishlist();
+                                      }),
+                                    ),
+                                  ),
+                                  AccountCustomTile(
+                                    title: "Subscription",
+                                    icon: Iconsax.user_tick,
+                                    onTap: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return Subscription();
+                                      }),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
                         ),
-                      ),
-                    ),
-                    SizedBox(height: 15),
-                    AccountCustomTile(
-                      title: "Add Address",
-                      icon: Iconsax.home,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return AddAddress();
-                        }),
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                      title: "My Wishlist",
-                      icon: Iconsax.heart,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return Wishlist();
-                        }),
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                      title: "My Orders",
-                      icon: Iconsax.bag_2,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return MyOrders();
-                        }),
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                        title: "Wallet",
-                        icon: Iconsax.wallet_3,
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return WalletPage();
-                          }),
-                        ),),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                      title: "Subscription",
-                      icon: Iconsax.user_tick,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return Subscription();
-                        }),
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                      title: "Settings",
-                      icon: Iconsax.setting_2,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return Settings();
-                        }),
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                      title: "Privacy info & Terms",
-                      icon: Iconsax.security_safe,
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) {
-                          return Privacy();
-                        }),
-                      ),
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    AccountCustomTile(
-                      title: "Help & Support",
-                      icon: Iconsax.info_circle,
-                      onTap: () {
-                        openGmail();
-                      },
-                    ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: InkWell(
-                        onTap: () {
-                          Share.share(
-                            "www.meatoz.in/Register/${referralList![index]["referral_code"]}",
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Iconsax.user_octagon,
-                              size: 25,
-                            ),
-                            SizedBox(width: 25),
-                            Expanded(
-                              flex: 1,
-                              child: Text(
-                                "Invite a friend",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) {
-                                  return FAQ(
-                                    section: "reffer_friend",
-                                  );
-                                }),
-                              ),
-                              icon: Icon(
-                                Icons.help_outline_rounded,
-                              ),
-                            )
-                          ],
+                        SizedBox(
+                          height: 10,
                         ),
-                      ),
+                        AccountCustomTile(
+                          title: "Add Address",
+                          icon: Iconsax.buildings,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return AddAddress();
+                            }),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        AccountCustomTile(
+                          title: "Settings",
+                          icon: Iconsax.setting_2,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return Settings();
+                            }),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        AccountCustomTile(
+                          title: "Help & Support",
+                          icon: Iconsax.info_circle,
+                          onTap: () {
+                            openGmail();
+                          },
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        AccountCustomTile(
+                          title: "Privacy info & Terms",
+                          icon: Iconsax.security_safe,
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) {
+                              return Privacy();
+                            }),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(15),
+                              ),
+                              color: Colors.white),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
+                            child: InkWell(
+                              onTap: () {
+                                Share.share(
+                                  "www.meatoz.in/Register/${referralList![index]["referral_code"]}",
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Iconsax.user_octagon,
+                                    size: 20,
+                                  ),
+                                  SizedBox(width: 25),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Text(
+                                      "Invite a friend",
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) {
+                                        return FAQ(
+                                          section: "reffer_friend",
+                                        );
+                                      }),
+                                    ),
+                                    icon: Icon(
+                                      Icons.help_outline_rounded,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Divider(
-                      thickness: 1,
-                    ),
-                  ],
-                ),
-              )
+                  )
             : Center(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,

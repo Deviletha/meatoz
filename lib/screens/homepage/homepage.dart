@@ -10,6 +10,7 @@ import 'package:meatoz/screens/homepage/PopularItems/poularcard.dart';
 import 'package:meatoz/screens/homepage/TopPicks/TopPicks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import '../../Components/discriptiontext.dart';
 import '../../Components/title_widget.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
@@ -596,7 +597,7 @@ class _HomePageState extends State<HomePage> {
                       margin: EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(10.0),
+                        borderRadius: BorderRadius.circular(360),
                       ),
                     );
                   },
@@ -1055,22 +1056,20 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(finalProductList![index1]["description"].toString(),
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.teal[900],
-                              fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8),
+                        child: TextDescription(text:finalProductList![index1]["description"].toString(),),
+                      ),
                       Row(mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(price,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               decoration: TextDecoration.lineThrough,
                               decorationStyle: TextDecorationStyle.solid,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.grey,
+                              color: Colors.grey.shade600,
                             ),
                           ),
                           SizedBox(
@@ -1079,10 +1078,10 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             "₹$offerPrice",
                             // WID,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.green,
+                              color: Colors.teal.shade800,
                             ),
                           ),
                         ],
@@ -1202,12 +1201,12 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                   price,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               decoration: TextDecoration.lineThrough,
                               decorationStyle: TextDecorationStyle.solid,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.grey,
+                              color: Colors.grey.shade600,
                             ),
                           ),
                           SizedBox(
@@ -1218,7 +1217,7 @@ class _HomePageState extends State<HomePage> {
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.green,
+                              color: Colors.teal.shade800,
                             ),
                           ),
                           SizedBox(
@@ -1252,12 +1251,10 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(dealOfTheDayList![index]["description"].toString(),
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.teal[900],
-                              fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8),
+                        child: TextDescription(text:dealOfTheDayList![index]["description"].toString(),),
+                      ),
                     ],
                   ),
                 ),
@@ -1353,23 +1350,22 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(ourProductList![index2]["description"].toString(),
-                          maxLines: 2,
-                          style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.teal[900],
-                              fontWeight: FontWeight.bold)),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0, right: 8),
+                        child: TextDescription(text: ourProductList![index2]["description"].toString(),
+                        ),
+                      ),
                       Row(mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
                             price,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               decoration: TextDecoration.lineThrough,
                               decorationStyle: TextDecorationStyle.solid,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.grey,
+                              color: Colors.grey.shade600,
                             ),
                           ),
                           SizedBox(
@@ -1380,7 +1376,7 @@ class _HomePageState extends State<HomePage> {
                             style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.green,
+                              color: Colors.teal.shade800,
                             ),
                           ),
                           SizedBox(

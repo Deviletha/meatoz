@@ -36,7 +36,7 @@ ThemeData _buildTheme(brightness) {
   return baseTheme.copyWith(
     // textTheme: GoogleFonts.robotoCondensedTextTheme(baseTheme.textTheme),
       appBarTheme: AppBarTheme(backgroundColor: Colors.teal[900],
-  centerTitle: true, elevation: 0,systemOverlayStyle: SystemUiOverlayStyle(
+   elevation: 0,systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.teal[900],
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.light,

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:meatoz/Components/discriptiontext.dart';
 
 import '../../Components/text_widget.dart';
 
@@ -80,21 +81,16 @@ class WishlistTile extends StatelessWidget {
                         SizedBox(
                           height: 10,
                         ),
-                        Text(description,
-                            maxLines: 2,
-                            style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.teal[900],
-                                fontWeight: FontWeight.bold)),
+                        TextDescription(text: description,),
                         SizedBox(
                           height: 10,
                         ),
                         Text(
                           totalPrice,
-                          style: const TextStyle(
+                          style:  TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.green),
+                              color: Colors.teal.shade800),
                         ),
                         SizedBox(
                           height: 10,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Components/alertbox_text.dart';
-import 'package:meatoz/screens/accounts/widgets/accounts_custom_card.dart';
+import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -73,7 +73,7 @@ class _SettingsState extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "SETTINGS",
+          text: "Settings",
         ),
       ),
       body: Container(

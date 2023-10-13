@@ -62,7 +62,7 @@ class _OrderDetailsState extends State<OrderDetails> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(text:
-          "ORDER HISTORY",
+          "Order History",
         ),
       ),
       body: isLoading
@@ -138,24 +138,24 @@ class _OrderDetailsState extends State<OrderDetails> {
                       ? Text("null data")
                       : Text(
                     price,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.green),
+                    style:  TextStyle(
+
+                        fontSize: 15,
+                        color: Colors.teal.shade800),
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
                     orderList![index]["product"].toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    // style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
                     orderList![index]["address"].toString(),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    // style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),

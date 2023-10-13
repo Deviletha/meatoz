@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:lottie/lottie.dart';
 import 'package:meatoz/screens/cartpage/CartCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,6 +12,7 @@ import '../../Config/image_url_const.dart';
 import '../placeOrder/widget/offer_card.dart';
 import '../registration/Login_page.dart';
 import '../placeOrder/Select_address.dart';
+import '../splash_bottomNav/BottomNavBar.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -213,7 +215,18 @@ class _CartPageState extends State<CartPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: AppText(
-          text: "MY CART",
+          text: "My Cart",
+        ),
+        leading: IconButton(
+          onPressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return BottomNav();
+              }),
+            );
+          }, icon: Icon(Iconsax.arrow_left
+        ),
         ),
       ),
       body: Container(

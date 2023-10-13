@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
+import '../../Components/discriptiontext.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
@@ -290,7 +291,7 @@ class _CategoryViewState extends State<CategoryView> {
                           decoration: TextDecoration.lineThrough,
                           decorationStyle: TextDecorationStyle.solid,
                           fontWeight: FontWeight.bold,
-                          color: Colors.grey,
+                          color: Colors.grey.shade600,
                           fontSize: 20
                       ),
                     ),
@@ -298,7 +299,7 @@ class _CategoryViewState extends State<CategoryView> {
                     Text(
                       "₹ ${finalCategoryList![index1]["offerPrice"].toString()}",
                       style: TextStyle(
-                          color: Colors.green,fontWeight: FontWeight.bold,
+                          color: Colors.teal.shade800,fontWeight: FontWeight.bold,
                           fontSize: 20
                       ),
                     ),
@@ -307,7 +308,7 @@ class _CategoryViewState extends State<CategoryView> {
                 SizedBox(
                   height: 15,
                 ),
-                TextConst(text:
+                TextDescription(text:
                 finalCategoryList![index1]["description"].toString(),
                 ),
                 Padding(

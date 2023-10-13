@@ -60,10 +60,10 @@ class RelatedItemTile extends StatelessWidget {
             ),
             Text(
               price,
-              style: const TextStyle(
+              style:  TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Colors.green,
+                color: Colors.teal.shade800,
               ),
             ),
             SizedBox(

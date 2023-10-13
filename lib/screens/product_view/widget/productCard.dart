@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
 
+import '../../../Components/discriptiontext.dart';
+
 class ProductViewTile extends StatelessWidget {
   final String itemName;
   final String description;
@@ -61,7 +63,7 @@ class ProductViewTile extends StatelessWidget {
             Text(
               "₹$price",
               style: TextStyle(
-                  color: Colors.green,
+                  color: Colors.teal.shade800,
                   fontWeight: FontWeight.bold,
                   fontSize: 20),
             ),
@@ -72,18 +74,17 @@ class ProductViewTile extends StatelessWidget {
               text: itemName,
             ),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
             TextConst(text: "No of Piece: $noOfPiece"),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
             TextConst(text: "Serving Capacity: $servingCapacity"),
             SizedBox(
-              height: 10,
+              height: 5,
             ),
-            TextConst(
-              text: description,
+        TextDescription(text:description,
             ),
             Padding(
               padding: const EdgeInsets.only(top: 10),

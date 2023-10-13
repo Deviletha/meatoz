@@ -4,7 +4,7 @@ import '../../Components/appbar_text.dart';
 import 'privacy_policy.dart';
 import 'refund_policy.dart';
 import 'terms&conditions.dart';
-import 'widgets/accounts_custom_card.dart';
+import 'widgets/AccountsCustomCard.dart';
 
 class Privacy extends StatefulWidget {
   const Privacy({Key? key}) : super(key: key);
@@ -19,7 +19,7 @@ class _PrivacyState extends State<Privacy> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "PRIVACY INFO",
+          text: "Privacy info",
         ),
       ),
       body: Container(

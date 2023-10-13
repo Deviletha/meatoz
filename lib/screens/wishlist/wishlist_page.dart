@@ -102,7 +102,7 @@ class _WishlistState extends State<Wishlist> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: AppText(text: "WISHLIST",),
+        title: AppText(text: "Wishlist",),
       ),
       body: Container(
         decoration: BoxDecoration(

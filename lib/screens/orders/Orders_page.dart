@@ -101,7 +101,7 @@ class _MyOrdersState extends State<MyOrders> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "MY ORDERS",
+          text: "My Orders",
         ),
         actions: [
           IconButton(
@@ -224,7 +224,7 @@ class _MyOrdersState extends State<MyOrders> {
                     ? Text("null data")
                     : Text(
                         orderList![index]["cartName"].toString(),
-                        style: const TextStyle(fontWeight: FontWeight.bold),textScaleFactor: 1.2,
+                        style:  TextStyle(fontSize:15,),textScaleFactor: 1.2,
                   textAlign: TextAlign.center,
                       ),
                 SizedBox(
@@ -239,31 +239,32 @@ class _MyOrdersState extends State<MyOrders> {
                       children: [
                         Text(
                           price,
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.green),
+                          style:  TextStyle(
+                              fontSize: 14,
+                              color: Colors.teal.shade800),
+                        ),
+                        SizedBox(
+                          height: 4,
                         ),
                         Text(
                           "Amount Paid: ₹ ${orderList![index]["amount_paid"]}",
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.green),
+                          style:  TextStyle(
+                              fontSize: 14,
+                              color: Colors.teal.shade800),
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Text(
                           orderList![index]["address"].toString(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          // style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(
-                          height: 15,
+                          height: 8,
                         ),
                         Text(
                           orderList![index]["date"].toString(),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          // style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),

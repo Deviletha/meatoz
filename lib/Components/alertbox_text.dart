@@ -11,7 +11,7 @@ class AlertText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(fontSize: 15, color: Colors.teal.shade900,fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 15, color: Colors.teal.shade900,),
     );
   }
 }

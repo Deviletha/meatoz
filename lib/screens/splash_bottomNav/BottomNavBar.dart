@@ -1,9 +1,11 @@
 import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:meatoz/Components/alertbox_text.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import '../cartpage/Cart_page.dart';
 import '../accounts/Account_page.dart';
+import '../category/category_page.dart';
 import '../homepage/homepage.dart';
 
 class BottomNav extends StatefulWidget {
@@ -16,7 +18,7 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int selectIndex = 0;
 
-  List body = <Widget>[const HomePage(), Wishlist(),  Accounts(),CartPage()];
+  List body = <Widget>[ HomePage(), CategoryPage(),  Accounts(),CartPage()];
 
   void onItemTapped(int index) {
     setState(() {
@@ -33,11 +35,11 @@ class _BottomNavState extends State<BottomNav> {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child:  Text('No'),
+            child:  AlertText(text: 'No'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child:  Text('Yes'),
+            child:  AlertText(text: 'Yes'),
           ),
         ],
       ),
@@ -57,7 +59,7 @@ class _BottomNavState extends State<BottomNav> {
           elevation: 0,
           items: [
             FloatingNavbarItem(icon: Iconsax.home, title: "MEATOZ"),
-            FloatingNavbarItem(icon: Iconsax.heart, title: "WISHLIST"),
+            FloatingNavbarItem(icon: Iconsax.box, title: "CATEGORIES"),
             FloatingNavbarItem(icon: Iconsax.profile_circle, title: "PROFILE"),
             FloatingNavbarItem(icon: Iconsax.shopping_bag, title: "MY CART"),
           ],

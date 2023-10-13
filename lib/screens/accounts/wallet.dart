@@ -49,7 +49,7 @@ class _WalletPageState extends State<WalletPage> {
         wallet = jsonDecode(responseWallet);
         walletList = wallet!["walletAmount"];
         walletAmountL = walletList![index]["wallet_amount"].toDouble();
-        // Initialize the WALLET_AMOUNT to the maximum available value initially
+        // Initialize the walletAmount to the maximum available value initially
         walletAmount = walletAmountL;
       });
     } else {
@@ -66,7 +66,7 @@ class _WalletPageState extends State<WalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppText(text: "WALLET"),
+        title: AppText(text: "Wallet"),
         actions: [
           IconButton(onPressed:
               () => Navigator.push(

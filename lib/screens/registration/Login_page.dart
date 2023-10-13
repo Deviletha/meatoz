@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         appBar: AppBar(
           title: AppText(
-            text: "LOGIN",
+            text: "Login",
           ),
         ),
         body: Container(

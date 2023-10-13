@@ -19,7 +19,7 @@ class Heading extends StatelessWidget {
           children: [
             Text(
               text,
-              style: TextStyle(fontSize: 18, color: Colors.teal[900],fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 17, color: Colors.grey.shade600,),
             ),
           ],
         ),

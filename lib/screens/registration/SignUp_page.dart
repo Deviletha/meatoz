@@ -108,7 +108,7 @@ class _SignupPageState extends State<SignupPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: AppText(text: "SIGNUP",),
+          title: AppText(text: "Sign Up",),
         ),
         body: Container(
           width: double.infinity,

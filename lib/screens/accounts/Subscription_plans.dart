@@ -168,7 +168,7 @@ class _SubscriptionState extends State<Subscription> {
     return Scaffold(
       appBar: AppBar(
         title: AppText(
-          text: "SUBCRIPTION",
+          text: "Subscription",
         ),
         actions: [
           IconButton(onPressed: () => Navigator.push(
@@ -212,53 +212,59 @@ class _SubscriptionState extends State<Subscription> {
              ''',
               style: TextStyle(fontSize: 18, color: Colors.grey.shade700),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
-              child: Container(
-                height: 80,
-                decoration: BoxDecoration(
+            Visibility(
+              visible: subDetailList != null && subDetailList!.isNotEmpty,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
+                child: Container(
+                  height: 80,
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     gradient: LinearGradient(
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                        colors: [
-                          Colors.blue.shade200,
-                          Colors.blue.shade100,
-                          Colors.green.shade50,
-                        ])),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          isLoading
-                              ? CircularProgressIndicator()
-                              : Text(
-                            subDetailList == null || subDetailList!.isEmpty
-                                      ? 'Loading...'
-                                      : "${subDetailList![0]["head"]} Plan",
-                                  style: TextStyle(
-                                    fontSize: 18,fontWeight: FontWeight.bold
-                                  ),
-                                ),
-                          Text(
-                            subDetailList == null || subDetailList!.isEmpty
-                                ? 'Loading...'
-                                : subDetailList![0]["to_date"].toString(),
-                            style: TextStyle(
-                              fontSize: 15,
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                        Colors.blue.shade200,
+                        Colors.blue.shade100,
+                        Colors.green.shade50,
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            isLoading
+                                ? CircularProgressIndicator()
+                                : Text(
+                              subDetailList == null || subDetailList!.isEmpty
+                                  ? 'Loading...'
+                                  : "${subDetailList![0]["head"]} Plan",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                      TextConst(
-                        text: "Activated",
-                      ),
-                    ],
+                            Text(
+                              subDetailList == null || subDetailList!.isEmpty
+                                  ? 'Loading...'
+                                  : "Expires on ${subDetailList![0]["to_date"]}".toString(),
+                              style: TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                          ],
+                        ),
+                        TextConst(
+                          text: "Activated",
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
