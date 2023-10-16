@@ -535,6 +535,12 @@ class _HomePageState extends State<HomePage> {
               height: 15,
             ),
             Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(15),
+                  topLeft: Radius.circular(15),
+                )
+              ),
                 child: bannerList != null && bannerList!.isNotEmpty
                     ? isLoading
                         ? Shimmer.fromColors(
