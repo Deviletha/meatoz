@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../../../../Components/text_widget.dart';
+import '../../../theme/colors.dart';
 
 class PopularCard extends StatelessWidget {
   final String imagePath;
@@ -43,10 +44,16 @@ class PopularCard extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 10,
-            left: 5,
-            child: TextConst(
-              text: itemName,
+            bottom: 15,
+            child: Container(
+              width: MediaQuery.of(context).size.width / 1,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextConst(
+                  text: itemName,
+                ),
+              ),
             ),
           )
         ],

@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 import 'faq_page.dart';
 
 
@@ -177,7 +178,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     changePassword();
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal[900],
+                      backgroundColor: Color(ColorT.themeColor),
                       shadowColor: Colors.teal[300],),
                   child: Text("Change Password"),
                 ),

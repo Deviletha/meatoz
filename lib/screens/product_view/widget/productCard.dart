@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
 
 import '../../../Components/discriptiontext.dart';
+import '../../../theme/colors.dart';
 
 class ProductViewTile extends StatelessWidget {
   final String itemName;
@@ -63,7 +64,7 @@ class ProductViewTile extends StatelessWidget {
             Text(
               "₹$price",
               style: TextStyle(
-                  color: Colors.teal.shade800,
+                  color: Color(ColorT.themeColor),
                   fontWeight: FontWeight.bold,
                   fontSize: 20),
             ),
@@ -91,9 +92,9 @@ class ProductViewTile extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: onPressed,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal[900],
+                    backgroundColor: Color(ColorT.themeColor),
                     shadowColor: Colors.teal[300],),
-                child: Text("Add to Cart"),
+                child: Text("Add"),
               ),
             )
           ],

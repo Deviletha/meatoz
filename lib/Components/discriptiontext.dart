@@ -11,7 +11,7 @@ class TextDescription extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      maxLines: 3,
+      maxLines: 6,
       style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
     );
   }

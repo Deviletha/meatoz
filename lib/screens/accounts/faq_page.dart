@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 
 class FAQ extends StatefulWidget {
   final String section;
@@ -83,7 +84,7 @@ class _FAQState extends State<FAQ> {
                             topLeft: Radius.circular(10),
                             topRight: Radius.circular(10),
                           ),
-                          color: Colors.teal[900]),
+                          color: Color(ColorT.themeColor),),
                       child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(faqList![index]["heading"].toString(),

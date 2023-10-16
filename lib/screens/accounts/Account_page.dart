@@ -5,7 +5,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Config/image_url_const.dart';
 import 'package:meatoz/screens/accounts/wallet.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
-import 'package:meatoz/screens/accounts/profile_pages.dart';
+import 'package:meatoz/screens/accounts/address_page.dart';
 import 'package:meatoz/screens/accounts/privacy_terms.dart';
 import 'package:meatoz/screens/wishlist/wishlist_page.dart';
 import 'package:share_plus/share_plus.dart';
@@ -15,12 +15,13 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../Components/alertbox_text.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 import '../splash_bottomNav/BottomNavBar.dart';
-import 'Add_address.dart';
+import 'EditProfile.dart';
 import 'faq_page.dart';
 import '../registration/Login_page.dart';
 import '../orders/Orders_page.dart';
-import 'Subscription_plans.dart';
+import 'subscription_plans.dart';
 import 'Settings.dart';
 
 class Accounts extends StatefulWidget {
@@ -190,23 +191,21 @@ class _AccountsState extends State<Accounts> {
                     child: Column(
                       children: [
                         InkWell(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return Profile();
-                            }),
-                          ),
+                          onTap: () => Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                                return ChangeProfile();
+                              })),
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 gradient: LinearGradient(
                                     begin: Alignment.centerRight,
                                     end: Alignment.centerLeft,
-                                    colors: [
-                                      Colors.teal.shade800,
-                                      Colors.teal.shade900,
+                                    colors: const [
+                                      Color(ColorT.lightGreen),
+                                      Color(ColorT.themeColor),
                                     ])),
-                            height: 100,
+                            height: 90,
                             child: Center(
                               child: dataList == null
                                   ? Shimmer.fromColors(
@@ -248,6 +247,7 @@ class _AccountsState extends State<Accounts> {
                                           errorWidget: (context, url, error) =>
                                               Container(
                                             decoration: BoxDecoration(
+                                              border: Border.all(color: Colors.white,width: 2),
                                                 image: DecorationImage(
                                                     image: AssetImage(
                                                         "assets/noItem.png"))),
@@ -262,13 +262,16 @@ class _AccountsState extends State<Accounts> {
                                         dataList![index]["first_name"]
                                             .toString(),
                                         style: TextStyle(
-                                            fontSize: 35,
+                                            fontSize: 19,
                                             color: Colors.white,
                                             fontWeight: FontWeight.w400),
                                       ),
-                                      subtitle: Text(
-                                        dataList![index]["email"].toString(),
-                                        style: TextStyle(color: Colors.white),
+                                      subtitle: Padding(
+                                        padding: const EdgeInsets.only(top: 8),
+                                        child: Text(
+                                          dataList![index]["email"].toString(),
+                                          style: TextStyle(fontSize: 12,color: Colors.white),
+                                        ),
                                       ),
                                     ),
                             ),
@@ -368,8 +371,8 @@ class _AccountsState extends State<Accounts> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(builder: (context) {
-                              return AddAddress();
-                            }),
+                              return AddressBook();
+                            })
                           ),
                         ),
                         SizedBox(

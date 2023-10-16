@@ -6,6 +6,9 @@ import 'package:shimmer/shimmer.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
+import '../accounts/Add_address.dart';
+import '../accounts/faq_page.dart';
 
 
 class SetectAddress extends StatefulWidget {
@@ -116,6 +119,37 @@ class _SetectAddressState extends State<SetectAddress> {
         title: AppText(text:
         "Select your Address",
         ),
+        actions: [
+          IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return FAQ(
+                    section: "edit_address",
+                  );
+                }),
+              ),
+              icon: Icon(Icons.help_outline_rounded))
+        ],
+      ),
+
+      bottomSheet:  Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ElevatedButton(
+          onPressed: (){
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return AddAddress();
+              }),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(ColorT.themeColor),
+            shadowColor: Colors.teal[300],
+            minimumSize: Size.fromHeight(50),
+          ),child: Text("Add New Address"),
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -212,15 +246,14 @@ class _SetectAddressState extends State<SetectAddress> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              TextConst(text: addressList![index]["address"].toString()),
-              SizedBox(height: 5),
               Text(
-                addressList![index]["phone"].toString(),
+                addressList![index]["address"].toString(),
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
                   color: Colors.red,
                 ),
               ),
+              SizedBox(height: 5),
+              TextConst(text: addressList![index]["phone"].toString()),
               SizedBox(height: 5),
               TextConst(text: addressList![index]["city"].toString()),
               SizedBox(height: 5),

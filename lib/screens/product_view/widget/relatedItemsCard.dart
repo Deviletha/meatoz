@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import '../../../theme/colors.dart';
+
 class RelatedItemTile extends StatelessWidget {
   final String itemName;
   final String price;
@@ -63,7 +65,7 @@ class RelatedItemTile extends StatelessWidget {
               style:  TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Colors.teal.shade800,
+                color: Color(ColorT.themeColor),
               ),
             ),
             SizedBox(
@@ -72,7 +74,7 @@ class RelatedItemTile extends StatelessWidget {
             ElevatedButton(
                 onPressed: onPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal[900],
+                  backgroundColor: Color(ColorT.themeColor),
                   shadowColor: Colors.teal[300],
                 ),
                 child: Text("Add")),

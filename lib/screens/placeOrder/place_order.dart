@@ -11,6 +11,7 @@ import '../../Components/custom_row.dart';
 import '../../Components/title_widget.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 import '../orders/Orders_page.dart';
 
 class PlaceOrder extends StatefulWidget {
@@ -630,7 +631,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         ),
         child: Center(
           child: CircularProgressIndicator(
-            color: Colors.teal[900],
+            color: Color(ColorT.themeColor)
           ),
         ),
       );
@@ -646,7 +647,9 @@ class _PlaceOrderState extends State<PlaceOrder> {
         ),
         backgroundColor: Colors.grey.shade200,
         body: isLoading
-            ? CircularProgressIndicator()
+            ? CircularProgressIndicator(
+          color: Color(ColorT.themeColor),
+        )
             : Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -775,7 +778,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(10))),
                                 child: CheckboxListTile(
-                                  activeColor: Colors.teal[900],
+                                  activeColor: Color(ColorT.themeColor),
                                   title: TextConst(text: "Express Delivery"),
                                   value: isExpressDeliverySelected,
                                   onChanged: (value) {
@@ -822,7 +825,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     ),
                                     Slider(
                                       mouseCursor: MouseCursor.uncontrolled,
-                                      activeColor: Colors.teal[900],
+                                      activeColor: Color(ColorT.themeColor),
                                       inactiveColor: Colors.teal[500],
                                       value: walletAmount,
                                       min: 0,
@@ -962,7 +965,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                               child: Column(
                                 children: [
                                   CheckboxListTile(
-                                    activeColor: Colors.teal[900],
+                                    activeColor: Color(ColorT.themeColor),
                                     title: TextConst(text: "Contactless Delivery"),
                                     value: isContactless,
                                     onChanged: (value) {
@@ -1031,7 +1034,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                   // Wait for 3 seconds before navigating to MyOrders
                                 },
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.teal[900],
+                                  backgroundColor: Color(ColorT.themeColor),
                                   shadowColor: Colors.teal[300],
                                 ),
                                 child: Text("Place Order"),

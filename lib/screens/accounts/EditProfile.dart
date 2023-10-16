@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 
 class ChangeProfile extends StatefulWidget {
   const ChangeProfile({Key? key}) : super(key: key);
@@ -306,7 +307,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
                     editProfile();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal[900],
+                    backgroundColor: Color(ColorT.themeColor),
                     shadowColor: Colors.teal[300],
                   ),
                   child: Text("Submit"),

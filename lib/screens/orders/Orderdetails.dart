@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:meatoz/theme/colors.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
@@ -139,9 +140,8 @@ class _OrderDetailsState extends State<OrderDetails> {
                       : Text(
                     price,
                     style:  TextStyle(
-
                         fontSize: 15,
-                        color: Colors.teal.shade800),
+                        color: Color(ColorT.themeColor)),
                   ),
                   SizedBox(
                     height: 10,

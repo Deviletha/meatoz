@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:meatoz/screens/splash_bottomNav/SplashScreen.dart';
+import 'package:meatoz/theme/colors.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,16 +17,6 @@ class MyApp extends StatelessWidget {
       title: 'Meatoz Application',
       theme: _buildTheme(Brightness.light),
       home: SplashScreen(),
-      // onGenerateRoute: (RouteSettings settings) {
-      //   if (settings.name == 'www.meatoz.in/Register/USR93') {
-      //     String referralCode = settings.arguments as String; // Extract referral code here
-      //
-      //     // Navigate to the relevant screen using the referral code
-      //     // Example:
-      //     return MaterialPageRoute(builder: (context) => SignupPage1(referralCode: referralCode));
-      //   }
-      //   return null;
-      // },
     );
   }
 }
@@ -35,11 +26,11 @@ ThemeData _buildTheme(brightness) {
 
   return baseTheme.copyWith(
     // textTheme: GoogleFonts.robotoCondensedTextTheme(baseTheme.textTheme),
-      appBarTheme: AppBarTheme(backgroundColor: Colors.teal[900],
+      appBarTheme: AppBarTheme(backgroundColor: Color(ColorT.themeColor),
    elevation: 0,systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: Colors.teal[900],
+          statusBarColor: Color(ColorT.themeColor),
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.light,
-        ),),focusColor: Colors.teal[900],primaryColor: Colors.teal[900]
+        ),),focusColor: Color(ColorT.themeColor),primaryColor: Color(ColorT.themeColor)
   );
 }

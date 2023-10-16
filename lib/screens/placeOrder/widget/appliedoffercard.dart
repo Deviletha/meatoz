@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../theme/colors.dart';
+
 class AppliedOfferCard extends StatelessWidget {
   final String title;
   final String description;
@@ -58,7 +60,7 @@ class AppliedOfferCard extends StatelessWidget {
                 bottomRight: Radius.circular(12),
                 topRight: Radius.circular(12),
               ),
-              color: Colors.teal[900],
+              color: Color(ColorT.themeColor),
             ),
             child: TextButton(
               onPressed: onPressed,

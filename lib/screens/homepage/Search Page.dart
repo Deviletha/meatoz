@@ -3,10 +3,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:meatoz/Components/discriptiontext.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
+import '../../theme/colors.dart';
 import '../product_view/Product_view.dart';
 
 class Search extends StatefulWidget {
@@ -254,30 +256,65 @@ class _SearchState extends State<Search> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.grey,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: ClipRRect(
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    borderRadius: BorderRadius.circular(20), // Image border
-                    child: SizedBox.fromSize(
-                      size: Size.fromRadius(40), // Image radius
-                      child: CachedNetworkImage(
-                        imageUrl: image,
-                        placeholder: (context, url) => Container(
-                          color: Colors.grey[300],
+                Column(
+                  children: [
+                    Container(
+                      height: 70,
+                      width: 90,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ClipRRect(
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        borderRadius: BorderRadius.circular(20), // Image border
+                        child: SizedBox.fromSize(
+                          size: Size.fromRadius(40), // Image radius
+                          child: CachedNetworkImage(
+                            imageUrl: image,
+                            placeholder: (context, url) => Container(
+                              color: Colors.grey[300],
+                            ),
+                            errorWidget: (context, url, error) => Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage("assets/noItem.png"))),
+                            ),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                        errorWidget: (context, url, error) => Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: AssetImage("assets/noItem.png"))),
-                        ),
-                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          "₹$price",
+                          style:  TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color:  Color(ColorT.themeColor),),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                            color: isInWishlist ? Colors.red : Colors.black,
+                            size: 30,
+                          ),
+                          onPressed: () {
+                            if (isInWishlist) {
+                              removeFromWishList(combId);
+                              wishListGet();
+                            } else {
+                              // The item is not in the wishlist, you may want to add it.
+                              addToWishList(pId, combId, price);
+                              wishListGet();
+                            }
+                          },
+                        )
+                      ],
+                    ),
+                  ],
                 ),
                 SizedBox(
                   width: 10,
@@ -296,38 +333,9 @@ class _SearchState extends State<Search> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                        "₹$price",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.green),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
+                      TextDescription(text:
                         searchList![index]["description"].toString(),
-                        maxLines: 4,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      IconButton(
-                        icon: Icon(
-                          isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                          color: isInWishlist ? Colors.red : Colors.black,
-                          size: 30,
-                        ),
-                        onPressed: () {
-                          if (isInWishlist) {
-                            removeFromWishList(combId);
-                            wishListGet();
-                          } else {
-                            // The item is not in the wishlist, you may want to add it.
-                            addToWishList(pId, combId, price);
-                            wishListGet();
-                          }
-                        },
-                      )
                     ],
                   ),
                 )

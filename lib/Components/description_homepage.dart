@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
-
-class AlertText extends StatelessWidget {
-  const AlertText({
+class TextDescriptionHome extends StatelessWidget {
+  const TextDescriptionHome({
     required this.text,
     super.key,
   });
@@ -12,7 +11,8 @@ class AlertText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: TextStyle(fontSize: 15, color: Colors.black,),
+      maxLines: 1,
+      style: TextStyle(fontSize: 8, color: Colors.grey.shade600),
     );
   }
 }

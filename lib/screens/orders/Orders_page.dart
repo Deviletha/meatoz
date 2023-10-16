@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
+import '../../theme/colors.dart';
 import '../accounts/faq_page.dart';
 import 'Orderdetails.dart';
 
@@ -241,7 +242,7 @@ class _MyOrdersState extends State<MyOrders> {
                           price,
                           style:  TextStyle(
                               fontSize: 14,
-                              color: Colors.teal.shade800),
+                              color: Color(ColorT.themeColor)),
                         ),
                         SizedBox(
                           height: 4,
@@ -250,7 +251,7 @@ class _MyOrdersState extends State<MyOrders> {
                           "Amount Paid: ₹ ${orderList![index]["amount_paid"]}",
                           style:  TextStyle(
                               fontSize: 14,
-                              color: Colors.teal.shade800),
+                              color: Color(ColorT.themeColor)),
                         ),
                         SizedBox(
                           height: 5,

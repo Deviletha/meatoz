@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 
 import '../../Components/text_widget.dart';
+import '../../theme/colors.dart';
 
 class CartTile extends StatelessWidget {
   final String itemName;
@@ -79,10 +80,10 @@ class CartTile extends StatelessWidget {
                   ),
                   Text(
                     "₹$totalPrice",
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.green),
+                        fontSize: 17,
+                        color: Color(ColorT.themeColor),),
                   ),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,

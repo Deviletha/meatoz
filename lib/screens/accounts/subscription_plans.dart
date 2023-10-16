@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/alertbox_text.dart';
-import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 import 'faq_page.dart';
 
 
@@ -166,20 +166,28 @@ class _SubscriptionState extends State<Subscription> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: AppText(
-          text: "Subscription",
+      // appBar: AppBar(
+      //   title: AppText(
+      //     text: "Subscription",
+      //   ),
+      //   actions: [
+      //     IconButton(onPressed: () => Navigator.push(
+      //               context,
+      //               MaterialPageRoute(builder: (context) {
+      //                 return FAQ(
+      //                   section: "subcription_plans",
+      //                 );
+      //               }),
+      //             ), icon: Icon(Icons.help_outline_rounded))
+      //   ],
+      // ),
+      bottomNavigationBar: Container(
+        color: Colors.grey.shade200,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.asset("assets/logo1.png", height: 30,alignment: Alignment.centerLeft,
+            color: Colors.grey.shade700,),
         ),
-        actions: [
-          IconButton(onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return FAQ(
-                        section: "subcription_plans",
-                      );
-                    }),
-                  ), icon: Icon(Icons.help_outline_rounded))
-        ],
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -196,37 +204,46 @@ class _SubscriptionState extends State<Subscription> {
         child: ListView(
           children: [
             SizedBox(
-              height: 8,
+              height: 15,
             ),
             Text(
               '''
   Unlock all
   premium features''',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
             ),
+            IconButton(
+              alignment: Alignment.centerRight,
+                onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return FAQ(
+                  section: "subcription_plans",
+                );
+              }),
+            ), icon: Icon(Icons.help_outline_rounded, size: 30,)),
             Text(
               '''
-              
-   Choose the subscription among the top one 
-   and enjoy all the premium features
+   Choose the subscription among the top one and enjoy 
+   all the premium features
              ''',
-              style: TextStyle(fontSize: 18, color: Colors.grey.shade700),
+              style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
             ),
             Visibility(
               visible: subDetailList != null && subDetailList!.isNotEmpty,
               child: Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10, bottom: 20),
                 child: Container(
-                  height: 80,
+                  height: 70,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(10),
                     gradient: LinearGradient(
                       begin: Alignment.bottomLeft,
                       end: Alignment.topRight,
-                      colors: [
-                        Colors.blue.shade200,
-                        Colors.blue.shade100,
-                        Colors.green.shade50,
+                      colors: const [
+                        Color(ColorT.subscriptionCard1),
+                        Color(ColorT.subscriptionCard),
+                        Color(ColorT.subscriptionCard),
                       ],
                     ),
                   ),
@@ -246,7 +263,8 @@ class _SubscriptionState extends State<Subscription> {
                                   ? 'Loading...'
                                   : "${subDetailList![0]["head"]} Plan",
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 17,
+                                color: Colors.white,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -255,13 +273,19 @@ class _SubscriptionState extends State<Subscription> {
                                   ? 'Loading...'
                                   : "Expires on ${subDetailList![0]["to_date"]}".toString(),
                               style: TextStyle(
+                                color: Colors.white,
                                 fontSize: 15,
                               ),
                             ),
                           ],
                         ),
-                        TextConst(
-                          text: "Activated",
+                        Card(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextConst(
+                              text: "Activated",
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -282,7 +306,7 @@ class _SubscriptionState extends State<Subscription> {
                         options: CarouselOptions(
                           height: 420,
                           aspectRatio: 15 / 6,
-                          viewportFraction: .65,
+                          viewportFraction: .75,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
@@ -307,7 +331,7 @@ class _SubscriptionState extends State<Subscription> {
                       options: CarouselOptions(
                         height: 420,
                         aspectRatio: 15 / 6,
-                        viewportFraction: .65,
+                        viewportFraction: .75,
                         initialPage: 0,
                         enableInfiniteScroll: false,
                         reverse: false,
@@ -321,11 +345,6 @@ class _SubscriptionState extends State<Subscription> {
                       ),
                     ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 30, left: 10),
-              child: Image.asset("assets/logo1.png", height: 30,alignment: Alignment.centerLeft,
-              color: Colors.grey.shade700,),
-            )
           ],
         ),
       ),
@@ -358,8 +377,8 @@ class _SubscriptionState extends State<Subscription> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-              width: 330,
-              height: 120,
+              width: 360,
+              height: 150,
               decoration: BoxDecoration(
                   color: planColors[index1],
                   borderRadius: BorderRadius.only(
@@ -368,8 +387,8 @@ class _SubscriptionState extends State<Subscription> {
               child: Image.asset(images[index1]),
             ),
             Container(
-              height: 238,
-              width: 330,
+              height: 208,
+              width: 360,
               color: Colors.white,
               child: Padding(
                 padding: const EdgeInsets.only(left: 10),
@@ -382,47 +401,47 @@ class _SubscriptionState extends State<Subscription> {
                       child: Text(
                         subscriptionList![index1]["head"].toString(),
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
                     Text(
                       subscriptionList![index1]["description"].toString(),
-                      style: TextStyle(fontSize: 15, color: Colors.grey),
+                      style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 15, bottom: 15),
+                      padding: const EdgeInsets.only(top: 10, bottom: 10),
                       child: Text(
                         "Features",
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                       ),
                     ),
                     Text(
-                      "No of Orders - ${subscriptionList![index1]["no_of_orders"] ??" "}",
-                      style: TextStyle(fontSize: 15, color: Colors.grey),
+                      "✔️ No of Orders - ${subscriptionList![index1]["no_of_orders"] ??" "}",
+                      style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                      "Duration - ${subscriptionList![index1]["plan_duration"] ?? " "}Month",
-                      style: TextStyle(fontSize: 15, color: Colors.grey),
+                      "✔️ Duration - ${subscriptionList![index1]["plan_duration"] ?? " "}Month",
+                      style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
-                      "CashBack - ${subscriptionList![index1]["cashback_percentage"] ??" "}%",
-                      style: TextStyle(fontSize: 15, color: Colors.grey),
+                      "✔️ CashBack - ${subscriptionList![index1]["cashback_percentage"] ??" "}%",
+                      style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                     ),
                     SizedBox(
                       height: 5,
                     ),
                     Text(
                       "Rs.${subscriptionList![index1]["amount"] ?? ""}",
-                      style: TextStyle(fontSize: 20, color: Colors.teal[900]),
+                      style: TextStyle(fontSize: 18,),
                     ),
                   ],
                 ),
@@ -430,12 +449,12 @@ class _SubscriptionState extends State<Subscription> {
             ),
             Container(
               height: 40,
-              width: 330,
+              width: 360,
               decoration: BoxDecoration(
                 color: isPlanActivated &&
-                    subDetailList![0]["planID"] == subscriptionList![index1]["id"].toString()
-                    ? Colors.grey[400] // Disabled color
-                    : Colors.grey[800],
+                    subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString()
+                    ? Colors.grey.shade900 // Disabled color
+                    : Colors.grey.shade700,
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20),
                   bottomRight: Radius.circular(20),
@@ -443,7 +462,7 @@ class _SubscriptionState extends State<Subscription> {
               ),
               child: TextButton(
                 onPressed: isPlanActivated &&
-                    subDetailList![0]["planID"] == subscriptionList![index1]["id"].toString()
+                    subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString()
                     ? null // Disable the button if plan is activated
                     : () {
                   _showPlanConfirmationDialog(
@@ -453,14 +472,12 @@ class _SubscriptionState extends State<Subscription> {
                 },
                 child: Text(
                   isPlanActivated &&
-                      subDetailList![0]["planID"] == subscriptionList![index1]["id"].toString()
+                      subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString()
                       ? "Plan Activated"
                       : "Choose Plan",
                   style: TextStyle(fontSize: 15, color: Colors.white),
                 ),
               ),
-
-
             ),
           ],
         ),

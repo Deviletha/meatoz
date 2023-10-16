@@ -2,7 +2,7 @@ import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.da
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Components/alertbox_text.dart';
-import 'package:meatoz/screens/wishlist/wishlist_page.dart';
+import '../../theme/colors.dart';
 import '../cartpage/Cart_page.dart';
 import '../accounts/Account_page.dart';
 import '../category/category_page.dart';
@@ -51,12 +51,14 @@ class _BottomNavState extends State<BottomNav> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        extendBody: true,
+        // extendBody: false,
         bottomNavigationBar: FloatingNavbar(
           onTap: onItemTapped,
           currentIndex: selectIndex,
-          backgroundColor: Colors.teal[900],
-          elevation: 0,
+          backgroundColor: Colors.white,
+          selectedBackgroundColor: Colors.white,
+          selectedItemColor: Color(ColorT.themeColor),
+          unselectedItemColor: Colors.black,
           items: [
             FloatingNavbarItem(icon: Iconsax.home, title: "MEATOZ"),
             FloatingNavbarItem(icon: Iconsax.box, title: "CATEGORIES"),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import '../../theme/colors.dart';
 import 'BottomNavBar.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class _SplashScreenState extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.teal[900],
+      backgroundColor: Color(ColorT.themeColor),
       body: Center(
               child: Image.asset("assets/logo1.png",height: 80,color: Colors.white,
                 // fit: BoxFit.cover,

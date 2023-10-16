@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../Components/text_widget.dart';
-import '../../accounts/Subscription_plans.dart';
+import '../../accounts/subscription_plans.dart';
 
 class MeatozPlan extends StatefulWidget {
   const MeatozPlan({Key? key}) : super(key: key);

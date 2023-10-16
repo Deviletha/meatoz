@@ -18,55 +18,40 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  Future<void> _showLogoutConfirmationDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          // shape: OutlineInputBorder(
-          //     borderRadius: BorderRadius.circular(20),gapPadding: 20
-          // ),
-          title: Text('Logout'),
-          content: Text('Do you want to logout?'),
-          actions: <Widget>[
-            TextButton(
-              child: AlertText(
-                text: 'Cancel',
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            TextButton(
-              child: AlertText(
-                text: 'Logout',
-              ),
-              onPressed: () async {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return BottomNav();
-                  }),
-                );
-                // Clear the user session data
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.remove("UID");
-                Fluttertoast.showToast(
-                  msg: "Logged out",
-                  toastLength: Toast.LENGTH_SHORT,
-                  gravity: ToastGravity.SNACKBAR,
-                  timeInSecForIosWeb: 1,
-                  textColor: Colors.white,
-                  fontSize: 16.0,
-                );
-              },
-            ),
-          ],
-        );
-      },
+
+  Future<void> _showLogoutConfirmationSnackBar() async {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Do you want to logout from app'),
+        action: SnackBarAction(
+          label: 'YES',
+          textColor: Colors.red,
+          onPressed: () async {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return BottomNav();
+              }),
+            );
+
+            // Clear the user session data
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove("UID");
+
+            Fluttertoast.showToast(
+              msg: "Logged out",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.SNACKBAR,
+              timeInSecForIosWeb: 1,
+              textColor: Colors.red,
+              fontSize: 16.0,
+            );
+          },
+        ),
+      ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -88,33 +73,42 @@ class _SettingsState extends State<Settings> {
               Colors.grey.shade200,
               Colors.grey.shade400,
             ])),
-        child: Column(
-          children: [
-            AccountCustomTile(
-              title: "Edit Profile",
-              icon: Iconsax.user_edit,
-              onTap: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return ChangeProfile();
-              })),
-            ),
-            Divider(),
-            AccountCustomTile(
-              title: "Change Password",
-              icon: Iconsax.keyboard,
-              onTap: () =>
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return ChangePassword();
-              })),
-            ),
-            Divider(),
-            AccountCustomTile(
-              title: "Logout",
-              icon: Iconsax.logout,
-              onTap: () => _showLogoutConfirmationDialog(),
-            ),
-            Divider(),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              AccountCustomTile(
+                title: "Edit Profile",
+                icon: Iconsax.user_edit,
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return ChangeProfile();
+                })),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              AccountCustomTile(
+                title: "Change Password",
+                icon: Iconsax.keyboard,
+                onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                  return ChangePassword();
+                })),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              AccountCustomTile(
+                title: "Logout from App",
+                icon: Iconsax.logout,
+                onTap: () => _showLogoutConfirmationSnackBar(),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/screens/product_view/widget/productCard.dart';
 import 'package:meatoz/screens/product_view/widget/relatedItemsCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +13,7 @@ import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../registration/Login_page.dart';
+import '../splash_bottomNav/BottomNavBar.dart';
 
 class ProductView extends StatefulWidget {
   final String productName;
@@ -112,44 +114,45 @@ class _ProductViewState extends State<ProductView> {
     String? loginId = prefs.getString('UID');
 
     if (loginId != null && loginId.isNotEmpty) {
-      // User is logged in, proceed with adding to cart
-      var response = await ApiHelper().post(endpoint: "cart/add", body: {
-        "userid": uID,
-        "productid": widget.id.toString(),
-        "product": widget.productName.toString(),
-        "price": widget.amount.toString(),
-        "quantity": "1",
-        "psize": widget.pSize.toString(),
-        "combination_id": widget.combinationId.toString()
-      }).catchError((err) {});
-      if (response != null) {
-        setState(() {
-          debugPrint('cart page successful:');
+      var stock = widget.stock.toString();
+      bool isStockAvailable = int.parse(stock) > 0;
 
+      if (isStockAvailable) {
+        var response = await ApiHelper().post(endpoint: "cart/add", body: {
+          "userid": uID,
+          "productid": widget.id.toString(),
+          "product": widget.productName.toString(),
+          "price": widget.amount.toString(),
+          "quantity": "1",
+          "psize": widget.pSize.toString(),
+          "combination_id": widget.combinationId.toString()
+        }).catchError((err) {});
 
-          var stock = widget.stock.toString();
-          bool isStockAvailable = int.parse(stock) > 0;
+        if (response != null) {
+          setState(() {
+            debugPrint('cart page successful:');
 
-          if (isStockAvailable) {
             Fluttertoast.showToast(
-                msg: "Item added to Cart",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.SNACKBAR,
-                timeInSecForIosWeb: 1,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          } else {
-            Fluttertoast.showToast(
-                msg: "Product is out of stock!",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.SNACKBAR,
-                timeInSecForIosWeb: 1,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          }
-        });
+              msg: "Item added to Cart",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.SNACKBAR,
+              timeInSecForIosWeb: 1,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          });
+        } else {
+          debugPrint('api failed:');
+        }
       } else {
-        debugPrint('api failed:');
+        Fluttertoast.showToast(
+          msg: "Product is out of stock!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       }
     } else {
       // User is not logged in, navigate to LoginPage
@@ -157,6 +160,7 @@ class _ProductViewState extends State<ProductView> {
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
+
 
   void _showAlertDialog() {
     showDialog(
@@ -214,6 +218,15 @@ class _ProductViewState extends State<ProductView> {
       appBar: AppBar(
         title: AppText(
           text: widget.productName,
+        ),
+        leading: IconButton(
+          onPressed: (){
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => BottomNav()), // Replace with your cart page
+            );
+          },
+          icon: Icon(Iconsax.arrow_left),
         ),
         actions: [
           IconButton(

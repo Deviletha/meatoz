@@ -9,6 +9,7 @@ import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
+import '../../theme/colors.dart';
 import '../placeOrder/widget/offer_card.dart';
 import '../registration/Login_page.dart';
 import '../placeOrder/Select_address.dart';
@@ -214,8 +215,12 @@ class _CartPageState extends State<CartPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: AppText(
-          text: "My Cart",
+        title: isLoading
+            ? Center(
+          child: CircularProgressIndicator(color: Color(ColorT.themeColor),),
+        )
+            : AppText(
+          text: "My Cart (${cartList!.length})",
         ),
         leading: IconButton(
           onPressed: (){
@@ -244,7 +249,7 @@ class _CartPageState extends State<CartPage> {
         child: isLoggedIn
             ? isLoading
                 ? Center(
-                    child: CircularProgressIndicator(color: Colors.teal[900]),
+                    child: CircularProgressIndicator(color:Color(ColorT.themeColor),),
                   )
                 : cartList == null || cartList!.isEmpty
                     ? Center(
@@ -259,31 +264,6 @@ class _CartPageState extends State<CartPage> {
                       )
                     : ListView(
                         children: [
-                          Card(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Text(
-                                  "${cartList!.length} Items in Cart",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                ElevatedButton(
-                                    onPressed: () => Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) {
-                                            return SetectAddress();
-                                          }),
-                                        ),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.teal[900],
-                                      shadowColor: Colors.teal[300],
-                                    ),
-                                    child: Text("Place Order"))
-                              ],
-                            ),
-                          ),
                           ListView.builder(
                             physics: ScrollPhysics(),
                             shrinkWrap: true,
@@ -346,6 +326,26 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
       ),
+      bottomSheet:  isLoading
+          ? Center(
+        child: CircularProgressIndicator(color: Color(ColorT.themeColor),),
+      )
+          : Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return SetectAddress();
+                  }),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(ColorT.themeColor),
+                  shadowColor: Colors.teal[300],
+                  minimumSize: Size.fromHeight(50),
+                ),
+                child: Text("Place Order")),
+          ),
     );
   }
 
