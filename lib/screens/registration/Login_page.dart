@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 import '../splash_bottomNav/BottomNavBar.dart';
 import 'SignUp_page.dart';
 
@@ -196,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                     apiForLogin();
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal[900],
+                      backgroundColor: Color(ColorT.themeColor),
                       shadowColor: Colors.teal[300],),
                   child: Text("Login"),
                 ),

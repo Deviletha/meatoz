@@ -22,6 +22,7 @@ class ProductView extends StatefulWidget {
   final String url;
   final String description;
   final String amount;
+  final String actualPrice;
   final String id;
   final String combinationId;
   final String pSize;
@@ -40,7 +41,10 @@ class ProductView extends StatefulWidget {
       required this.pSize,
       required this.position,
       required this.stock,
-      required this.recipe, required this.noOfPiece, required this.serveCapacity})
+      required this.recipe,
+      required this.noOfPiece,
+      required this.serveCapacity,
+      required this.actualPrice})
       : super(key: key);
 
   @override
@@ -48,7 +52,6 @@ class ProductView extends StatefulWidget {
 }
 
 class _ProductViewState extends State<ProductView> {
-
   ///ProductList
   String? data;
   Map? productList;
@@ -108,7 +111,6 @@ class _ProductViewState extends State<ProductView> {
     }
   }
 
-
   Future<void> checkLoggedIn(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? loginId = prefs.getString('UID');
@@ -161,7 +163,6 @@ class _ProductViewState extends State<ProductView> {
     }
   }
 
-
   void _showAlertDialog() {
     showDialog(
       context: context,
@@ -203,8 +204,8 @@ class _ProductViewState extends State<ProductView> {
         productList = jsonDecode(response);
         productList1 = productList!["pagination"];
         finalProductList = productList1!["pageData"];
-        relatedProductList = finalProductList![widget.position]["relatedProduct"];
-
+        relatedProductList =
+            finalProductList![widget.position]["relatedProduct"];
       });
     } else {
       debugPrint('api failed:');
@@ -213,17 +214,18 @@ class _ProductViewState extends State<ProductView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
         title: AppText(
           text: widget.productName,
         ),
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => BottomNav()), // Replace with your cart page
+              MaterialPageRoute(
+                  builder: (context) =>
+                      BottomNav()), // Replace with your cart page
             );
           },
           icon: Icon(Iconsax.arrow_left),
@@ -250,6 +252,7 @@ class _ProductViewState extends State<ProductView> {
         child: ListView(
           children: [
             ProductViewTile(
+              actualPrice: widget.actualPrice,
                 noOfPiece: widget.noOfPiece,
                 servingCapacity: widget.serveCapacity,
                 itemName: widget.productName.toString(),
@@ -274,10 +277,10 @@ class _ProductViewState extends State<ProductView> {
                         return getProducts(index);
                       },
                       options: CarouselOptions(
-                        height: 230,
+                        height: 290,
                         aspectRatio: 15 / 6,
-                        viewportFraction: .45,
-                        initialPage: 0,
+                        viewportFraction: .65,
+                        initialPage: 1,
                         enableInfiniteScroll: false,
                         reverse: false,
                         autoPlay: true,
@@ -291,15 +294,16 @@ class _ProductViewState extends State<ProductView> {
                     ),
                   )
                 : CarouselSlider.builder(
-                    itemCount:
-                    relatedProductList == null ? 0 : relatedProductList?.length,
+                    itemCount: relatedProductList == null
+                        ? 0
+                        : relatedProductList?.length,
                     itemBuilder: (context, index, realIndex) {
                       return getProducts(index);
                     },
                     options: CarouselOptions(
-                      height: 230,
+                      height: 290,
                       aspectRatio: 15 / 6,
-                      viewportFraction: .45,
+                      viewportFraction: .55,
                       initialPage: 0,
                       enableInfiniteScroll: false,
                       reverse: false,
@@ -322,7 +326,8 @@ class _ProductViewState extends State<ProductView> {
     if (relatedProductList == null || relatedProductList![index] == null) {
       return Container();
     }
-    var image = UrlConstants.base + (relatedProductList![index]["image"] ?? "").toString();
+    var image = UrlConstants.base +
+        (relatedProductList![index]["image"] ?? "").toString();
     var price = "₹${relatedProductList![index]["offerPrice"] ?? ""}";
 
     var stock = relatedProductList![index]["stock"];
@@ -331,25 +336,27 @@ class _ProductViewState extends State<ProductView> {
     return RelatedItemTile(
       itemName: relatedProductList![index]["name"].toString(),
       imagePath: image,
-        onPressed: () {
-          if (isStockAvailable) {
-            productID = relatedProductList![index]["productID"].toString();
-            productName = relatedProductList![index]["name"].toString();
-            offerPrice = relatedProductList![index]["offerPrice"].toString();
-            pSize = relatedProductList![index]["size_attribute_name"].toString();
-            combinationId = relatedProductList![index]["combinationid"].toString();
-            addToCart(productID!, productName!, offerPrice!, pSize!, combinationId!);
-          } else {
-            Fluttertoast.showToast(
-                msg: "Product is out of stock!",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.SNACKBAR,
-                timeInSecForIosWeb: 1,
-                textColor: Colors.white,
-                fontSize: 16.0);
-          }
-        },
+      onPressed: () {
+        if (isStockAvailable) {
+          productID = relatedProductList![index]["productID"].toString();
+          productName = relatedProductList![index]["name"].toString();
+          offerPrice = relatedProductList![index]["offerPrice"].toString();
+          pSize = relatedProductList![index]["size_attribute_name"].toString();
+          combinationId =
+              relatedProductList![index]["combinationid"].toString();
+          addToCart(
+              productID!, productName!, offerPrice!, pSize!, combinationId!);
+        } else {
+          Fluttertoast.showToast(
+              msg: "Product is out of stock!",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.SNACKBAR,
+              timeInSecForIosWeb: 1,
+              textColor: Colors.white,
+              fontSize: 16.0);
+        }
+      },
       price: price,
-        );
+    );
   }
 }

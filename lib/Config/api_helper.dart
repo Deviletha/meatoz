@@ -1,8 +1,8 @@
 import 'package:http/http.dart' as http;
 
 const String baseUrl =
-    // 'https://meatoz.hawkssolutions.com/basicapi/public/v1/';
-    'https://meatoz.in/basicapi/public/v1/';
+    'https://meatoz.hawkssolutions.com/basicapi/public/v1/';
+    // 'https://meatoz.in/basicapi/public/v1/';
 
 class ApiHelper {
   var client = http.Client();

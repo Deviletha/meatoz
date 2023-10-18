@@ -6,6 +6,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 import 'Login_page.dart';
 
 class SignupPage extends StatefulWidget {
@@ -310,7 +311,7 @@ class _SignupPageState extends State<SignupPage> {
                             MaterialPageRoute(builder: (context) => LoginPage()));
                       },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal[900],
+                          backgroundColor: Color(ColorT.themeColor),
                           shadowColor: Colors.teal[300],),
                       child: Text("Sign Up"),
                     ),

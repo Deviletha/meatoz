@@ -221,76 +221,83 @@ class _MyOrdersState extends State<MyOrders> {
                 SizedBox(
                   height: 5,
                 ),
-                orderList == null
-                    ? Text("null data")
-                    : Text(
-                        orderList![index]["cartName"].toString(),
-                        style:  TextStyle(fontSize:15,),textScaleFactor: 1.2,
-                  textAlign: TextAlign.center,
-                      ),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          price,
-                          style:  TextStyle(
-                              fontSize: 14,
-                              color: Color(ColorT.themeColor)),
-                        ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          "Amount Paid: ₹ ${orderList![index]["amount_paid"]}",
-                          style:  TextStyle(
-                              fontSize: 14,
-                              color: Color(ColorT.themeColor)),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          orderList![index]["address"].toString(),
-                          // style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          orderList![index]["date"].toString(),
-                          // style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
+                    orderList == null
+                        ? Text("null data")
+                        : Text(
+                      orderList![index]["cartName"].toString(),
+                      maxLines: 2,
+                      style:  TextStyle(fontSize:13,fontWeight: FontWeight.bold),
                     ),
-                    if (!isOrderCancelled && isButtonVisible)
-                      ElevatedButton(
-                        onPressed: () {
-                          orderID = orderList![index]["id"].toString();
-                          print(orderID);
-                          if (!isOrderCancelled) {
-                            cancelOrderApi();
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red[300],
-                          shadowColor: Colors.red[100],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
+                    SizedBox(
+                      height: 3,
+                    ),
+                    Text(
+                      price,
+                      style:  TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Color(ColorT.themeColor)),
+                    ),
+                    SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      "Amount Paid: ₹ ${orderList![index]["amount_paid"]}",
+                      style:  TextStyle(
+                          fontSize: 14,
+                          color: Color(ColorT.themeColor)),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              orderList![index]["address"].toString(),
+                              // style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              orderList![index]["date"].toString(),
+                              // style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
                         ),
-                        child: Text("Cancel",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            )),
-                      ),
+                        if (!isOrderCancelled && isButtonVisible)
+                          ElevatedButton(
+                            onPressed: () {
+                              orderID = orderList![index]["id"].toString();
+                              print(orderID);
+                              if (!isOrderCancelled) {
+                                cancelOrderApi();
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red[300],
+                              shadowColor: Colors.red[100],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: Text("Cancel",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                )),
+                          ),
+                      ],
+                    )
                   ],
                 ),
               ],

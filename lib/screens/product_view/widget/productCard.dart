@@ -3,14 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
 
 import '../../../Components/discriptiontext.dart';
+import '../../../Components/itemname_text.dart';
 import '../../../theme/colors.dart';
 
 class ProductViewTile extends StatelessWidget {
   final String itemName;
   final String description;
-  final String noOfPiece;
-  final String servingCapacity;
+  final String? noOfPiece;
+  final String? servingCapacity;
   final String price;
+  final String actualPrice;
   final String imagePath;
   // final color;
   final void Function()? onPressed;
@@ -23,8 +25,8 @@ class ProductViewTile extends StatelessWidget {
       required this.onPressed,
       required this.price,
       required this.description,
-      required this.noOfPiece,
-      required this.servingCapacity})
+       this.noOfPiece,
+       this.servingCapacity, required this.actualPrice})
       : super(key: key);
 
   @override
@@ -33,7 +35,7 @@ class ProductViewTile extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
@@ -61,42 +63,64 @@ class ProductViewTile extends StatelessWidget {
             SizedBox(
               height: 15,
             ),
-            Text(
-              "₹$price",
-              style: TextStyle(
-                  color: Color(ColorT.themeColor),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
-            ),
+            // Row(mainAxisAlignment: MainAxisAlignment.end,
+            //   children: [
+            //     ElevatedButton(
+            //       onPressed: onPressed,
+            //       style: ElevatedButton.styleFrom(
+            //         backgroundColor: Color(ColorT.themeColor),
+            //         shadowColor: Colors.teal[300],),
+            //       child: Text("Add"),
+            //     ),
+            //   ],
+            // ),
             SizedBox(
               height: 10,
             ),
-            TextConst(
+            ItemName(
               text: itemName,
             ),
             SizedBox(
               height: 5,
             ),
-            TextConst(text: "No of Piece: $noOfPiece"),
+            TextDescription(text:description,
+            ),
             SizedBox(
               height: 5,
             ),
-            TextConst(text: "Serving Capacity: $servingCapacity"),
+            Visibility(
+              visible: noOfPiece != "null",
+                child: TextConst(text: "No of Piece: $noOfPiece")),
             SizedBox(
               height: 5,
             ),
-        TextDescription(text:description,
+            Visibility(
+              visible: servingCapacity != "null",
+                child: TextConst(text: "Serving Capacity: $servingCapacity")),
+            SizedBox(
+              height: 5,
             ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: ElevatedButton(
-                onPressed: onPressed,
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(ColorT.themeColor),
-                    shadowColor: Colors.teal[300],),
-                child: Text("Add"),
-              ),
-            )
+            Row(
+              children: [
+                Text(actualPrice, style: TextStyle(
+                    decoration: TextDecoration.lineThrough,
+                    decorationStyle: TextDecorationStyle.solid,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18),),
+                SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "₹$price",
+                  style: TextStyle(
+                      color: Color(ColorT.themeColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                ),
+              ],
+            ),
+
           ],
         ),
       ),

@@ -1,5 +1,4 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Components/alertbox_text.dart';
@@ -67,6 +66,9 @@ class _BottomNavState extends State<BottomNav> {
       onWillPop: _onWillPop,
       child: Scaffold(
         floatingActionButton: FloatingActionButton(
+          clipBehavior: Clip.hardEdge,
+          // isExtended: true,
+          mini: false,
           backgroundColor: Colors.white,
           child: Padding(
             padding: const EdgeInsets.all(10),

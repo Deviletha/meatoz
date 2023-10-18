@@ -1,29 +1,28 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:meatoz/Components/discriptiontext.dart';
+import 'package:meatoz/Components/itemname_text.dart';
 
-import '../../Components/text_widget.dart';
+import '../../theme/colors.dart';
 
 class WishlistTile extends StatelessWidget {
   final String itemName;
   final String description;
   final String totalPrice;
   final String imagePath;
-  // final color;
+  final String actualPrice;
   final void Function()? onPressed;
   final void Function()? onTap;
 
-  const WishlistTile({Key? key,
-    required this.itemName,
-    required this.imagePath,
-    // this.color,
-    required this.onPressed,
-    required this.onTap,
-    required this.totalPrice,
-    required this.description
-  })
+  const WishlistTile(
+      {Key? key,
+      required this.itemName,
+      required this.imagePath,
+      required this.onPressed,
+      required this.onTap,
+      required this.totalPrice,
+      required this.description,
+      required this.actualPrice})
       : super(key: key);
 
   @override
@@ -48,17 +47,14 @@ class WishlistTile extends StatelessWidget {
                         size: Size.fromRadius(60), // Image radius
                         child: CachedNetworkImage(
                           imageUrl: imagePath,
-                          placeholder: (context, url) =>
-                              Container(
-                                color: Colors.grey[300],
-                              ),
-                          errorWidget: (context, url, error) =>
-                              Container(
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: AssetImage(
-                                            "assets/noItem.png"))),
-                              ),
+                          placeholder: (context, url) => Container(
+                            color: Colors.grey[300],
+                          ),
+                          errorWidget: (context, url, error) => Container(
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: AssetImage("assets/noItem.png"))),
+                          ),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -72,25 +68,42 @@ class WishlistTile extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [SizedBox(
-                        height: 10,
-                      ),
-                       TextConst(text:
-                       itemName
-                        ),
+                      children: [
                         SizedBox(
                           height: 10,
                         ),
-                        TextDescription(text: description,),
+                        ItemName(text: itemName),
                         SizedBox(
                           height: 10,
                         ),
                         Text(
-                          totalPrice,
-                          style:  TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.teal.shade800),
+                          description,
+                          maxLines: 2,
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 10),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          children: [
+                            Text(actualPrice, style: TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                                decorationStyle: TextDecorationStyle.solid,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16)),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              totalPrice,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Color(ColorT.themeColor)),
+                            ),
+                          ],
                         ),
                         SizedBox(
                           height: 10,
@@ -105,7 +118,9 @@ class WishlistTile extends StatelessWidget {
           trailing: IconButton(
             onPressed: onPressed,
             icon: Icon(
-              Iconsax.trash, size: 25, color: Colors.red,
+              Iconsax.trash,
+              size: 25,
+              color: Colors.red,
             ),
           )),
     );

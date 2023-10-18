@@ -43,7 +43,7 @@ class _SettingsState extends State<Settings> {
               toastLength: Toast.LENGTH_SHORT,
               gravity: ToastGravity.SNACKBAR,
               timeInSecForIosWeb: 1,
-              textColor: Colors.red,
+              textColor: Colors.white,
               fontSize: 16.0,
             );
           },

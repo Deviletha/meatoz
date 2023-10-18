@@ -709,8 +709,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                           shrinkWrap: true,
                                           gridDelegate:
                                               const SliverGridDelegateWithFixedCrossAxisCount(
-                                            crossAxisCount: 2,
-                                            childAspectRatio: 3.4,
+                                            crossAxisCount: 3,
+                                            childAspectRatio: 4,
                                           ),
                                           itemCount: todaySlotList == null
                                               ? 0
@@ -1065,12 +1065,18 @@ class _PlaceOrderState extends State<PlaceOrder> {
         });
       },
       child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Card(
-          color: isSelected ? Colors.red.shade100 : Colors.green.shade100,
-          child: Center(
-            child: Text(
-              todaySlotList![index]["slot"].toString(),
+        padding: const EdgeInsets.all(3),
+        child: Container(
+    decoration: BoxDecoration(
+    borderRadius: BorderRadius.all(Radius.circular(15)),
+    color: isSelected ? Colors.red.shade300 : Colors.grey.shade800,),
+          child: Padding(
+            padding: const EdgeInsets.all(3),
+            child: Center(
+              child: Text(
+                todaySlotList![index]["slot"].toString(),
+                style: TextStyle(color: Colors.white, fontSize: 10),
+              ),
             ),
           ),
         ),
@@ -1091,11 +1097,21 @@ class _PlaceOrderState extends State<PlaceOrder> {
           // print("slotDate: {tomorrowSlotList![index]["tomorrow"]}");
         });
       },
-      child: Card(
-        color: isSelected ? Colors.red.shade100 : Colors.green.shade100,
-        child: Center(
-          child: Text(
-            tomorrowSlotList![index]["slot"].toString(),
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            color: isSelected ? Colors.red.shade300 : Colors.grey.shade800,
+          ),
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(3),
+              child: Text(
+                tomorrowSlotList![index]["slot"].toString(),
+                style: TextStyle(color: Colors.white, fontSize: 10),
+              ),
+            ),
           ),
         ),
       ),

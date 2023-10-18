@@ -3,10 +3,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:meatoz/Components/itemname_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Components/discriptiontext.dart';
-import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../../theme/colors.dart';
@@ -27,6 +27,129 @@ class CategoryView extends StatefulWidget {
 }
 
 class _CategoryViewState extends State<CategoryView> {
+  void _showBottomSheet(BuildContext context, int index1) {
+    var image =
+        UrlConstants.base + finalCategoryList![index1]["image"].toString();
+
+    var stock = finalCategoryList![index1]["stock"].toString();
+    bool isStockAvailable = int.parse(stock) > 0;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                clipBehavior: Clip.antiAlias,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                // Image border// Image radius
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (isStockAvailable) {
+                          productId =
+                              finalCategoryList![index1]["id"].toString();
+                          productName =
+                              finalCategoryList![index1]["name"].toString();
+                          price1 = finalCategoryList![index1]["offerPrice"]
+                              .toString();
+                          combinationId = finalCategoryList![index1]
+                                  ["combinationId"]
+                              .toString();
+                          pSize = finalCategoryList![index1]
+                                  ["size_attribute_name"]
+                              .toString();
+                          addToCart(productId!, productName!, price1!, pSize!,
+                              combinationId!);
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Product is out of stock!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.SNACKBAR,
+                              timeInSecForIosWeb: 1,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(ColorT.themeColor),
+                        shadowColor: Colors.teal[300],
+                      ),
+                      child: Text("Add"),
+                    ),
+                  ],
+                ),
+              ),
+              ItemName(
+                text: finalCategoryList![index1]["name"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextDescription(
+                text: finalCategoryList![index1]["description"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "₹${finalCategoryList![index1]["totalPrice"].toString()}",
+                    style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        decorationStyle: TextDecorationStyle.solid,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "₹${finalCategoryList![index1]["offerPrice"].toString()}",
+                    style: TextStyle(
+                        color: Color(ColorT.themeColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Map? categoryList;
   List? finalCategoryList;
   int index = 0;
@@ -152,7 +275,8 @@ class _CategoryViewState extends State<CategoryView> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => CartPage()), // Replace with your cart page
+          MaterialPageRoute(
+              builder: (context) => CartPage()), // Replace with your cart page
         );
       });
     } else {
@@ -197,57 +321,59 @@ class _CategoryViewState extends State<CategoryView> {
           text: widget.itemName,
         ),
       ),
-      body: isLoading ?
-      Center(
-        child: CircularProgressIndicator(
-          color: Color(ColorT.themeColor),
-        ),
-      ):
-      Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade200,
-              Colors.grey.shade50,
-              Colors.grey.shade200,
-              Colors.grey.shade400,
-            ])),
-        child: Center(
-          child: Column(
-            children: [
-              SizedBox(
-                height: 15,
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+                color: Color(ColorT.themeColor),
               ),
-              Expanded(
-                child:
-                    finalCategoryList != null && finalCategoryList!.isNotEmpty
-                        ? isLoading ?
-                    Center(
-                      child: CircularProgressIndicator(
-                        color: Color(ColorT.themeColor),
-                      ),
-                    ): ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: finalCategoryList!.length,
-                            itemBuilder: (context, index) => getCatView(index),
-                          )
-                        : Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "There are currently no items. Items will be available soon..!!",
-                                style: TextStyle(fontSize: 18),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ])),
+              child: Center(
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Expanded(
+                      child: finalCategoryList != null &&
+                              finalCategoryList!.isNotEmpty
+                          ? isLoading
+                              ? Center(
+                                  child: CircularProgressIndicator(
+                                    color: Color(ColorT.themeColor),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  scrollDirection: Axis.vertical,
+                                  itemCount: finalCategoryList!.length,
+                                  itemBuilder: (context, index) =>
+                                      getCatView(index),
+                                )
+                          : Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "There are currently no items. Items will be available soon..!!",
+                                  style: TextStyle(fontSize: 18),
+                                ),
                               ),
                             ),
-                          ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -261,132 +387,107 @@ class _CategoryViewState extends State<CategoryView> {
     bool isInWishlist = finalPrList != null &&
         finalPrList!.any((item) => item['combinationId'].toString() == combId);
     return Padding(
-      padding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
+      padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(15)),
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Column(
-                children: [
-                  Container(
-                    clipBehavior: Clip.antiAlias,
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          child: ListTile(
+              onTap: () {
+                _showBottomSheet(context, index1);
+              },
+              isThreeLine: true,
+              leading: Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.white),
+                width: 90,
+                height: 90,
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.white),
-                    width: 90,
-                    height: 70,
-                    child: CachedNetworkImage(
-                      imageUrl: image,
-                      placeholder: (context, url) => Container(
-                        color: Colors.grey[300],
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/noItem.png"))),
-                      ),
-                      fit: BoxFit.cover,
-                    ),
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "₹${finalCategoryList![index1]["totalPrice"].toString()}",
-                        style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            decorationStyle: TextDecorationStyle.solid,
-                            color: Colors.grey.shade600,
-                            fontSize: 15),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        "₹ ${finalCategoryList![index1]["offerPrice"].toString()}",
-                        style: TextStyle(
-                            color: Colors.teal.shade800,
-                            fontSize: 15),
-                      ),
-                    ],
-                  ),
-                ],
+                  fit: BoxFit.cover,
+                ),
               ),
-              Expanded(
+              title: Padding(
+                padding: const EdgeInsets.only(
+                  left: 8.0,
+                  top: 8,
+                ),
+                child: ItemName(
+                  text: finalCategoryList![index1]["name"].toString(),
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(
+                  left: 8,
+                  top: 8,
+                ),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      finalCategoryList![index1]["description"].toString(),
+                      maxLines: 2,
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 10),
+                    ),
                     SizedBox(
-                      height: 15,
+                      height: 8,
                     ),
-                    TextConst(
-                      text: finalCategoryList![index1]["name"].toString(),
+                    Row(
+                      children: [
+                        Text(
+                            "₹${finalCategoryList![index1]["totalPrice"].toString()}",
+                            style: TextStyle(
+                                decoration: TextDecoration.lineThrough,
+                                decorationStyle: TextDecorationStyle.solid,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15)),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "₹${finalCategoryList![index1]["offerPrice"].toString()}",
+                          style: TextStyle(
+                              color: Color(ColorT.themeColor),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextDescription(
-                        text:
-                            finalCategoryList![index1]["description"].toString(),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.red : Colors.black,
-                              size: 30,
-                            ),
-                            onPressed: () {
-                              if (isInWishlist) {
-                                removeFromWishList(combId);
-                                wishListGet();
-                              } else {
-                                // The item is not in the wishlist, you may want to add it.
-                                addToWishList(pId, combId, price);
-                                wishListGet();
-                              }
-                            },
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              productId =
-                                  finalCategoryList![index1]["id"].toString();
-                              productName =
-                                  finalCategoryList![index1]["name"].toString();
-                              price1 = finalCategoryList![index1]["offerPrice"]
-                                  .toString();
-                              combinationId = finalCategoryList![index1]
-                                      ["combinationId"]
-                                  .toString();
-                              pSize = finalCategoryList![index1]
-                                      ["size_attribute_name"]
-                                  .toString();
-                              addToCart(productId!, productName!, price1!,
-                                  pSize!, combinationId!);
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(ColorT.themeColor),
-                              shadowColor: Colors.teal[300],
-                            ),
-                            child: Text("Add"),
-                          ),
-                        ],
-                      ),
-                    )
                   ],
                 ),
               ),
-            ],
-          ),
+              trailing: IconButton(
+                icon: Icon(
+                  isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                  color: isInWishlist ? Colors.red : Colors.black,
+                  size: 30,
+                ),
+                onPressed: () {
+                  if (isInWishlist) {
+                    removeFromWishList(combId);
+                    wishListGet();
+                  } else {
+                    // The item is not in the wishlist, you may want to add it.
+                    addToWishList(pId, combId, price);
+                    wishListGet();
+                  }
+                },
+              )),
         ),
       ),
     );

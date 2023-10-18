@@ -1,15 +1,19 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:meatoz/Components/itemname_text.dart';
 import 'package:meatoz/screens/wishlist/wishListCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../Components/discriptiontext.dart';
 import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
+import '../../theme/colors.dart';
+import '../cartpage/Cart_page.dart';
 import '../registration/Login_page.dart';
-import '../product_view/Product_view.dart';
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
@@ -96,6 +100,165 @@ class _WishlistState extends State<Wishlist> {
       debugPrint('api failed:');
     }
   }
+  String? productId;
+  String? productName;
+  String? price1;
+  String? pSize;
+  String? combinationId;
+  addToCart(String prID, String prName, String prPrice, String pSize,
+      String combID) async {
+    var response = await ApiHelper().post(endpoint: "cart/add", body: {
+      "userid": uID,
+      "productid": prID,
+      "product": prName,
+      "price": prPrice,
+      "quantity": "1",
+      "psize": pSize,
+      "combination_id": combID
+    }).catchError((err) {});
+    if (response != null) {
+      setState(() {
+        debugPrint('cart page successful:');
+
+        Fluttertoast.showToast(
+          msg: "Item added to Cart",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CartPage()), // Replace with your cart page
+        );
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  void _showBottomSheet(BuildContext context, int index1) {
+    var image =
+        UrlConstants.base + finalPrList![index1]["image"].toString();
+
+    var stock = finalPrList![index1]["stock"].toString();
+    bool isStockAvailable = int.parse(stock) > 0;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                clipBehavior: Clip.antiAlias,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                // Image border// Image radius
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (isStockAvailable) {
+                          productId =
+                              finalPrList![index1]["id"].toString();
+                          productName =
+                              finalPrList![index1]["name"].toString();
+                          price1 = finalPrList![index1]["offerPrice"]
+                              .toString();
+                          combinationId = finalPrList![index1]
+                          ["combinationId"]
+                              .toString();
+                          pSize = finalPrList![index1]
+                          ["size_attribute_name"]
+                              .toString();
+                          addToCart(productId!, productName!, price1!, pSize!,
+                              combinationId!);
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Product is out of stock!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.SNACKBAR,
+                              timeInSecForIosWeb: 1,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(ColorT.themeColor),
+                        shadowColor: Colors.teal[300],
+                      ),
+                      child: Text("Add"),
+                    ),
+                  ],
+                ),
+              ),
+              ItemName(
+                text: finalPrList![index1]["name"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextDescription(
+                text: finalPrList![index1]["description"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "₹${finalPrList![index1]["totalPrice"].toString()}",
+                    style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        decorationStyle: TextDecorationStyle.solid,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "₹${finalPrList![index1]["offerPrice"].toString()}",
+                    style: TextStyle(color: Color(ColorT.themeColor),
+                        fontWeight: FontWeight.bold,fontSize: 15),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -163,10 +326,10 @@ class _WishlistState extends State<Wishlist> {
 
   Widget getWishlist(int index) {
     var image = UrlConstants.base + finalPrList![index]["image"].toString();
-    var price = "₹ ${finalPrList![index]["offerPrice"]}";
-    var pId = (finalPrList![index]["id"] ?? "").toString();
-    var combID = (finalPrList![index]["combinationId"] ?? "").toString();
+    var price = "₹${finalPrList![index]["offerPrice"]}";
+    var actualPrice = "₹${finalPrList![index]["totalPrice"]}";
     return WishlistTile(
+      actualPrice: actualPrice,
         itemName: finalPrList![index]["name"].toString(),
         imagePath: image,
         onPressed: () {
@@ -176,26 +339,8 @@ class _WishlistState extends State<Wishlist> {
               }
             },
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductView(
-                serveCapacity: finalPrList![index]["serving_cupacity"].toString(),
-                noOfPiece: finalPrList![index]["no_of_piece"].toString(),
-                stock: finalPrList![index]["stock"].toString(),
-                recipe: "Recipe not available for this item",
-                position: index,
-                id: pId,
-                productName:
-                finalPrList![index]["name"].toString(),
-                url: image,
-                description: finalPrList![index]["description"].toString(),
-                amount: finalPrList![index]["offerPrice"].toString(),
-                combinationId: combID,
-                pSize: "0",
-              ),
-            ),
-          );
+          _showBottomSheet(context, index);
+
         },
         totalPrice: price,
         description: finalPrList![index]["description"].toString());

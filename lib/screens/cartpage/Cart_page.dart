@@ -217,10 +217,12 @@ class _CartPageState extends State<CartPage> {
       appBar: AppBar(
         title: isLoading
             ? Center(
-          child: CircularProgressIndicator(color: Color(ColorT.themeColor),),
+          child: CircularProgressIndicator(
+            color: Color(ColorT.themeColor),
+          ),
         )
             : AppText(
-          text: "My Cart (${cartList!.length})",
+          text: "My Cart (${cartList?.length ?? 0})",
         ),
         leading: IconButton(
           onPressed: (){
@@ -230,10 +232,11 @@ class _CartPageState extends State<CartPage> {
                 return BottomNav();
               }),
             );
-          }, icon: Icon(Iconsax.arrow_left
-        ),
+          },
+          icon: Icon(Iconsax.arrow_left),  // Corrected typo here
         ),
       ),
+
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -270,17 +273,7 @@ class _CartPageState extends State<CartPage> {
                             itemCount: cartList == null ? 0 : cartList?.length ?? 0,
                             itemBuilder: (context, index) => getCartList(index),
                           ),
-                          // GridView.builder(
-                          //   gridDelegate:
-                          //       const SliverGridDelegateWithFixedCrossAxisCount(
-                          //     crossAxisCount: 2,
-                          //     childAspectRatio: .54,
-                          //   ),
-                          //   itemCount: CartList?.length ?? 0,
-                          //   itemBuilder: (context, index) => getCartList(index),
-                          //   physics: ScrollPhysics(),
-                          //   shrinkWrap: true,
-                          // ),
+
                           if (cartDiscountList != null &&
                               cartDiscountList!.isNotEmpty &&
                               cartDiscountList![0]["discountAvailable"] == 1)
@@ -309,7 +302,7 @@ class _CartPageState extends State<CartPage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => LoginPage()));

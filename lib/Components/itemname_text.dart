@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class TextConst extends StatelessWidget {
-  const TextConst({
+class ItemName extends StatelessWidget {
+  const ItemName({
     required this.text,
     super.key,
   });
@@ -11,8 +11,8 @@ class TextConst extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      maxLines: 1,
-      style: TextStyle(fontSize: 12, color: Colors.black,),
+      maxLines: 10,
+      style: TextStyle(fontSize: 13, color: Colors.black,fontWeight: FontWeight.bold),
     );
   }
 }

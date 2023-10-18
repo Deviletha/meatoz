@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/Components/discriptiontext.dart';
+import 'package:meatoz/Components/itemname_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../../theme/colors.dart';
-import '../product_view/Product_view.dart';
+import '../cartpage/Cart_page.dart';
 
 class Search extends StatefulWidget {
   const Search({Key? key}) : super(key: key);
@@ -19,7 +20,6 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-
   String? uID;
   Map? search;
   Map? search1;
@@ -74,7 +74,6 @@ class _SearchState extends State<Search> {
         prList = jsonDecode(response);
         prList1 = prList!["pagination"];
         finalPrList = prList1!["pageData"];
-
       });
     } else {
       debugPrint('api failed:');
@@ -141,6 +140,163 @@ class _SearchState extends State<Search> {
         search = jsonDecode(response);
         search1 = search!["data"];
         searchList = search1!["pageData"];
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  String? productId;
+  String? productName;
+  String? price1;
+  String? pSize;
+  String? combinationId;
+
+  void _showBottomSheet(BuildContext context, int index1) {
+    var image = UrlConstants.base + searchList![index1]["image"].toString();
+
+    var stock = searchList![index1]["stock"].toString();
+    bool isStockAvailable = int.parse(stock) > 0;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                clipBehavior: Clip.antiAlias,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                // Image border// Image radius
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (isStockAvailable) {
+                          productId = searchList![index1]["id"].toString();
+                          productName = searchList![index1]["name"].toString();
+                          price1 = searchList![index1]["offerPrice"].toString();
+                          combinationId =
+                              searchList![index1]["combinationId"].toString();
+                          pSize = searchList![index1]["size_attribute_name"]
+                              .toString();
+                          addToCart(productId!, productName!, price1!, pSize!,
+                              combinationId!);
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Product is out of stock!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.SNACKBAR,
+                              timeInSecForIosWeb: 1,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(ColorT.themeColor),
+                        shadowColor: Colors.teal[300],
+                      ),
+                      child: Text("Add"),
+                    ),
+                  ],
+                ),
+              ),
+              ItemName(
+                text: searchList![index1]["name"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextDescription(
+                text: searchList![index1]["description"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "₹${searchList![index1]["totalPrice"].toString()}",
+                    style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        decorationStyle: TextDecorationStyle.solid,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "₹${searchList![index1]["offerPrice"].toString()}",
+                    style: TextStyle(
+                        color: Color(ColorT.themeColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  addToCart(String prID, String prName, String prPrice, String pSize,
+      String combID) async {
+    var response = await ApiHelper().post(endpoint: "cart/add", body: {
+      "userid": uID,
+      "productid": prID,
+      "product": prName,
+      "price": prPrice,
+      "quantity": "1",
+      "psize": pSize,
+      "combination_id": combID
+    }).catchError((err) {});
+    if (response != null) {
+      setState(() {
+        debugPrint('cart page successful:');
+
+        Fluttertoast.showToast(
+          msg: "Item added to Cart",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => CartPage()), // Replace with your cart page
+        );
       });
     } else {
       debugPrint('api failed:');
@@ -220,128 +376,236 @@ class _SearchState extends State<Search> {
   Widget getSearchList(int index) {
     var image = UrlConstants.base + searchList![index]["image"].toString();
     var price = searchList![index]["offerPrice"].toString();
+    var actualPrice = searchList![index]["totalPrice"].toString();
     var pId = searchList![index]["id"].toString();
     var combId = searchList![index]["combinationId"].toString();
 
     bool isInWishlist = finalPrList != null &&
         finalPrList!.any((item) => item['combinationId'].toString() == combId);
 
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductView(
-                noOfPiece: searchList![index]["no_of_piece"].toString(),
-                serveCapacity:
-                searchList![index]["serving_cupacity"].toString(),
-                stock: searchList![index]["stock"].toString(),
-                recipe: searchList![index]["hint"].toString(),
-                position: index,
-                id: searchList![index]["id"].toString(),
-                productName: searchList![index]["name"].toString(),
-                url: image,
-                description: searchList![index]["description"].toString(),
-                amount: price,
-                combinationId: searchList![index]["id"].toString(),
-                pSize: "0"),
-          ),
-        );
-      },
-      child: Card(
-          color: Colors.grey.shade50,
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 8),
+          child: ListTile(
+              onTap: () {
+                _showBottomSheet(context, index);
+              },
+              isThreeLine: true,
+              leading: Container(
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Colors.white),
+                width: 90,
+                height: 90,
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              title: Padding(
+                padding: const EdgeInsets.only(
+                  left: 8.0,
+                  top: 8,
+                ),
+                child: ItemName(
+                  text: searchList![index]["name"].toString(),
+                ),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(
+                  left: 8,
+                  top: 8,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      height: 70,
-                      width: 90,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: ClipRRect(
-                        clipBehavior: Clip.antiAliasWithSaveLayer,
-                        borderRadius: BorderRadius.circular(20), // Image border
-                        child: SizedBox.fromSize(
-                          size: Size.fromRadius(40), // Image radius
-                          child: CachedNetworkImage(
-                            imageUrl: image,
-                            placeholder: (context, url) => Container(
-                              color: Colors.grey[300],
-                            ),
-                            errorWidget: (context, url, error) => Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage("assets/noItem.png"))),
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+                    Text(
+                      searchList![index]["description"].toString(),
+                      maxLines: 2,
+                      style:
+                          TextStyle(color: Colors.grey.shade600, fontSize: 10),
+                    ),
+                    SizedBox(
+                      height: 8,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          "₹$price",
-                          style:  TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color:  Color(ColorT.themeColor),),
+                          "₹$actualPrice",
+                          style: TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              decorationStyle: TextDecorationStyle.solid,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                            color: isInWishlist ? Colors.red : Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            if (isInWishlist) {
-                              removeFromWishList(combId);
-                              wishListGet();
-                            } else {
-                              // The item is not in the wishlist, you may want to add it.
-                              addToWishList(pId, combId, price);
-                              wishListGet();
-                            }
-                          },
-                        )
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "₹$price",
+                          style: TextStyle(
+                              color: Color(ColorT.themeColor),
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ],
                 ),
-                SizedBox(
-                  width: 10,
+              ),
+              trailing: IconButton(
+                icon: Icon(
+                  isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                  color: isInWishlist ? Colors.red : Colors.black,
+                  size: 30,
                 ),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      searchList == null
-                          ? Text("null data")
-                          : Text(
-                        searchList![index]["name"].toString(),
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      TextDescription(text:
-                        searchList![index]["description"].toString(),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          )),
+                onPressed: () {
+                  if (isInWishlist) {
+                    removeFromWishList(combId);
+                    wishListGet();
+                  } else {
+                    // The item is not in the wishlist, you may want to add it.
+                    addToWishList(pId, combId, price);
+                    wishListGet();
+                  }
+                },
+              )),
+        ),
+      ),
     );
+    // InkWell(
+    //   onTap: () {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => ProductView(
+    //             noOfPiece: searchList![index]["no_of_piece"].toString(),
+    //             serveCapacity:
+    //                 searchList![index]["serving_cupacity"].toString(),
+    //             stock: searchList![index]["stock"].toString(),
+    //             recipe: searchList![index]["hint"].toString(),
+    //             position: index,
+    //             id: searchList![index]["id"].toString(),
+    //             productName: searchList![index]["name"].toString(),
+    //             url: image,
+    //             description: searchList![index]["description"].toString(),
+    //             amount: price,
+    //             combinationId: searchList![index]["id"].toString(),
+    //             pSize: "0"),
+    //       ),
+    //     );
+    //   },
+    //   child: Card(
+    //       color: Colors.grey.shade50,
+    //       child: Padding(
+    //         padding: const EdgeInsets.all(10),
+    //         child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.start,
+    //           crossAxisAlignment: CrossAxisAlignment.start,
+    //           children: [
+    //             Column(
+    //               children: [
+    //                 Container(
+    //                   height: 70,
+    //                   width: 90,
+    //                   decoration: BoxDecoration(
+    //                     color: Colors.grey,
+    //                     borderRadius: BorderRadius.circular(20),
+    //                   ),
+    //                   child: ClipRRect(
+    //                     clipBehavior: Clip.antiAliasWithSaveLayer,
+    //                     borderRadius: BorderRadius.circular(20), // Image border
+    //                     child: SizedBox.fromSize(
+    //                       size: Size.fromRadius(40), // Image radius
+    //                       child: CachedNetworkImage(
+    //                         imageUrl: image,
+    //                         placeholder: (context, url) => Container(
+    //                           color: Colors.grey[300],
+    //                         ),
+    //                         errorWidget: (context, url, error) => Container(
+    //                           decoration: BoxDecoration(
+    //                               image: DecorationImage(
+    //                                   image: AssetImage("assets/noItem.png"))),
+    //                         ),
+    //                         fit: BoxFit.cover,
+    //                       ),
+    //                     ),
+    //                   ),
+    //                 ),
+    //                 Row(
+    //                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //                   children: [
+    //                     Text(
+    //                       "₹$price",
+    //                       style: TextStyle(
+    //                         fontWeight: FontWeight.bold,
+    //                         fontSize: 16,
+    //                         color: Color(ColorT.themeColor),
+    //                       ),
+    //                     ),
+    //                     IconButton(
+    //                       icon: Icon(
+    //                         isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+    //                         color: isInWishlist ? Colors.red : Colors.black,
+    //                         size: 30,
+    //                       ),
+    //                       onPressed: () {
+    //                         if (isInWishlist) {
+    //                           removeFromWishList(combId);
+    //                           wishListGet();
+    //                         } else {
+    //                           // The item is not in the wishlist, you may want to add it.
+    //                           addToWishList(pId, combId, price);
+    //                           wishListGet();
+    //                         }
+    //                       },
+    //                     )
+    //                   ],
+    //                 ),
+    //               ],
+    //             ),
+    //             SizedBox(
+    //               width: 10,
+    //             ),
+    //             Expanded(
+    //               child: Column(
+    //                 mainAxisAlignment: MainAxisAlignment.start,
+    //                 children: [
+    //                   searchList == null
+    //                       ? Text("null data")
+    //                       : Text(
+    //                           searchList![index]["name"].toString(),
+    //                           style:
+    //                               const TextStyle(fontWeight: FontWeight.bold),
+    //                         ),
+    //                   SizedBox(
+    //                     height: 10,
+    //                   ),
+    //                   TextDescription(
+    //                     text: searchList![index]["description"].toString(),
+    //                   ),
+    //                 ],
+    //               ),
+    //             )
+    //           ],
+    //         ),
+    //       )),
+    // );
   }
 }

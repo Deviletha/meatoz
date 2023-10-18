@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../Components/text_widget.dart';
+import '../../../theme/colors.dart';
 import '../../accounts/subscription_plans.dart';
 
 class MeatozPlan extends StatefulWidget {
@@ -29,9 +30,9 @@ class _MeatozPlanState extends State<MeatozPlan> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.blue.shade200,
-                  Colors.blue.shade100,
-                  Colors.green.shade50,
+                  Color(ColorT.subscriptionCard1),
+                  Color(ColorT.subscriptionCard),
+                  Color(ColorT.subscriptionCard),
                 ])),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -44,6 +45,9 @@ class _MeatozPlanState extends State<MeatozPlan> {
                 height: 50,
                 alignment: Alignment.centerLeft,
                 color: Colors.white,
+              ),
+              SizedBox(
+                width: 5,
               ),
               Expanded(
                 flex: 1,
@@ -58,6 +62,7 @@ class _MeatozPlanState extends State<MeatozPlan> {
                       "Meatoz Subscription Plan",
                       style: TextStyle(
                           fontSize: 18,
+                          color: Colors.white,
                           fontWeight:
                           FontWeight.bold),
                     ),
@@ -65,13 +70,19 @@ class _MeatozPlanState extends State<MeatozPlan> {
                       "Subscription plan details",
                       style: TextStyle(
                         fontSize: 15,
+                        color: Colors.white
                       ),
                     ),
                   ],
                 ),
               ),
-              TextConst(
-                text: "Know More",
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextConst(
+                    text: "Know More",
+                  ),
+                ),
               ),
             ],
           ),

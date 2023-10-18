@@ -24,17 +24,27 @@ class RelatedItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return
-      Card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: SizedBox.fromSize(
-                size: Size.fromHeight(90),
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.grey.shade500,blurRadius: 3,),],
+            borderRadius: BorderRadius.all(Radius.circular(15))
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                clipBehavior: Clip.antiAlias,
+                width: double.infinity,
+                height: 150,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.only(topLeft: Radius.circular(15),
+                  topRight: Radius.circular(15)),
+                ),
+                // Image border// Image radius
                 child: CachedNetworkImage(
                   imageUrl: imagePath,
                   placeholder: (context, url) => Container(
@@ -42,43 +52,38 @@ class RelatedItemTile extends StatelessWidget {
                   ),
                   errorWidget: (context, url, error) => Container(
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage("assets/noItem.png"),
-                      ),
-                    ),
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
                   ),
                   fit: BoxFit.cover,
                 ),
               ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            TextConst(
-              text: itemName,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              price,
-              style:  TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: Color(ColorT.themeColor),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            ElevatedButton(
-                onPressed: onPressed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(ColorT.themeColor),
-                  shadowColor: Colors.teal[300],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextConst(
+                  text: itemName,
                 ),
-                child: Text("Add")),
-          ],
+              ),
+              Text(
+                price,
+                style:  TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                  color: Color(ColorT.themeColor),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                  onPressed: onPressed,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(ColorT.themeColor),
+                    shadowColor: Colors.teal[300],
+                  ),
+                  child: Text("Add")),
+            ],
+          ),
         ),
       );
   }

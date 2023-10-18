@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:meatoz/Components/itemname_text.dart';
 import 'package:meatoz/screens/homepage/Category/CategoryWidget.dart';
 import 'package:meatoz/screens/homepage/Order/OrderListtile.dart';
 import 'package:meatoz/screens/homepage/PopularItems/poularcard.dart';
@@ -11,6 +12,7 @@ import 'package:meatoz/screens/homepage/TopPicks/TopPicks.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Components/description_homepage.dart';
+import '../../Components/discriptiontext.dart';
 import '../../Components/title_widget.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
@@ -72,7 +74,6 @@ class _HomePageState extends State<HomePage> {
   Map? productList;
   Map? productList1;
   List? finalProductList;
-  List? relatedProductList;
 
   ///PopularProductList
   Map? popularList;
@@ -159,31 +160,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  apiForAllProducts() async {
-    var response =
-        await ApiHelper().post(endpoint: "products/ByCombination", body: {
-      "offset": "0",
-      "pageLimit": "50",
-    }).catchError((err) {});
-
-    setState(() {
-      isLoading = false;
-    });
-
-    if (response != null) {
-      setState(() {
-        debugPrint('get products api successful:');
-        data = response.toString();
-        productList = jsonDecode(response);
-        productList1 = productList!["pagination"];
-        finalProductList = productList1!["pageData"];
-        relatedProductList = finalProductList![0]["relatedProduct"];
-      });
-    } else {
-      debugPrint('api failed:');
-    }
-  }
-
   apiForBanner() async {
     var response = await ApiHelper()
         .post(endpoint: "banner/getOfferBanner", body: {}).catchError((err) {});
@@ -248,6 +224,30 @@ class _HomePageState extends State<HomePage> {
         data = response.toString();
         deal = jsonDecode(response);
         dealOfTheDayList = deal!["dealProducts"];
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
+
+  apiForAllProducts() async {
+    var response =
+        await ApiHelper().post(endpoint: "products/ByCombination", body: {
+      "offset": "0",
+      "pageLimit": "100",
+    }).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response != null) {
+      setState(() {
+        debugPrint('get products api successful:');
+        data = response.toString();
+        productList = jsonDecode(response);
+        productList1 = productList!["pagination"];
+        finalProductList = productList1!["pageData"];
       });
     } else {
       debugPrint('api failed:');
@@ -375,6 +375,658 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  String? productId;
+  String? productName;
+  String? price1;
+  String? pSize;
+  String? combinationId;
+
+  void _showBottomSheetOurProducts(BuildContext context, int index1) {
+    var image = UrlConstants.base + ourProductList![index1]["image"].toString();
+
+    var stock = ourProductList![index1]["stock"].toString();
+    bool isStockAvailable = int.parse(stock) > 0;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                clipBehavior: Clip.antiAlias,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                // Image border// Image radius
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (isStockAvailable) {
+                          productId = ourProductList![index1]["id"].toString();
+                          productName =
+                              ourProductList![index1]["name"].toString();
+                          price1 =
+                              ourProductList![index1]["offerPrice"].toString();
+                          combinationId = ourProductList![index1]
+                                  ["combinationId"]
+                              .toString();
+                          pSize = ourProductList![index1]["size_attribute_name"]
+                              .toString();
+                          checkLoggedIn(context, productId!, productName!,
+                              price1!, pSize!, combinationId!);
+                          Future.delayed(Duration(seconds: 3), () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CartPage()), // Replace with your cart page
+                            );
+                          });
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Product is out of stock!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.SNACKBAR,
+                              timeInSecForIosWeb: 1,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(ColorT.themeColor),
+                        shadowColor: Colors.teal[300],
+                      ),
+                      child: Text("Add"),
+                    ),
+                  ],
+                ),
+              ),
+              ItemName(
+                text: ourProductList![index1]["name"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextDescription(
+                text: ourProductList![index1]["description"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "₹${ourProductList![index1]["totalPrice"].toString()}",
+                    style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        decorationStyle: TextDecorationStyle.solid,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "₹${ourProductList![index1]["offerPrice"].toString()}",
+                    style: TextStyle(
+                        color: Color(ColorT.themeColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showBottomSheetDealOfTheDay(BuildContext context, int index1) {
+    var image =
+        UrlConstants.base + dealOfTheDayList![index1]["image"].toString();
+
+    var stock = dealOfTheDayList![index1]["stock"].toString();
+    bool isStockAvailable = int.parse(stock) > 0;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                clipBehavior: Clip.antiAlias,
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 4,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                // Image border// Image radius
+                child: CachedNetworkImage(
+                  imageUrl: image,
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        if (isStockAvailable) {
+                          productId =
+                              dealOfTheDayList![index1]["id"].toString();
+                          productName =
+                              dealOfTheDayList![index1]["name"].toString();
+                          price1 = dealOfTheDayList![index1]["offerPrice"]
+                              .toString();
+                          combinationId = dealOfTheDayList![index1]
+                                  ["combinationId"]
+                              .toString();
+                          pSize = dealOfTheDayList![index1]
+                                  ["size_attribute_name"]
+                              .toString();
+                          checkLoggedIn(context, productId!, productName!,
+                              price1!, pSize!, combinationId!);
+                          Future.delayed(Duration(seconds: 3), () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CartPage()), // Replace with your cart page
+                            );
+                          });
+                        } else {
+                          Fluttertoast.showToast(
+                              msg: "Product is out of stock!",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.SNACKBAR,
+                              timeInSecForIosWeb: 1,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(ColorT.themeColor),
+                        shadowColor: Colors.teal[300],
+                      ),
+                      child: Text("Add"),
+                    ),
+                  ],
+                ),
+              ),
+              ItemName(
+                text: dealOfTheDayList![index1]["name"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              TextDescription(
+                text: dealOfTheDayList![index1]["description"].toString(),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    "₹${dealOfTheDayList![index1]["totalPrice"].toString()}",
+                    style: TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        decorationStyle: TextDecorationStyle.solid,
+                        color: Colors.grey.shade600,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                  SizedBox(
+                    width: 5,
+                  ),
+                  Text(
+                    "₹${dealOfTheDayList![index1]["offerPrice"].toString()}",
+                    style: TextStyle(
+                        color: Color(ColorT.themeColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> checkLoggedIn(BuildContext context, String prID, String prName,
+      String prPrice, String pSize, String combID) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? loginId = prefs.getString('UID');
+
+    if (loginId != null && loginId.isNotEmpty) {
+      var stock = finalProductList![index]["stock"].toString();
+      bool isStockAvailable = int.parse(stock) > 0;
+
+      if (isStockAvailable) {
+        var response = await ApiHelper().post(endpoint: "cart/add", body: {
+          "userid": uID,
+          "productid": prID,
+          "product": prName,
+          "price": prPrice,
+          "quantity": "1",
+          "psize": pSize,
+          "combination_id": combID
+        }).catchError((err) {});
+
+        if (response != null) {
+          setState(() {
+            debugPrint('cart page successful:');
+
+            Fluttertoast.showToast(
+              msg: "Item added to Cart",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.SNACKBAR,
+              timeInSecForIosWeb: 1,
+              textColor: Colors.white,
+              fontSize: 16.0,
+            );
+          });
+        } else {
+          debugPrint('api failed:');
+        }
+      } else {
+        Fluttertoast.showToast(
+          msg: "Product is out of stock!",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.SNACKBAR,
+          timeInSecForIosWeb: 1,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+    } else {
+      // User is not logged in, navigate to LoginPage
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => LoginPage()));
+    }
+  }
+
+  void _showBottomSheetAllProducts(BuildContext context, int index1) {
+    if (finalProductList != null && finalProductList!.length > index1) {
+      var image =
+          UrlConstants.base + finalProductList![index1]["image"].toString();
+      var stock = finalProductList![index1]["stock"].toString();
+
+      bool isStockAvailable = int.parse(stock) > 0;
+
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  // Image border// Image radius
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[300],
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("assets/noItem.png"))),
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (isStockAvailable) {
+                            productId =
+                                finalProductList![index1]["id"].toString();
+                            productName = finalProductList![index1]
+                                    ["combinationName"]
+                                .toString();
+                            price1 = finalProductList![index1]["offerPrice"]
+                                .toString();
+                            combinationId = finalProductList![index1]
+                                    ["combinationId"]
+                                .toString();
+                            pSize = finalProductList![index1]
+                                    ["size_attribute_name"]
+                                .toString();
+                            checkLoggedIn(context, productId!, productName!,
+                                price1!, pSize!, combinationId!);
+                            Future.delayed(Duration(seconds: 3), () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductView(
+                                    actualPrice: finalProductList![index1]
+                                            ["totalPrice"]
+                                        .toString(),
+                                    serveCapacity: finalProductList![index1]
+                                            ["serving_cupacity"]
+                                        .toString(),
+                                    noOfPiece: finalProductList![index1]
+                                            ["no_of_piece"]
+                                        .toString(),
+                                    stock: finalProductList![index1]
+                                            ["stock"]
+                                        .toString(),
+                                    recipe: finalProductList![index1]
+                                            ["hint"]
+                                        .toString(),
+                                    position: index1,
+                                    id: productId!,
+                                    productName: finalProductList![index1]
+                                            ["combinationName"]
+                                        .toString(),
+                                    url: image,
+                                    description: finalProductList![index1]
+                                            ["description"]
+                                        .toString(),
+                                    amount: finalProductList![index1]
+                                            ["offerPrice"]
+                                        .toString(),
+                                    combinationId: combinationId!,
+                                    pSize: finalProductList![index1]
+                                            ["size_attribute_name"]
+                                        .toString(),
+                                  ),
+                                ),
+                              );
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Product is out of stock!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.SNACKBAR,
+                                timeInSecForIosWeb: 1,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(ColorT.themeColor),
+                          shadowColor: Colors.teal[300],
+                        ),
+                        child: Text("Add"),
+                      ),
+                    ],
+                  ),
+                ),
+                ItemName(
+                  text: finalProductList![index1]["combinationName"]
+                      .toString(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextDescription(
+                  text: finalProductList![index1]["description"].toString(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "₹${finalProductList![index1]["totalPrice"].toString()}",
+                      style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          decorationStyle: TextDecorationStyle.solid,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "₹${finalProductList![index1]["offerPrice"].toString()}",
+                      style: TextStyle(
+                          color: Color(ColorT.themeColor),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  void _showBottomSheetPopularProducts(BuildContext context, int index1) {
+    if (finalPopularList != null && finalPopularList!.length > index1) {
+      var image =
+          UrlConstants.base + finalPopularList![index1]["image"].toString();
+      var stock = finalPopularList![index1]["stock"].toString();
+
+      bool isStockAvailable = int.parse(stock) > 0;
+
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height / 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  // Image border// Image radius
+                  child: CachedNetworkImage(
+                    imageUrl: image,
+                    placeholder: (context, url) => Container(
+                      color: Colors.grey[300],
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage("assets/noItem.png"))),
+                    ),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          if (isStockAvailable) {
+                            productId =
+                                finalPopularList![index1]["id"].toString();
+                            productName = finalPopularList![index1]
+                                    ["combinationName"]
+                                .toString();
+                            price1 = finalPopularList![index1]["offerPrice"]
+                                .toString();
+                            combinationId = finalPopularList![index1]
+                                    ["combinationId"]
+                                .toString();
+                            pSize = finalPopularList![index1]
+                                    ["size_attribute_name"]
+                                .toString();
+                            checkLoggedIn(context, productId!, productName!,
+                                price1!, pSize!, combinationId!);
+                            Future.delayed(Duration(seconds: 3), () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ProductView(
+                                    actualPrice: finalPopularList![index1]
+                                            ["totalPrice"]
+                                        .toString(),
+                                    serveCapacity: finalPopularList![index1]
+                                            ["serving_cupacity"]
+                                        .toString(),
+                                    noOfPiece: finalPopularList![index1]
+                                            ["no_of_piece"]
+                                        .toString(),
+                                    stock: finalPopularList![index1]
+                                            ["stock"]
+                                        .toString(),
+                                    recipe: finalPopularList![index1]
+                                            ["hint"]
+                                        .toString(),
+                                    position: index1,
+                                    id: productId!,
+                                    productName: finalPopularList![index1]
+                                            ["combinationName"]
+                                        .toString(),
+                                    url: image,
+                                    description: finalPopularList![index1]
+                                            ["description"]
+                                        .toString(),
+                                    amount: finalPopularList![index1]
+                                            ["offerPrice"]
+                                        .toString(),
+                                    combinationId: combinationId!,
+                                    pSize: finalPopularList![index1]
+                                            ["size_attribute_name"]
+                                        .toString(),
+                                  ),
+                                ),
+                              );
+                            });
+                          } else {
+                            Fluttertoast.showToast(
+                                msg: "Product is out of stock!",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.SNACKBAR,
+                                timeInSecForIosWeb: 1,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(ColorT.themeColor),
+                          shadowColor: Colors.teal[300],
+                        ),
+                        child: Text("Add"),
+                      ),
+                    ],
+                  ),
+                ),
+                ItemName(
+                  text: finalPopularList![index1]["combinationName"]
+                      .toString(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                TextDescription(
+                  text: finalPopularList![index1]["description"].toString(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "₹${finalPopularList![index1]["totalPrice"].toString()}",
+                      style: TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          decorationStyle: TextDecorationStyle.solid,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "₹${finalPopularList![index1]["offerPrice"].toString()}",
+                      style: TextStyle(
+                          color: Color(ColorT.themeColor),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
   @override
   void initState() {
     setState(() {
@@ -399,25 +1051,9 @@ class _HomePageState extends State<HomePage> {
           height: 36,
           color: Colors.white,
         ),
-        // actions: [
-        //   IconButton(
-        //       onPressed: () => Navigator.push(context, MaterialPageRoute(
-        //         builder: (context) {
-        //           return Notifications();
-        //         },
-        //       )),
-        //       icon: Icon(
-        //         Icons.notifications_outlined,
-        //         color: Colors.white,
-        //       )),
-        //   SizedBox(
-        //     width: 15,
-        //   ),
-        // ],
       ),
       bottomSheet: Visibility(
-        visible:  cartList != null &&
-            cartList!.isNotEmpty,
+        visible: cartList != null && cartList!.isNotEmpty,
         child: InkWell(
           onTap: () {
             Navigator.push(
@@ -439,7 +1075,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            height: 60,
+            height: 55,
             child: Padding(
               padding:
                   const EdgeInsets.only(left: 12, right: 10, top: 8, bottom: 8),
@@ -535,12 +1171,11 @@ class _HomePageState extends State<HomePage> {
               height: 15,
             ),
             Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
                   topRight: Radius.circular(15),
                   topLeft: Radius.circular(15),
-                )
-              ),
+                )),
                 child: bannerList != null && bannerList!.isNotEmpty
                     ? isLoading
                         ? Shimmer.fromColors(
@@ -763,33 +1398,42 @@ class _HomePageState extends State<HomePage> {
                         )
                   : SizedBox(),
             ),
-            Heading(text: "Deal of The Day"),
-            Container(
-              child: dealOfTheDayList != null && dealOfTheDayList!.isNotEmpty
-                  ? CarouselSlider.builder(
-                      itemCount: dealOfTheDayList!.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return getDealOfTheDay(index);
-                      },
-                      options: CarouselOptions(
-                        height: 250,
-                        aspectRatio: 15 / 6,
-                        viewportFraction: .50,
-                        initialPage: 0,
-                        enableInfiniteScroll: true,
-                        reverse: false,
-                        autoPlay: true,
-                        enlargeCenterPage: false,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        onPageChanged: (index, reason) {},
-                        scrollDirection: Axis.horizontal,
-                      ),
-                    )
-                  : Center(
-                      child: Text('No deals available'),
-                    ),
+            Visibility(
+              visible: dealOfTheDayList != null && dealOfTheDayList!.isNotEmpty,
+              child: Column(
+                children: [
+                  Heading(text: "Deal of The Day"),
+                  Container(
+                    child:
+                        dealOfTheDayList != null && dealOfTheDayList!.isNotEmpty
+                            ? CarouselSlider.builder(
+                                itemCount: dealOfTheDayList!.length,
+                                itemBuilder: (context, index, realIndex) {
+                                  return getDealOfTheDay(index);
+                                },
+                                options: CarouselOptions(
+                                  height: 250,
+                                  aspectRatio: 15 / 6,
+                                  viewportFraction: .50,
+                                  initialPage: 0,
+                                  enableInfiniteScroll: true,
+                                  reverse: false,
+                                  autoPlay: true,
+                                  enlargeCenterPage: false,
+                                  autoPlayInterval: Duration(seconds: 3),
+                                  autoPlayAnimationDuration:
+                                      Duration(milliseconds: 800),
+                                  autoPlayCurve: Curves.fastOutSlowIn,
+                                  onPageChanged: (index, reason) {},
+                                  scrollDirection: Axis.horizontal,
+                                ),
+                              )
+                            : Center(
+                                child: Text('No deals available'),
+                              ),
+                  ),
+                ],
+              ),
             ),
             Heading(text: "Our Products"),
             Container(
@@ -954,29 +1598,30 @@ class _HomePageState extends State<HomePage> {
     return PopularCard(
         imagePath: image,
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductView(
-                serveCapacity:
-                    finalPopularList![index]["serving_cupacity"].toString(),
-                noOfPiece: finalPopularList![index]["no_of_piece"].toString(),
-                stock: finalPopularList![index]["stock"].toString(),
-                recipe: finalPopularList![index]["hint"].toString(),
-                position: index,
-                id: finalPopularList![index]["id"].toString(),
-                productName:
-                    finalPopularList![index]["combinationName"].toString(),
-                url: image,
-                description: finalPopularList![index]["description"].toString(),
-                amount: finalPopularList![index]["offerPrice"].toString(),
-                combinationId:
-                    finalPopularList![index]["combinationId"].toString(),
-                pSize:
-                    finalPopularList![index]["size_attribute_name"].toString(),
-              ),
-            ),
-          );
+          _showBottomSheetPopularProducts(context, index);
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     builder: (context) => ProductView(
+          //       serveCapacity:
+          //           finalPopularList![index]["serving_cupacity"].toString(),
+          //       noOfPiece: finalPopularList![index]["no_of_piece"].toString(),
+          //       stock: finalPopularList![index]["stock"].toString(),
+          //       recipe: finalPopularList![index]["hint"].toString(),
+          //       position: index,
+          //       id: finalPopularList![index]["id"].toString(),
+          //       productName:
+          //           finalPopularList![index]["combinationName"].toString(),
+          //       url: image,
+          //       description: finalPopularList![index]["description"].toString(),
+          //       amount: finalPopularList![index]["offerPrice"].toString(),
+          //       combinationId:
+          //           finalPopularList![index]["combinationId"].toString(),
+          //       pSize:
+          //           finalPopularList![index]["size_attribute_name"].toString(),
+          //     ),
+          //   ),
+          // );
         },
         itemName: itemName);
   }
@@ -1012,7 +1657,7 @@ class _HomePageState extends State<HomePage> {
     if (bannerList == null || bannerList!.isEmpty) {
       return Center(
         child: CircularProgressIndicator(
-          color: Colors.teal[900],
+          color: Color(ColorT.themeColor),
         ),
       );
     }
@@ -1062,10 +1707,7 @@ class _HomePageState extends State<HomePage> {
           context,
           MaterialPageRoute(
             builder: (context) => CategoryView(
-              // url: image,
               itemName: categoryList![index]["name"].toString(),
-              // description: categoryList![index]["description"].toString(),
-              // price: categoryList![index]["price"].toString(),
               id: categoryList![index]["id"],
             ),
           ),
@@ -1097,29 +1739,30 @@ class _HomePageState extends State<HomePage> {
             border: Border.all(color: Colors.grey.shade300, width: 1)),
         child: InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductView(
-                  serveCapacity:
-                      finalProductList![index]["serving_cupacity"].toString(),
-                  noOfPiece: finalProductList![index]["no_of_piece"].toString(),
-                  stock: finalProductList![index1]["stock"].toString(),
-                  recipe: finalProductList![index1]["hint"].toString(),
-                  position: index1,
-                  id: pId,
-                  productName:
-                      finalProductList![index1]["combinationName"].toString(),
-                  url: image,
-                  description:
-                      finalProductList![index1]["description"].toString(),
-                  amount: finalProductList![index1]["offerPrice"].toString(),
-                  combinationId: combID,
-                  pSize: finalProductList![index1]["size_attribute_name"]
-                      .toString(),
-                ),
-              ),
-            );
+            _showBottomSheetAllProducts(context, index1);
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => ProductView(
+            //       serveCapacity:
+            //           finalProductList![index1]["serving_cupacity"].toString(),
+            //       noOfPiece: finalProductList![index1]["no_of_piece"].toString(),
+            //       stock: finalProductList![index1]["stock"].toString(),
+            //       recipe: finalProductList![index1]["hint"].toString(),
+            //       position: index1,
+            //       id: pId,
+            //       productName:
+            //           finalProductList![index1]["combinationName"].toString(),
+            //       url: image,
+            //       description:
+            //           finalProductList![index1]["description"].toString(),
+            //       amount: finalProductList![index1]["offerPrice"].toString(),
+            //       combinationId: combID,
+            //       pSize: finalProductList![index1]["size_attribute_name"]
+            //           .toString(),
+            //     ),
+            //   ),
+            // );
           },
           child: Column(
             children: [
@@ -1147,18 +1790,18 @@ class _HomePageState extends State<HomePage> {
                   fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(
-                width: 15,
-              ),
               Expanded(
                 flex: 1,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    TextConst(
-                      text: finalProductList![index1]["combinationName"]
-                          .toString(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8),
+                      child: TextConst(
+                        text: finalProductList![index1]["combinationName"]
+                            .toString(),
+                      ),
                     ),
                     SizedBox(
                       height: 10,
@@ -1170,54 +1813,56 @@ class _HomePageState extends State<HomePage> {
                             finalProductList![index1]["description"].toString(),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              price,
-                              style: TextStyle(
-                                decoration: TextDecoration.lineThrough,
-                                decorationStyle: TextDecorationStyle.solid,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.grey.shade600,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                price,
+                                style: TextStyle(
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationStyle: TextDecorationStyle.solid,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: 8,
-                            ),
-                            Text(
-                              "₹$offerPrice",
-                              // WID,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.teal.shade800,
+                              SizedBox(
+                                width: 8,
                               ),
-                            ),
-                          ],
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                            color: isInWishlist ? Colors.red : Colors.black,
-                            size: 30,
+                              Text(
+                                "₹$offerPrice",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Color(ColorT.themeColor),
+                                ),
+                              ),
+                            ],
                           ),
-                          onPressed: () {
-                            if (isInWishlist) {
-                              removeFromWishList(combID);
-                              wishListGet();
-                            } else {
-                              addToWishList(pId, combID, offerPrice, context);
-                              wishListGet();
-                            }
-                          },
-                        )
-                      ],
+                          IconButton(
+                            icon: Icon(
+                              isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                              color: isInWishlist ? Colors.red : Colors.black,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              if (isInWishlist) {
+                                removeFromWishList(combID);
+                                wishListGet();
+                              } else {
+                                addToWishList(pId, combID, offerPrice, context);
+                                wishListGet();
+                              }
+                            },
+                          )
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -1249,31 +1894,10 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.teal.shade50, width: 1)),
+            border: Border.all(color: Colors.grey.shade300, width: 1)),
         child: InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductView(
-                  serveCapacity:
-                      dealOfTheDayList![index]["serving_cupacity"].toString(),
-                  noOfPiece: dealOfTheDayList![index]["no_of_piece"].toString(),
-                  stock: dealOfTheDayList![index]["stock"].toString(),
-                  recipe: "Recipe not available for this product",
-                  position: index,
-                  id: pId,
-                  productName: dealOfTheDayList![index]["name"].toString(),
-                  url: image,
-                  description:
-                      dealOfTheDayList![index]["description"].toString(),
-                  amount: dealOfTheDayList![index]["offerPrice"].toString(),
-                  combinationId: combID,
-                  pSize: dealOfTheDayList![index]["size_attribute_name"]
-                      .toString(),
-                ),
-              ),
-            );
+            _showBottomSheetDealOfTheDay(context, index);
           },
           child: Column(
             children: [
@@ -1307,71 +1931,76 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 flex: 3,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          price,
-                          style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            decorationStyle: TextDecorationStyle.solid,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "₹$offerPrice",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.teal.shade800,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                            color: isInWishlist ? Colors.red : Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            if (isInWishlist) {
-                              // The item is in the wishlist, you may want to remove it.
-                              removeFromWishList(combID);
-                              wishListGet();
-                            } else {
-                              // The item is not in the wishlist, you may want to add it.
-                              addToWishList(pId, combID, offerPrice, context);
-                              wishListGet();
-                            }
-                          },
-                        )
-                      ],
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 8.0, right: 8, top: 5),
+                      child: TextConst(
+                        text: dealOfTheDayList![index]["name"].toString(),
+                      ),
                     ),
                     SizedBox(
-                      height: 10,
-                    ),
-                    TextConst(
-                      text: dealOfTheDayList![index]["name"].toString(),
-                    ),
-                    SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, right: 8),
                       child: TextDescriptionHome(
                         text:
                             dealOfTheDayList![index]["description"].toString(),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                price,
+                                style: TextStyle(
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationStyle: TextDecorationStyle.solid,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                "₹$offerPrice",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Color(ColorT.themeColor),
+                                ),
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            icon: Icon(
+                              isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                              color: isInWishlist ? Colors.red : Colors.black,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              if (isInWishlist) {
+                                // The item is in the wishlist, you may want to remove it.
+                                removeFromWishList(combID);
+                                wishListGet();
+                              } else {
+                                // The item is not in the wishlist, you may want to add it.
+                                addToWishList(pId, combID, offerPrice, context);
+                                wishListGet();
+                              }
+                            },
+                          )
+                        ],
                       ),
                     ),
                   ],
@@ -1404,31 +2033,10 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.teal.shade50, width: 1)),
+            border: Border.all(color: Colors.grey.shade300, width: 1)),
         child: InkWell(
           onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ProductView(
-                  noOfPiece: ourProductList![index2]["no_of_piece"].toString(),
-                  serveCapacity:
-                      ourProductList![index2]["serving_cupacity"].toString(),
-                  stock: ourProductList![index2]["stock"].toString(),
-                  recipe: "Recipe not available for this item",
-                  position: index2,
-                  id: pId,
-                  productName: ourProductList![index2]["name"].toString(),
-                  url: image,
-                  description:
-                      ourProductList![index2]["description"].toString(),
-                  amount: ourProductList![index2]["offerPrice"].toString(),
-                  combinationId: combID,
-                  pSize:
-                      ourProductList![index2]["size_attribute_name"].toString(),
-                ),
-              ),
-            );
+            _showBottomSheetOurProducts(context, index2);
           },
           child: Column(
             children: [
@@ -1462,14 +2070,18 @@ class _HomePageState extends State<HomePage> {
               Expanded(
                 flex: 3,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    TextConst(
-                      text: ourProductList![index2]["name"].toString(),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 8.0, right: 8, top: 5),
+                      child: TextConst(
+                        text: ourProductList![index2]["name"].toString(),
+                      ),
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(left: 8.0, right: 8),
@@ -1477,52 +2089,56 @@ class _HomePageState extends State<HomePage> {
                         text: ourProductList![index2]["description"].toString(),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          price,
-                          style: TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            decorationStyle: TextDecorationStyle.solid,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.grey.shade600,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, right: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                price,
+                                style: TextStyle(
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationStyle: TextDecorationStyle.solid,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Text(
+                                "₹$offerPrice",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: Color(ColorT.themeColor),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "₹$offerPrice",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.teal.shade800,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 15,
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                            color: isInWishlist ? Colors.red : Colors.black,
-                            size: 30,
-                          ),
-                          onPressed: () {
-                            if (isInWishlist) {
-                              removeFromWishList(combID);
-                              wishListGet();
-                            } else {
-                              // The item is not in the wishlist, you may want to add it.
-                              addToWishList(pId, combID, offerPrice, context);
-                              wishListGet();
-                            }
-                          },
-                        )
-                      ],
+                          IconButton(
+                            icon: Icon(
+                              isInWishlist ? Iconsax.heart5 : Iconsax.heart,
+                              color: isInWishlist ? Colors.red : Colors.black,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              if (isInWishlist) {
+                                removeFromWishList(combID);
+                                wishListGet();
+                              } else {
+                                // The item is not in the wishlist, you may want to add it.
+                                addToWishList(pId, combID, offerPrice, context);
+                                wishListGet();
+                              }
+                            },
+                          )
+                        ],
+                      ),
                     ),
                     SizedBox(
                       height: 10,
@@ -1536,4 +2152,40 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+// Widget getRelatedProducts(int index3) {
+//   index = index3;
+//   if (relatedProductList == null || relatedProductList![index3] == null) {
+//     return Container();
+//   }
+//   var image = UrlConstants.base + (relatedProductList![index3]["image"] ?? "").toString();
+//   var price = "₹${relatedProductList![index3]["offerPrice"] ?? ""}";
+//
+//   var stock = relatedProductList![index3]["stock"];
+//   bool isStockAvailable = stock != null && int.parse(stock.toString()) > 0;
+//
+//   return RelatedItemTile(
+//     itemName: relatedProductList![index3]["name"].toString(),
+//     imagePath: image,
+//     onPressed: () {
+//       if (isStockAvailable) {
+//         productId = relatedProductList![index3]["productID"].toString();
+//         productName = relatedProductList![index3]["name"].toString();
+//         price1 = relatedProductList![index3]["offerPrice"].toString();
+//         pSize = relatedProductList![index3]["size_attribute_name"].toString();
+//         combinationId = relatedProductList![index3]["combinationid"].toString();
+//         addToCart(productId!, productName!, price1!, pSize!, combinationId!);
+//       } else {
+//         Fluttertoast.showToast(
+//             msg: "Product is out of stock!",
+//             toastLength: Toast.LENGTH_SHORT,
+//             gravity: ToastGravity.SNACKBAR,
+//             timeInSecForIosWeb: 1,
+//             textColor: Colors.white,
+//             fontSize: 16.0);
+//       }
+//     },
+//     price: price,
+//   );
+// }
 }
