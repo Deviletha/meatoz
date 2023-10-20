@@ -319,7 +319,7 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
       ),
-      bottomSheet:  isLoading
+      bottomNavigationBar:  isLoading
           ? Center(
         child: CircularProgressIndicator(color: Color(ColorT.themeColor),),
       )
@@ -348,6 +348,7 @@ class _CartPageState extends State<CartPage> {
     int price = cartList![index]["price"];
     int totalAmount = quantity * price;
     return CartTile(
+      description: cartList![index]["description"].toString(),
       itemName: cartList![index]["product"].toString(),
       imagePath: image,
       onPressedLess: () {

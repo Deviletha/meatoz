@@ -17,11 +17,13 @@ import '../orders/Orders_page.dart';
 class PlaceOrder extends StatefulWidget {
   final String id;
   final String pinCode;
+  final int firstPurchase;
 
   const PlaceOrder({
     Key? key,
     required this.id,
     required this.pinCode,
+    required this.firstPurchase,
   }) : super(key: key);
 
   @override
@@ -35,11 +37,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
   int index = 0;
 
   final couponController = TextEditingController();
-
-  // ///OrderList
-  // Map? order;
-  // Map? orderList;
-  // List? FinalOrderList;
 
   ///Delivery slot List
   Map? slot;
@@ -104,7 +101,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   late double subtotalFromFirstPurchase;
 
-  int discountAmount = 0;
 
   Map? plan;
   List? planList;
@@ -122,7 +118,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
   bool isLoading = true;
   bool hidePlaceOrderButton = false;
 
-
   Map? sub1;
   List? subDetailList;
 
@@ -139,12 +134,12 @@ class _PlaceOrderState extends State<PlaceOrder> {
         debugPrint('Subscription detail api successful:');
         sub1 = jsonDecode(response);
         subDetailList = sub1!["planDetails"];
-
       });
     } else {
       debugPrint('api failed:');
     }
   }
+
   checkPinCode() async {
     var response = await ApiHelper().post(
       endpoint: "postal/checkAvailabilityAtCheckout",
@@ -160,8 +155,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
         pinCodeList = pinCode!["orderData"];
         // print(pinCodeList);
 
-        discountAmount = pinCodeList![0]["first_purchase_discount"];
-        // print(discountAmount);
 
         int pinCodeAvailability = pinCodeList![0]["pincode_availability"];
         if (pinCodeAvailability == 0) {
@@ -170,7 +163,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
         }
 
         expressDeliveryAvailable =
-        pinCodeList![0]["express_delivery_available"];
+            pinCodeList![0]["express_delivery_available"].toString();
 
         if (expressDeliveryAvailable == "available") {
           int expressDelivery = pinCodeList![0]["express_delivery"];
@@ -285,13 +278,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
           cartDiscountList = cartList!["cartDiscountForAllProduct"];
           cartDiscountAppliedList = cartList!["cartAppliedDiscounts"];
 
-
-          if (cartDiscountAppliedList != null && cartDiscountAppliedList!.isNotEmpty) {
+          if (cartDiscountAppliedList != null &&
+              cartDiscountAppliedList!.isNotEmpty) {
             cartId = cartDiscountAppliedList![0]["cartID"].toString();
-            discountAmount1 = cartDiscountAppliedList![0]["discountAmount"].toDouble();
+            discountAmount1 =
+                cartDiscountAppliedList![0]["discountAmount"].toDouble();
             // print("discount amount: $discountAmount1");
-            discountAmountTotal  = discountAmount1.toString();
-
+            discountAmountTotal = discountAmount1.toString();
           }
 
           if (cartDiscountList != null && cartDiscountList!.isNotEmpty) {
@@ -309,18 +302,16 @@ class _PlaceOrderState extends State<PlaceOrder> {
             } else {
               discountId = "0";
             }
-
           }
-
 
           if (finalCartList != null && finalCartList!.isNotEmpty) {
             for (int i = 0; i < finalCartList!.length; i++) {
-              int price = finalCartList![i]["price"];
+              int price = finalCartList![i]["price"] * finalCartList![i]["quantity"];
               subtotal1 = subtotal1 + price;
             }
           }
 
-          subtotalFromFirstPurchase = discountAmount.toDouble();
+          subtotalFromFirstPurchase = widget.firstPurchase.toDouble();
           // print(subtotalFromFirstPurchase);
           subTotalFirstPurchase = subtotalFromFirstPurchase.toString();
           subtotal = subtotal1 - walletAmount - subtotalFromFirstPurchase;
@@ -363,8 +354,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
         discountAmount1 = discountList!["discountAmount"].toDouble();
         // print("discount amount: $discountAmount1");
-        discountAmountTotal  = discountAmount1.toString();
-
+        discountAmountTotal = discountAmount1.toString();
 
         netPayableAfterDiscount = (grandAmount - discountAmount1);
         // print("net payable after discount$netPayableAfterDiscount");
@@ -383,7 +373,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
         if (responseData.containsKey('discountAmount')) {
           Map<String, dynamic> discountAmount = responseData['discountAmount'];
 
-          if (discountAmount['status'] != null && discountAmount['status'] == false) {
+          if (discountAmount['status'] != null &&
+              discountAmount['status'] == false) {
             Fluttertoast.showToast(
               msg: "Offer is not available for you",
               toastLength: Toast.LENGTH_SHORT,
@@ -395,7 +386,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
             );
           }
         }
-
       });
     } else {
       debugPrint('discount api failed:');
@@ -418,7 +408,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => PlaceOrder(id: widget.id, pinCode: widget.pinCode,),
+            builder: (context) => PlaceOrder(
+              firstPurchase: widget.firstPurchase,
+              id: widget.id,
+              pinCode: widget.pinCode,
+            ),
           ),
         );
         // Trigger a rebuild of the widget tree
@@ -428,7 +422,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
       debugPrint('discount api failed:');
     }
   }
-
 
   apiForWalletAmount() async {
     var responseWallet = await ApiHelper().post(endpoint: "wallet", body: {
@@ -500,7 +493,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
         todaySlotList = slotList?["today"] ?? [];
         tomorrowSlotList = slotList?["tomorrow"] ?? [];
-
       });
     } else {
       apiForWalletAmount();
@@ -513,7 +505,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
   }
 
   generalDetailsApi() async {
-    var response = await ApiHelper().post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
+    var response = await ApiHelper()
+        .post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('general details api successful:');
@@ -526,8 +519,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
           packingCharge = "0";
         }
 
-        shipCharge ??= generalList![index]["delivery_charge"]?.toString() ?? "0";
-        packingCharge ??= generalList![index]["packing_charge"]?.toString() ?? "0";
+        shipCharge ??=
+            generalList![index]["delivery_charge"]?.toString() ?? "0";
+        packingCharge ??=
+            generalList![index]["packing_charge"]?.toString() ?? "0";
 
         int shippingCharge = 0;
 
@@ -554,7 +549,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
             walletAmount;
 
         grandAmount = amount.toInt();
-        grandTotal = grandAmount.toString() ;
+        grandTotal = grandAmount.toString();
       });
     } else {
       debugPrint('api failed:');
@@ -568,8 +563,11 @@ class _PlaceOrderState extends State<PlaceOrder> {
     var response = await ApiHelper().post(endpoint: "cart/addCODOrder", body: {
       "id": uID.toString(),
       "address": widget.id.toString(),
-      "delivery_time": isExpressDeliverySelected ? "express_delivery" : slotId.toString(),
-      "delivery_date": isExpressDeliverySelected ? DateTime.now().toString() : slotDate.toString(),
+      "delivery_time":
+          isExpressDeliverySelected ? "express_delivery" : slotId.toString(),
+      "delivery_date": isExpressDeliverySelected
+          ? DateTime.now().toString()
+          : slotDate.toString(),
       "totalAmount": subTotalForApi.toString(),
       "amount": grandTotal.toString(),
       "discountAmount": discountAmount1.toString(),
@@ -630,9 +628,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
           ),
         ),
         child: Center(
-          child: CircularProgressIndicator(
-            color: Color(ColorT.themeColor)
-          ),
+          child: CircularProgressIndicator(color: Color(ColorT.themeColor)),
         ),
       );
     }
@@ -648,8 +644,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
         backgroundColor: Colors.grey.shade200,
         body: isLoading
             ? CircularProgressIndicator(
-          color: Color(ColorT.themeColor),
-        )
+                color: Color(ColorT.themeColor),
+              )
             : Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -778,7 +774,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(10))),
                                 child: CheckboxListTile(
-                                  activeColor: Color(ColorT.themeColor),
+                                  activeColor: Colors.red.shade300,
                                   title: TextConst(text: "Express Delivery"),
                                   value: isExpressDeliverySelected,
                                   onChanged: (value) {
@@ -825,9 +821,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                     ),
                                     Slider(
                                       mouseCursor: MouseCursor.uncontrolled,
-                                      activeColor: Color(ColorT.themeColor),
-                                      inactiveColor: Colors.teal[500],
+                                      activeColor: Colors.red.shade400,
+                                      inactiveColor: Colors.red.shade300,
                                       value: walletAmount,
+                                      thumbColor: Colors.grey.shade300,
                                       min: 0,
                                       max: walletAmountL,
                                       onChanged: (double value) {
@@ -862,7 +859,7 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 children: [
                                   AmountRow(
                                     text: "Subtotal",
-                                    subtext: "Rs.${subTotalForApi ?? "0"}" ,
+                                    subtext: "Rs.${subTotalForApi ?? "0"}",
                                   ),
                                   CustomRow(
                                     text: "Delivery Charges",
@@ -886,19 +883,19 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                       planList![0]["paid_status"] == "Unpaid")
                                     CustomRow(
                                       text: "Subscription Plan Amount",
-                                      subtext:
-                                      "Rs.$subscriptionPlanAmount",
+                                      subtext: "Rs.$subscriptionPlanAmount",
                                     ),
                                   if (cartDiscountAppliedList != null &&
                                       cartDiscountAppliedList!.isNotEmpty)
                                     CustomRow(
                                       text: "Discount Applied Amount",
                                       subtext:
-                                      "Rs.${discountAmountTotal ?? '0'}",
+                                          "Rs.${discountAmountTotal ?? '0'}",
                                     ),
                                   CustomRow(
                                     text: "First time Purchase Discount",
-                                    subtext: "Rs.${subTotalFirstPurchase ?? '0'}",
+                                    subtext:
+                                        "Rs.${subTotalFirstPurchase ?? '0'}",
                                   ),
                                   CustomRow(
                                     text: "Grand Total",
@@ -922,15 +919,15 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 children: [
                                   Heading(text: "APPLIED DISCOUNTS"),
                                   AppliedOfferCard(
-                                    title: cartDiscountAppliedList![index]["cartProductName"] ?? ""
-                                        .toString(),
-                                    description: "Rs. ${cartDiscountAppliedList![index]
-                                    ["discountAmount"]}",
-                                    image: "assets/offeratcart.png",
-                                    onPressed: (){
-                                      apiForRemoveDiscount();
-                                    }
-                                  ),
+                                      title: cartDiscountAppliedList![index]
+                                              ["cartProductName"] ??
+                                          "".toString(),
+                                      description:
+                                          "Rs. ${cartDiscountAppliedList![index]["discountAmount"]}",
+                                      image: "assets/offeratcart.png",
+                                      onPressed: () {
+                                        apiForRemoveDiscount();
+                                      }),
                                 ],
                               ),
                             SizedBox(
@@ -941,20 +938,23 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 // cartDiscountAppliedList == null &&
                                 cartDiscountAppliedList!.isEmpty &&
                                 cartDiscountList![0]["discountAvailable"] == 1)
-                            Column(
-                              children: [
-                                Heading(text: "AVAILABLE DISCOUNTS"),
-                                OfferCard(
-                                  title: cartDiscountList![index]["title"] ?? ""
-                                      .toString(),
-                                  description: "${cartDiscountList![index]
-                                  ["discount_value"]}${discountType!} Discount",
-                                  image: "assets/offer1.png",
-                                  onPressed: _isApplied ? null : _onApplyButtonPressed,
-                                  isApplied: _isApplied, // Pass the isApplied value to OfferCard
-                                ),
-                              ],
-                            ),
+                              Column(
+                                children: [
+                                  Heading(text: "AVAILABLE DISCOUNTS"),
+                                  OfferCard(
+                                    title: cartDiscountList![index]["title"] ??
+                                        "".toString(),
+                                    description:
+                                        "${cartDiscountList![index]["discount_value"]}${discountType!} Discount",
+                                    image: "assets/offer1.png",
+                                    onPressed: _isApplied
+                                        ? null
+                                        : _onApplyButtonPressed,
+                                    isApplied:
+                                        _isApplied, // Pass the isApplied value to OfferCard
+                                  ),
+                                ],
+                              ),
                             SizedBox(
                               height: 10,
                             ),
@@ -966,14 +966,14 @@ class _PlaceOrderState extends State<PlaceOrder> {
                                 children: [
                                   CheckboxListTile(
                                     activeColor: Color(ColorT.themeColor),
-                                    title: TextConst(text: "Contactless Delivery"),
+                                    title:
+                                        TextConst(text: "Contactless Delivery"),
                                     value: isContactless,
                                     onChanged: (value) {
                                       setState(() {
                                         isContactless = value!;
-                                        contactLess = value
-                                            ? "Contactless_Delivery"
-                                            : "";
+                                        contactLess =
+                                            value ? "Contactless_Delivery" : "";
                                       });
                                     },
                                   ),
@@ -1028,11 +1028,13 @@ class _PlaceOrderState extends State<PlaceOrder> {
                             SizedBox(
                               width: double.infinity,
                               height: 50,
-                              child:ElevatedButton(
-                                onPressed: hidePlaceOrderButton ? null : () async {
-                                  await placeOrderApi();
-                                  // Wait for 3 seconds before navigating to MyOrders
-                                },
+                              child: ElevatedButton(
+                                onPressed: hidePlaceOrderButton
+                                    ? null
+                                    : () async {
+                                        await placeOrderApi();
+                                        // Wait for 3 seconds before navigating to MyOrders
+                                      },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(ColorT.themeColor),
                                   shadowColor: Colors.teal[300],
@@ -1067,9 +1069,10 @@ class _PlaceOrderState extends State<PlaceOrder> {
       child: Padding(
         padding: const EdgeInsets.all(3),
         child: Container(
-    decoration: BoxDecoration(
-    borderRadius: BorderRadius.all(Radius.circular(15)),
-    color: isSelected ? Colors.red.shade300 : Colors.grey.shade800,),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            color: isSelected ? Colors.red.shade300 : Colors.grey.shade800,
+          ),
           child: Padding(
             padding: const EdgeInsets.all(3),
             child: Center(

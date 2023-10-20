@@ -122,7 +122,7 @@ class _AddressBookState extends State<AddressBook> {
           ),
         ),
       ),
-      bottomSheet:  Padding(
+      bottomNavigationBar:  Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: (){

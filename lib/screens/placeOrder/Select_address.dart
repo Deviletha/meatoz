@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meatoz/screens/placeOrder/place_order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
@@ -23,6 +25,66 @@ class _SetectAddressState extends State<SetectAddress> {
   Map? address;
   List? addressList;
 
+  Map? offerList;
+  Map? finalOfferList;
+
+  String? totalAmount;
+
+  bool isLoading = true;
+
+  ///CartList
+  Map? cartList;
+  List? finalCartList;
+  List? cartDiscountList;
+  List? cartDiscountAppliedList;
+
+  // int discountAmount = 0;
+  // double discountAmount1 = 0;
+  // String? discountAmountTotal;
+
+  double subtotal = 0;
+  double subtotal1 = 0;
+
+  String? subTotalForApi;
+  int? firstPurchaseAmount;
+
+
+  apiForCart() async {
+    if (uID != null) {
+      var response = await ApiHelper().post(endpoint: "cart/get", body: {
+        "userid": uID,
+      }).catchError((err) {});
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (response != null) {
+        setState(() {
+          debugPrint('cart page successful:');
+          cartList = jsonDecode(response);
+          finalCartList = cartList!["cart"];
+          cartDiscountAppliedList = cartList!["cartAppliedDiscounts"];
+          print(response);
+
+
+          if (finalCartList != null && finalCartList!.isNotEmpty) {
+            for (int i = 0; i < finalCartList!.length; i++) {
+              int price = finalCartList![i]["price"] * finalCartList![i]["quantity"];
+              subtotal1 = subtotal1 + price;
+            }
+          }
+          print(subtotal1);
+          subTotalForApi = subtotal1.toString();
+          firstPurchaseOffer();
+
+        });
+      } else {
+        debugPrint('api failed:');
+      }
+    }
+  }
+
   @override
   void initState() {
     checkUser();
@@ -35,32 +97,38 @@ class _SetectAddressState extends State<SetectAddress> {
       uID = prefs.getString("UID");
     });
     getUserAddress();
+    apiForCart();
+
   }
 
-  // checkPincode(String pin, int position) async {
-  //   var response = await ApiHelper().post(
-  //     endpoint: "postal/checkAvailabilityAtCheckout",
-  //     body: {
-  //       "userid": UID,
-  //       "pincode": pin,
-  //     },
-  //   ).catchError((err) {});
-  //   if (response != null) {
-  //     setState(() {
-  //       debugPrint('check pin code api successful:');
-  //       pincode = jsonDecode(response);
-  //       pincodeList = pincode!["orderData"];
-  //       int pincodeAvailability = pincodeList![position]["pincode_availability"];
-  //       if (pincodeAvailability == 0) {
-  //         showCustomSnackBar(context);
-  //       }
-  //       String expressDeliveryStatus = pincodeList![position]["express_delivery_available"];
-  //       print("Express Delivery Status: $expressDeliveryStatus");
-  //     });
-  //   } else {
-  //     debugPrint('api failed:');
-  //   }
-  // }
+  firstPurchaseOffer() async {
+    var response = await ApiHelper().post(
+      endpoint: "discount/getFirstPurchaseOffer",
+      body: {
+        "user_id": uID,
+        "total_amount": subTotalForApi.toString(),
+      },
+    ).catchError((err) {});
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response != null) {
+      setState(() {
+        debugPrint('first purchase api successful:');
+        offerList = jsonDecode(response);
+        finalOfferList = offerList!["firstPurchaseOffer"];
+        print(finalOfferList);
+
+        firstPurchaseAmount = finalOfferList?["discountAmount"] ?? 0;
+        print(firstPurchaseAmount!);
+
+      });
+    } else {
+      debugPrint('api failed:');
+    }
+  }
 
 
   void showCustomSnackBar(BuildContext context) {
@@ -68,29 +136,27 @@ class _SetectAddressState extends State<SetectAddress> {
       SnackBar(
         backgroundColor: Colors.red[400],
         duration: Duration(seconds: 5),
-        content: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: const [
-              Text(
-                "Delivery is not available in this pincode.",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+        content: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            Text(
+              "Delivery is not available in this pincode.",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              SizedBox(height: 4),
-              Text(
-                "Please use another address.",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              "Please use another address.",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 16,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -133,7 +199,7 @@ class _SetectAddressState extends State<SetectAddress> {
         ],
       ),
 
-      bottomSheet:  Padding(
+      bottomNavigationBar:  Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
           onPressed: (){
@@ -169,7 +235,7 @@ class _SetectAddressState extends State<SetectAddress> {
             SizedBox(
               height: 10,
             ),
-            addressList == null
+            (addressList == null && isLoading)
                 ? Shimmer.fromColors(
               baseColor: Colors.grey[300]!,
               highlightColor: Colors.grey[100]!,
@@ -228,16 +294,50 @@ class _SetectAddressState extends State<SetectAddress> {
 
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                PlaceOrder(
-                  id: addressList![index]["id"].toString(),
-                  pinCode: addressList![index]["pincode"].toString(),
-                ),
-          ),
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            // Show a dialog with CircularProgressIndicator
+            return AlertDialog(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    color: Color(ColorT.themeColor),
+                  ),
+                ],
+              ),
+            );
+          },
         );
+        // Set a timer
+        Timer(Duration(seconds: 3), () {
+          // After 3 seconds, navigate to PlaceOrder
+          Navigator.pop(context); // Close the dialog
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlaceOrder(
+                firstPurchase: firstPurchaseAmount!.toInt(),
+                id: addressList![index]["id"].toString(),
+                pinCode: addressList![index]["pincode"].toString(),
+              ),
+            ),
+          );
+        });
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) =>
+        //         PlaceOrder(
+        //           firstPurchase: firstPurchaseAmount!.toInt(),
+        //           id: addressList![index]["id"].toString(),
+        //           pinCode: addressList![index]["pincode"].toString(),
+        //         ),
+        //   ),
+        // );
       },
       child: Card(
         child: Padding(
@@ -266,4 +366,5 @@ class _SetectAddressState extends State<SetectAddress> {
       ),
     );
   }
+
 }

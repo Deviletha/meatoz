@@ -756,7 +756,7 @@ class _HomePageState extends State<HomePage> {
                                 .toString();
                             checkLoggedIn(context, productId!, productName!,
                                 price1!, pSize!, combinationId!);
-                            Future.delayed(Duration(seconds: 3), () {
+                            Future.delayed(Duration(seconds: 1), () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -1052,7 +1052,7 @@ class _HomePageState extends State<HomePage> {
           color: Colors.white,
         ),
       ),
-      bottomSheet: Visibility(
+      bottomNavigationBar: Visibility(
         visible: cartList != null && cartList!.isNotEmpty,
         child: InkWell(
           onTap: () {
@@ -1065,7 +1065,7 @@ class _HomePageState extends State<HomePage> {
           },
           child: Container(
             decoration: BoxDecoration(
-              backgroundBlendMode: BlendMode.srcATop, // Example blend mode
+              // backgroundBlendMode: BlendMode.srcATop, // Example blend mode
               gradient: LinearGradient(
                 begin: Alignment.centerRight,
                 end: Alignment.centerLeft,

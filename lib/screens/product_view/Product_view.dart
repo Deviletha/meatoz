@@ -12,6 +12,7 @@ import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
+import '../../theme/colors.dart';
 import '../registration/Login_page.dart';
 import '../splash_bottomNav/BottomNavBar.dart';
 
@@ -249,7 +250,7 @@ class _ProductViewState extends State<ProductView> {
               Colors.grey.shade200,
               Colors.grey.shade400,
             ])),
-        child: ListView(
+        child: Column(
           children: [
             ProductViewTile(
               actualPrice: widget.actualPrice,
@@ -262,37 +263,41 @@ class _ProductViewState extends State<ProductView> {
                 },
                 price: widget.amount,
                 description: widget.description.toString()),
+
             Heading(
               text: "Related Products",
             ),
             isLoading
-                ? Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: CarouselSlider.builder(
-                      itemCount: relatedProductList == null
-                          ? 0
-                          : relatedProductList?.length,
-                      itemBuilder: (context, index, realIndex) {
-                        return getProducts(index);
-                      },
-                      options: CarouselOptions(
-                        height: 290,
-                        aspectRatio: 15 / 6,
-                        viewportFraction: .65,
-                        initialPage: 1,
-                        enableInfiniteScroll: false,
-                        reverse: false,
-                        autoPlay: true,
-                        enlargeCenterPage: false,
-                        autoPlayInterval: Duration(seconds: 3),
-                        autoPlayAnimationDuration: Duration(milliseconds: 800),
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        onPageChanged: (index, reason) {},
-                        scrollDirection: Axis.horizontal,
-                      ),
-                    ),
-                  )
+                ? CircularProgressIndicator(
+              color: Color(ColorT.themeColor),
+            )
+            // Shimmer.fromColors(
+            //         baseColor: Colors.grey[300]!,
+            //         highlightColor: Colors.grey[100]!,
+            //         child: CarouselSlider.builder(
+            //           itemCount: relatedProductList == null
+            //               ? 0
+            //               : relatedProductList?.length,
+            //           itemBuilder: (context, index, realIndex) {
+            //             return getProducts(index);
+            //           },
+            //           options: CarouselOptions(
+            //             height: 290,
+            //             aspectRatio: 15 / 6,
+            //             viewportFraction: .65,
+            //             initialPage: 1,
+            //             enableInfiniteScroll: false,
+            //             reverse: false,
+            //             autoPlay: true,
+            //             enlargeCenterPage: false,
+            //             autoPlayInterval: Duration(seconds: 3),
+            //             autoPlayAnimationDuration: Duration(milliseconds: 800),
+            //             autoPlayCurve: Curves.fastOutSlowIn,
+            //             onPageChanged: (index, reason) {},
+            //             scrollDirection: Axis.horizontal,
+            //           ),
+            //         ),
+            //       )
                 : CarouselSlider.builder(
                     itemCount: relatedProductList == null
                         ? 0
@@ -329,11 +334,13 @@ class _ProductViewState extends State<ProductView> {
     var image = UrlConstants.base +
         (relatedProductList![index]["image"] ?? "").toString();
     var price = "₹${relatedProductList![index]["offerPrice"] ?? ""}";
+    var actualPrice = "₹${relatedProductList![index]["totalPrice"] ?? ""}";
 
     var stock = relatedProductList![index]["stock"];
     bool isStockAvailable = stock != null && int.parse(stock.toString()) > 0;
 
     return RelatedItemTile(
+      actualPrice: actualPrice,
       itemName: relatedProductList![index]["name"].toString(),
       imagePath: image,
       onPressed: () {

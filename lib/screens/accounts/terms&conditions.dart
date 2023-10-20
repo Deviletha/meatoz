@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../../../Components/appbar_text.dart';
 import '../../../Config/api_helper.dart';
+import '../../theme/colors.dart';
 
 class TermsAndConditions extends StatefulWidget {
   const TermsAndConditions({Key? key}) : super(key: key);
@@ -25,8 +26,10 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
 
   generalDetailsApi() async {
     var response = await ApiHelper()
-        .post(endpoint: "generalInfo/get", body: {})
-        .catchError((err) {});
+        .post(endpoint: "generalInfo/get", body: {}).catchError((err) {});
+    setState(() {
+      isLoading = false;
+    });
     if (response != null) {
       setState(() {
         debugPrint('general details api successful:');
@@ -36,9 +39,6 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
     } else {
       debugPrint('api failed:');
     }
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
@@ -49,32 +49,37 @@ class _TermsAndConditionsState extends State<TermsAndConditions> {
           text: "Terms & Conditions",
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomLeft,
-              end: Alignment.topRight,
-              colors: [
-                Colors.grey.shade400,
-                Colors.grey.shade200,
-                Colors.grey.shade50,
-                Colors.grey.shade200,
-                Colors.grey.shade400,
-              ],
-            )),
-        child: isLoading
-            ? Center(child: CircularProgressIndicator()) // Show a CircularProgressIndicator while loading
-            : ListView(
-          children: [
-            if (generalList != null) ...[
-              Padding(
-                padding: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-                child: HtmlWidget(generalList![index]["terms_and_conditions"]),
+      body: isLoading
+          ? Center(
+              child: CircularProgressIndicator(
+              color: Color(ColorT.themeColor),
+            )) // Show a CircularProgressIndicator while loading
+          : Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                begin: Alignment.bottomLeft,
+                end: Alignment.topRight,
+                colors: [
+                  Colors.grey.shade400,
+                  Colors.grey.shade200,
+                  Colors.grey.shade50,
+                  Colors.grey.shade200,
+                  Colors.grey.shade400,
+                ],
+              )),
+              child: ListView(
+                children: [
+                  if (generalList != null) ...[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 15, right: 15, top: 10, bottom: 10),
+                      child: HtmlWidget(
+                          generalList![index]["terms_and_conditions"]),
+                    ),
+                  ],
+                ],
               ),
-            ],
-          ],
-        ),
-      ),
+            ),
     );
   }
 }
