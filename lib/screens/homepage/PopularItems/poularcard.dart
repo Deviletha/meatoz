@@ -23,9 +23,11 @@ class PopularCard extends StatelessWidget {
         children: [
           Container(
             clipBehavior: Clip.antiAlias,
-            height: MediaQuery.of(context).size.height / 2.5,
-            width: MediaQuery.of(context).size.width / 1,
+            height: 200,
+            width: 200,
             decoration: BoxDecoration(
+              // border: Border.all(color: Colors.grey.shade700),
+              // boxShadow: [BoxShadow(color: Colors.grey.shade500,blurRadius: 3,),],
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
             ),
@@ -44,10 +46,19 @@ class PopularCard extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 15,
+            bottom: 0,
+            left: 0,
+            right: 0,
             child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(15),
+                  bottomRight: Radius.circular(15),
+                ),
+                color: Colors.white,
+              ),
               width: MediaQuery.of(context).size.width / 1,
-              color: Colors.white,
+
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextConst(

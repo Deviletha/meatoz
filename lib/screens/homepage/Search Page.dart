@@ -472,8 +472,8 @@ class _SearchState extends State<Search> {
               trailing: IconButton(
                 icon: Icon(
                   isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                  color: isInWishlist ? Colors.red : Colors.black,
-                  size: 30,
+                  color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                  size: 25,
                 ),
                 onPressed: () {
                   if (isInWishlist) {

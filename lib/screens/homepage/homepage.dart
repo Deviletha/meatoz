@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
@@ -22,6 +23,7 @@ import '../cartpage/Cart_page.dart';
 import '../registration/Login_page.dart';
 import '../orders/Orderdetails.dart';
 import '../product_view/Product_view.dart';
+import '../splash_bottomNav/BottomNavBar.dart';
 import 'Search Page.dart';
 import '../category_view/category_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -278,29 +280,46 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+
   Future<void> addToWishList(String id, String combination, String amount,
       BuildContext context) async {
     if (uID == null) {
-      // User is not logged in, show Snack bar and navigate to login page
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text('Please log in to add to wishlist.'),
-              SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginPage()),
-                  );
-                },
-                child: Text('Log In'),
-              ),
-            ],
-          ),
-        ),
+      // User is not logged in, show BottomSheet and navigate to login page
+      showModalBottomSheet(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Please log in to add to wishlist.',
+                  style: TextStyle(fontSize: 18),
+                ),
+                SizedBox(height: 16),
+                SizedBox(
+                  height: 40,
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(ColorT.themeColor),
+                      shadowColor: Colors.teal[300],
+                    ),
+                    child: Text('Log In'),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       );
       return;
     }
@@ -329,6 +348,7 @@ class _HomePageState extends State<HomePage> {
       debugPrint('Add to wishlist failed:');
     }
   }
+
 
   removeFromWishList(String id) async {
     var response =
@@ -1499,14 +1519,14 @@ class _HomePageState extends State<HomePage> {
                           return getPopularRow(index);
                         },
                         options: CarouselOptions(
-                          height: MediaQuery.of(context).size.height / 2.5,
+                          height: 300,
                           aspectRatio: 15 / 6,
                           viewportFraction: .58,
                           initialPage: 0,
                           enableInfiniteScroll: true,
                           reverse: false,
                           autoPlay: false,
-                          enlargeCenterPage: true,
+                          // enlargeCenterPage: true,
                           autoPlayInterval: Duration(seconds: 3),
                           autoPlayAnimationDuration:
                               Duration(milliseconds: 800),
@@ -1516,7 +1536,18 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     )
-                  : CarouselSlider.builder(
+                  :
+              // ListView.builder(
+              //   physics: ScrollPhysics(),
+              //   shrinkWrap: true,
+              //   addSemanticIndexes: true,
+              //   itemCount: finalPopularList == null
+              //       ? 0
+              //       : finalPopularList?.length,
+              //   scrollDirection: Axis.horizontal,
+              //   itemBuilder: (context, index) => getPopularRow(index),
+              // ),
+              CarouselSlider.builder(
                       itemCount: finalPopularList == null
                           ? 0
                           : finalPopularList?.length,
@@ -1524,9 +1555,9 @@ class _HomePageState extends State<HomePage> {
                         return getPopularRow(index);
                       },
                       options: CarouselOptions(
-                        height: MediaQuery.of(context).size.height / 2.5,
+                        height: 200,
                         aspectRatio: 15 / 6,
-                        viewportFraction: .7,
+                        viewportFraction: .45,
                         initialPage: 0,
                         enableInfiniteScroll: true,
                         reverse: false,
@@ -1599,29 +1630,6 @@ class _HomePageState extends State<HomePage> {
         imagePath: image,
         onTap: () {
           _showBottomSheetPopularProducts(context, index);
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => ProductView(
-          //       serveCapacity:
-          //           finalPopularList![index]["serving_cupacity"].toString(),
-          //       noOfPiece: finalPopularList![index]["no_of_piece"].toString(),
-          //       stock: finalPopularList![index]["stock"].toString(),
-          //       recipe: finalPopularList![index]["hint"].toString(),
-          //       position: index,
-          //       id: finalPopularList![index]["id"].toString(),
-          //       productName:
-          //           finalPopularList![index]["combinationName"].toString(),
-          //       url: image,
-          //       description: finalPopularList![index]["description"].toString(),
-          //       amount: finalPopularList![index]["offerPrice"].toString(),
-          //       combinationId:
-          //           finalPopularList![index]["combinationId"].toString(),
-          //       pSize:
-          //           finalPopularList![index]["size_attribute_name"].toString(),
-          //     ),
-          //   ),
-          // );
         },
         itemName: itemName);
   }
@@ -1740,29 +1748,6 @@ class _HomePageState extends State<HomePage> {
         child: InkWell(
           onTap: () {
             _showBottomSheetAllProducts(context, index1);
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(
-            //     builder: (context) => ProductView(
-            //       serveCapacity:
-            //           finalProductList![index1]["serving_cupacity"].toString(),
-            //       noOfPiece: finalProductList![index1]["no_of_piece"].toString(),
-            //       stock: finalProductList![index1]["stock"].toString(),
-            //       recipe: finalProductList![index1]["hint"].toString(),
-            //       position: index1,
-            //       id: pId,
-            //       productName:
-            //           finalProductList![index1]["combinationName"].toString(),
-            //       url: image,
-            //       description:
-            //           finalProductList![index1]["description"].toString(),
-            //       amount: finalProductList![index1]["offerPrice"].toString(),
-            //       combinationId: combID,
-            //       pSize: finalProductList![index1]["size_attribute_name"]
-            //           .toString(),
-            //     ),
-            //   ),
-            // );
           },
           child: Column(
             children: [
@@ -1848,8 +1833,8 @@ class _HomePageState extends State<HomePage> {
                           IconButton(
                             icon: Icon(
                               isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.red : Colors.black,
-                              size: 30,
+                              color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                              size: 25,
                             ),
                             onPressed: () {
                               if (isInWishlist) {
@@ -1985,8 +1970,8 @@ class _HomePageState extends State<HomePage> {
                           IconButton(
                             icon: Icon(
                               isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.red : Colors.black,
-                              size: 30,
+                              color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                              size: 25,
                             ),
                             onPressed: () {
                               if (isInWishlist) {
@@ -2123,8 +2108,8 @@ class _HomePageState extends State<HomePage> {
                           IconButton(
                             icon: Icon(
                               isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.red : Colors.black,
-                              size: 30,
+                              color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                              size: 25,
                             ),
                             onPressed: () {
                               if (isInWishlist) {
@@ -2152,40 +2137,4 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-// Widget getRelatedProducts(int index3) {
-//   index = index3;
-//   if (relatedProductList == null || relatedProductList![index3] == null) {
-//     return Container();
-//   }
-//   var image = UrlConstants.base + (relatedProductList![index3]["image"] ?? "").toString();
-//   var price = "₹${relatedProductList![index3]["offerPrice"] ?? ""}";
-//
-//   var stock = relatedProductList![index3]["stock"];
-//   bool isStockAvailable = stock != null && int.parse(stock.toString()) > 0;
-//
-//   return RelatedItemTile(
-//     itemName: relatedProductList![index3]["name"].toString(),
-//     imagePath: image,
-//     onPressed: () {
-//       if (isStockAvailable) {
-//         productId = relatedProductList![index3]["productID"].toString();
-//         productName = relatedProductList![index3]["name"].toString();
-//         price1 = relatedProductList![index3]["offerPrice"].toString();
-//         pSize = relatedProductList![index3]["size_attribute_name"].toString();
-//         combinationId = relatedProductList![index3]["combinationid"].toString();
-//         addToCart(productId!, productName!, price1!, pSize!, combinationId!);
-//       } else {
-//         Fluttertoast.showToast(
-//             msg: "Product is out of stock!",
-//             toastLength: Toast.LENGTH_SHORT,
-//             gravity: ToastGravity.SNACKBAR,
-//             timeInSecForIosWeb: 1,
-//             textColor: Colors.white,
-//             fontSize: 16.0);
-//       }
-//     },
-//     price: price,
-//   );
-// }
 }

@@ -120,36 +120,6 @@ class _BottomNavState extends State<BottomNav> {
           onTap: (index) => setState(() => selectIndex = index),
         ),
 
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        // bottomNavigationBar: AnimatedBottomNavigationBar(
-        //   icons: iconList,
-        //   height: 70,
-        //   activeColor: Color(ColorT.themeColor),
-        //   iconSize: 30,
-        //   activeIndex: selectIndex,
-        //   gapLocation: GapLocation.center,
-        //   elevation: 10,
-        //   borderColor: Colors.grey.shade200,
-        //   // notchSmoothness: NotchSmoothness.softEdge,
-        //   onTap: (index) => setState(() => selectIndex = index),
-        //   inactiveColor: Colors.grey.shade800,
-        // ),
-
-        // extendBody: false,
-        // bottomNavigationBar: FloatingNavbar(
-        //   onTap: onItemTapped,
-        //   currentIndex: selectIndex,
-        //   backgroundColor: Colors.white,
-        //   selectedBackgroundColor: Colors.white,
-        //   selectedItemColor: Color(ColorT.themeColor),
-        //   unselectedItemColor: Colors.black,
-        //   items: [
-        //     FloatingNavbarItem(icon: Iconsax.home, title: "MEATOZ"),
-        //     FloatingNavbarItem(icon: Iconsax.box, title: "CATEGORIES"),
-        //     FloatingNavbarItem(icon: Iconsax.profile_circle, title: "PROFILE"),
-        //     FloatingNavbarItem(icon: Iconsax.shopping_bag, title: "MY CART"),
-        //   ],
-        // ),
         body: body.elementAt(selectIndex),
       ),
     );

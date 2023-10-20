@@ -76,11 +76,15 @@ class _SignupPageState extends State<SignupPage> {
       setState(() async {
         debugPrint('api successful:');
         signupList = jsonDecode(response);
+        print(response);
 
         print(response);
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("UID", signupList![0]["id"].toString());
-        checkUser();
+        // checkUser();
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => LoginPage()));
+
         Fluttertoast.showToast(
           msg: "Signup success",
           toastLength: Toast.LENGTH_SHORT,
@@ -307,9 +311,7 @@ class _SignupPageState extends State<SignupPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         apiForSignup();
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) => LoginPage()));
-                      },
+                        },
                       style: ElevatedButton.styleFrom(
                           backgroundColor: Color(ColorT.themeColor),
                           shadowColor: Colors.teal[300],),
