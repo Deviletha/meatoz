@@ -5,7 +5,7 @@ import 'package:meatoz/Components/alertbox_text.dart';
 import '../../theme/colors.dart';
 import '../accounts/subscription_plans.dart';
 import '../cartpage/Cart_page.dart';
-import '../accounts/Account_page.dart';
+import '../accounts/account_page.dart';
 import '../category/category_page.dart';
 import '../homepage/homepage.dart';
 

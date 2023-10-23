@@ -9,7 +9,7 @@ import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../category_view/category_view.dart';
 import '../homepage/Category/CategoryWidget.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});

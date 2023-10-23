@@ -20,10 +20,10 @@ import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../../theme/colors.dart';
 import '../cartpage/Cart_page.dart';
-import '../registration/Login_page.dart';
+import '../registration/login_page.dart';
 import '../orders/Orderdetails.dart';
-import '../product_view/Product_view.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
+import '../product_view/product_view.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
 import 'Search Page.dart';
 import '../category_view/category_view.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -304,7 +304,7 @@ class _HomePageState extends State<HomePage> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.push(
+                      Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
                       );
@@ -708,7 +708,7 @@ class _HomePageState extends State<HomePage> {
       }
     } else {
       // User is not logged in, navigate to LoginPage
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }

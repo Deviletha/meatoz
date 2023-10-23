@@ -5,7 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
-import 'Login_page.dart';
+import 'login_page.dart';
 
 class SignupPage1 extends StatefulWidget {
   const SignupPage1({Key? key, required String referralCode}) : super(key: key);

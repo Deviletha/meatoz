@@ -9,7 +9,7 @@ import '../../Components/appbar_text.dart';
 import '../../Components/text_widget.dart';
 import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
-import '../accounts/Add_address.dart';
+import '../accounts/add_address.dart';
 import '../accounts/faq_page.dart';
 
 

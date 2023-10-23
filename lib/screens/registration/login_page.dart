@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
-import 'SignUp_page.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
+import 'signup_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);

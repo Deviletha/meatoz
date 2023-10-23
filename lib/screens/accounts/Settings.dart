@@ -7,8 +7,8 @@ import 'package:meatoz/screens/accounts/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../Components/appbar_text.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
-import 'EditProfile.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
+import 'edit_profile.dart';
 
 class Settings extends StatefulWidget {
   const Settings({Key? key}) : super(key: key);

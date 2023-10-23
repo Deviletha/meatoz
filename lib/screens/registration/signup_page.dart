@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
-import 'Login_page.dart';
+import 'login_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({Key? key}) : super(key: key);
@@ -42,71 +42,91 @@ class _SignupPageState extends State<SignupPage> {
   // final TextEditingController _latitudeController = TextEditingController();
   // final TextEditingController _longitudeController = TextEditingController();
 
+
+
   apiForSignup() async {
     try {
-    LocationPermission permission = await Geolocator.requestPermission();
+      LocationPermission permission = await Geolocator.requestPermission();
 
-    if (permission == LocationPermission.denied) {
-      // Handle case where user denies permission
-      return;
-    }
+      if (permission == LocationPermission.denied) {
+        // Handle case where user denies permission
+        return;
+      }
 
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
 
-    double latitude = position.latitude;
-    double longitude = position.longitude;
+      double latitude = position.latitude;
+      double longitude = position.longitude;
 
-    print(latitude);
-    print(longitude);
+      print(latitude);
+      print(longitude);
 
-    var response = await ApiHelper().post(endpoint: "common/signUP", body: {
-      "name": _nameController.text.toString(),
-      "email": _emailController.text.toString(),
-      "contact": _contactController.text.toString(),
-      "address": _addressController.text.toString(),
-      "state": _stateController.text.toString(),
-      "location": _locationController.text.toString(),
-      "postal": _postalController.text.toString(),
-      "password": _passwordController.text.toString(),
-      "latitude": latitude.toString(),
-      "longitude": longitude.toString(),
-    }).catchError((err) {});
-    if (response != null) {
-      setState(() async {
-        debugPrint('api successful:');
-        signupList = jsonDecode(response);
-        print(response);
+      var response = await ApiHelper().post(endpoint: "common/signUP", body: {
+        "name": _nameController.text.toString(),
+        "first_name": _nameController.text.toString(),
+        "email": _emailController.text.toString(),
+        "contact": _contactController.text.toString(),
+        "address": _addressController.text.toString(),
+        "state": _stateController.text.toString(),
+        "location": _locationController.text.toString(),
+        "postal": _postalController.text.toString(),
+        "password": _passwordController.text.toString(),
+        "latitude": latitude.toString(),
+        "longitude": longitude.toString(),
+      }).catchError((err) {});
 
-        print(response);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("UID", signupList![0]["id"].toString());
-        // checkUser();
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => LoginPage()));
+      if (response != null) {
+        var jsonResponse = jsonDecode(response);
+        var status = jsonResponse['status'];
 
-        Fluttertoast.showToast(
-          msg: "Signup success",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          textColor: Colors.white,
-          fontSize: 16.0,
-        );
-      });
-    } else {
-      debugPrint('api failed:');
-    }
+        if (status == 2) {
+          Fluttertoast.showToast(
+            msg: "User already exists",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          _nameController.clear();
+          _emailController.clear();
+          _contactController.clear();
+          _addressController.clear();
+          _stateController.clear();
+          _locationController.clear();
+          _postalController.clear();
+          _passwordController.clear();
+          return;
+          // Return early to prevent further execution
+        }
+
+        setState(() async {
+          debugPrint('api successful:');
+          signupList = jsonResponse;
+          print(response);
+          print(signupList);
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => LoginPage()));
+
+          Fluttertoast.showToast(
+            msg: "Signup success",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        });
+      } else {
+        debugPrint('api failed:');
+      }
     } catch (err) {
       debugPrint('An error occurred: $err');
     }
   }
 
-  @override
-  void initState() {
-    apiForSignup();
-    super.initState();
-  }
+
 
   @override
   Widget build(BuildContext context) {

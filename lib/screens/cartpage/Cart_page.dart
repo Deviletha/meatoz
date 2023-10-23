@@ -11,9 +11,9 @@ import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../../theme/colors.dart';
 import '../placeOrder/widget/offer_card.dart';
-import '../registration/Login_page.dart';
+import '../registration/login_page.dart';
 import '../placeOrder/Select_address.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);

@@ -39,7 +39,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
     showDatePicker(
       context: context,
       initialDate: DateTime.now(),
-      firstDate: DateTime(2010),
+      firstDate: DateTime(1960),
       lastDate: DateTime(2025),
     ).then((value) {
       if (value != null) {
@@ -59,24 +59,26 @@ class _ChangeProfileState extends State<ChangeProfile> {
     apiForProfile();
   }
 
-  void convertImageToBase64() async {
-    if (_pickedImage != null) {
-      final bytes = await _pickedImage!.readAsBytes();
-      final String base64Image = base64Encode(bytes);
-      setState(() {
-        base64Images.add(base64Image);
-      });
-    }
-  }
-
   void selectImage() async {
-    final pickedImage =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
+      print('Image picked: ${pickedImage.path}');
       setState(() {
         _pickedImage = File(pickedImage.path);
       });
       convertImageToBase64();
+    }
+  }
+
+  void convertImageToBase64() async {
+    if (_pickedImage != null) {
+      final bytes = await _pickedImage!.readAsBytes();
+      final String base64Image ="data:image/;base64,${base64Encode(bytes)}";
+      print('Base64 Image: $base64Image');
+      setState(() {
+        base64Images.add(base64Image);
+        print(base64Images);
+      });
     }
   }
 
@@ -95,9 +97,9 @@ class _ChangeProfileState extends State<ChangeProfile> {
             print(responseData.toString());
           }
 
-          firstnameController.text = dataList![0]["first_name"];
-          lastnameController.text = dataList![0]["last_name"];
-          emailIdController.text = dataList![0]["email"];
+          firstnameController.text = dataList![0]["first_name"].toString();
+          emailIdController.text = dataList![0]["email"].toString();
+          lastnameController.text = dataList![0]["last_name"].toString();
         });
       } else {
         debugPrint('api failed:');
@@ -165,18 +167,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
           text: "Edit Profile",
         ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade200,
-              Colors.grey.shade50,
-              Colors.grey.shade200,
-              Colors.grey.shade400,
-            ])),
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -298,7 +289,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 35, right: 35),
+              padding: const EdgeInsets.only(left: 35, right: 35, top: 50),
               child: SizedBox(
                 width: double.infinity,
                 height: 50,

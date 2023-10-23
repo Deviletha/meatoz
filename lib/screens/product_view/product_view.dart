@@ -6,15 +6,14 @@ import 'package:iconsax/iconsax.dart';
 import 'package:meatoz/screens/product_view/widget/productCard.dart';
 import 'package:meatoz/screens/product_view/widget/relatedItemsCard.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:shimmer/shimmer.dart';
 import '../../Components/alertbox_text.dart';
 import '../../Components/title_widget.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../../theme/colors.dart';
-import '../registration/Login_page.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
+import '../registration/login_page.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
 
 class ProductView extends StatefulWidget {
   final String productName;
@@ -271,33 +270,6 @@ class _ProductViewState extends State<ProductView> {
                 ? CircularProgressIndicator(
               color: Color(ColorT.themeColor),
             )
-            // Shimmer.fromColors(
-            //         baseColor: Colors.grey[300]!,
-            //         highlightColor: Colors.grey[100]!,
-            //         child: CarouselSlider.builder(
-            //           itemCount: relatedProductList == null
-            //               ? 0
-            //               : relatedProductList?.length,
-            //           itemBuilder: (context, index, realIndex) {
-            //             return getProducts(index);
-            //           },
-            //           options: CarouselOptions(
-            //             height: 290,
-            //             aspectRatio: 15 / 6,
-            //             viewportFraction: .65,
-            //             initialPage: 1,
-            //             enableInfiniteScroll: false,
-            //             reverse: false,
-            //             autoPlay: true,
-            //             enlargeCenterPage: false,
-            //             autoPlayInterval: Duration(seconds: 3),
-            //             autoPlayAnimationDuration: Duration(milliseconds: 800),
-            //             autoPlayCurve: Curves.fastOutSlowIn,
-            //             onPageChanged: (index, reason) {},
-            //             scrollDirection: Axis.horizontal,
-            //           ),
-            //         ),
-            //       )
                 : CarouselSlider.builder(
                     itemCount: relatedProductList == null
                         ? 0

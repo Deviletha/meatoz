@@ -16,10 +16,10 @@ import '../../Components/alertbox_text.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
-import '../splash_bottomNav/BottomNavBar.dart';
-import 'EditProfile.dart';
+import '../splash_bottomNav/bottom_nav_bar.dart';
+import 'edit_profile.dart';
 import 'faq_page.dart';
-import '../registration/Login_page.dart';
+import '../registration/login_page.dart';
 import '../orders/Orders_page.dart';
 import 'subscription_plans.dart';
 import 'Settings.dart';
@@ -241,9 +241,11 @@ class _AccountsState extends State<Accounts> {
                                         child: CachedNetworkImage(
                                           imageUrl: image,
                                           placeholder: (context, url) =>
-                                              Container(
-                                            color: Colors.grey[300],
-                                          ),
+                                              Center(
+                                                child: CircularProgressIndicator(
+                                                  color: Color(ColorT.themeColor),
+                                                ),
+                                              ),
                                           errorWidget: (context, url, error) =>
                                               Container(
                                             decoration: BoxDecoration(

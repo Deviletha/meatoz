@@ -13,7 +13,7 @@ import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../../theme/colors.dart';
 import '../cartpage/Cart_page.dart';
-import '../registration/Login_page.dart';
+import '../registration/login_page.dart';
 
 class Wishlist extends StatefulWidget {
   const Wishlist({Key? key}) : super(key: key);
