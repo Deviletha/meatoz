@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
-import 'faq_page.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key}) : super(key: key);
@@ -105,7 +104,10 @@ class _AddAddressState extends State<AddAddress> {
             Text(
               "Hey, User!",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 35, color: Color(ColorT.themeColor),),
+              style: TextStyle(
+                fontSize: 35,
+                color: Color(ColorT.themeColor),
+              ),
             ),
             Text(
               "Complete your profile",

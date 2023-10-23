@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -107,50 +106,50 @@ class _MyOrdersState extends State<MyOrders> {
         actions: [
           IconButton(
               onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return FAQ(
-                    section: "orders",
-                  );
-                }),
-              ), icon: Icon(Icons.help_outline_rounded))
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return FAQ(
+                        section: "orders",
+                      );
+                    }),
+                  ),
+              icon: Icon(Icons.help_outline_rounded))
         ],
       ),
       body: orderList == null || orderList!.isEmpty
           ? Container(
-        color: Colors.white,
-            child: Center(
-        child: Lottie.asset(
-              "assets/emptyOrder.json",
-              height: 300,
-              repeat: true),
-      ),
-          )
+              color: Colors.white,
+              child: Center(
+                child: Lottie.asset("assets/emptyOrder.json",
+                    height: 300, repeat: true),
+              ),
+            )
           : Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade200,
-              Colors.grey.shade50,
-              Colors.grey.shade200,
-              Colors.grey.shade400,
-            ])),
-        child:  ListView.builder(
-          physics: ScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: orderList == null ? 0 : orderList?.length,
-          itemBuilder: (context, index) => getOrderList(index),
-        ),
-      ),
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ])),
+              child: ListView.builder(
+                physics: ScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: orderList == null ? 0 : orderList?.length,
+                itemBuilder: (context, index) => getOrderList(index),
+              ),
+            ),
     );
   }
 
   Widget getOrderList(int index) {
-
-    bool isOrderCancelled = orderList![index]["status_note"].toString().toLowerCase() == "cancelled";
+    bool isOrderCancelled =
+        orderList![index]["status_note"].toString().toLowerCase() ==
+            "cancelled";
     var image = UrlConstants.base + orderList![index]["image"].toString();
     var price = "₹ ${orderList![index]["total"]}";
     return Card(
@@ -183,16 +182,14 @@ class _MyOrdersState extends State<MyOrders> {
                       // Image border// Image radius
                       child: CachedNetworkImage(
                         imageUrl: image,
-                        placeholder: (context, url) =>
-                            Container(
-                              color: Colors.grey[300],
-                            ),
-                        errorWidget: (context, url, error) =>
-                            Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      image: AssetImage("assets/noItem.png"))),
-                            ),
+                        placeholder: (context, url) => Container(
+                          color: Colors.grey[300],
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage("assets/noItem.png"))),
+                        ),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -214,7 +211,6 @@ class _MyOrdersState extends State<MyOrders> {
                           ),
                         ),
                       ),
-
                     )
                   ],
                 ),
@@ -228,16 +224,17 @@ class _MyOrdersState extends State<MyOrders> {
                     orderList == null
                         ? Text("null data")
                         : Text(
-                      orderList![index]["cartName"].toString(),
-                      maxLines: 2,
-                      style:  TextStyle(fontSize:13,fontWeight: FontWeight.bold),
-                    ),
+                            orderList![index]["cartName"].toString(),
+                            maxLines: 2,
+                            style: TextStyle(
+                                fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
                     SizedBox(
                       height: 3,
                     ),
                     Text(
                       price,
-                      style:  TextStyle(
+                      style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: Color(ColorT.themeColor)),
@@ -247,9 +244,8 @@ class _MyOrdersState extends State<MyOrders> {
                     ),
                     Text(
                       "Amount Paid: ₹ ${orderList![index]["amount_paid"]}",
-                      style:  TextStyle(
-                          fontSize: 14,
-                          color: Color(ColorT.themeColor)),
+                      style: TextStyle(
+                          fontSize: 14, color: Color(ColorT.themeColor)),
                     ),
                     SizedBox(
                       height: 5,

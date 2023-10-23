@@ -10,7 +10,6 @@ import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
 import 'faq_page.dart';
 
-
 class Subscription extends StatefulWidget {
   const Subscription({Key? key}) : super(key: key);
 
@@ -51,7 +50,6 @@ class _SubscriptionState extends State<Subscription> {
   }
 
   apiForSubscription() async {
-
     var response = await ApiHelper()
         .post(endpoint: "subscriptionPlan/get", body: {}).catchError((err) {});
 
@@ -90,16 +88,13 @@ class _SubscriptionState extends State<Subscription> {
   }
 
   chooseSubscriptionPlan(String planId, String paymentType) async {
-
-    if (subscriptionList != null ) {
-      var response = await ApiHelper().post(
-          endpoint: "subscriptionPlan/subcription",
-          body: {
-            "userid": uID,
-            "plan_id": planId,
-            "type": paymentType,
-          }
-      ).catchError((err) {});
+    if (subscriptionList != null) {
+      var response = await ApiHelper()
+          .post(endpoint: "subscriptionPlan/subcription", body: {
+        "userid": uID,
+        "plan_id": planId,
+        "type": paymentType,
+      }).catchError((err) {});
 
       setState(() {
         isLoading = false;
@@ -109,7 +104,6 @@ class _SubscriptionState extends State<Subscription> {
         setState(() {
           debugPrint('Subscription plan api successful:');
           subscription = jsonDecode(response);
-
         });
 
         // Refresh the subscription details
@@ -123,6 +117,7 @@ class _SubscriptionState extends State<Subscription> {
       }
     }
   }
+
   void _showPlanConfirmationDialog(BuildContext context, String planId) {
     showDialog(
       context: context,
@@ -142,19 +137,17 @@ class _SubscriptionState extends State<Subscription> {
             //   child:  AlertText(text: 'Paid')
             // ),
             TextButton(
-              onPressed: () {
-                // Perform the action for Unpaid option
-                chooseSubscriptionPlan(planId, "Unpaid");
-                Navigator.pop(context); // Close the dialog
-              },
-              child:  AlertText(text: 'Unpaid')
-            ),
+                onPressed: () {
+                  // Perform the action for Unpaid option
+                  chooseSubscriptionPlan(planId, "Unpaid");
+                  Navigator.pop(context); // Close the dialog
+                },
+                child: AlertText(text: 'Unpaid')),
           ],
         );
       },
     );
   }
-
 
   @override
   void initState() {
@@ -171,8 +164,12 @@ class _SubscriptionState extends State<Subscription> {
           color: Colors.grey.shade200,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Image.asset("assets/logo1.png", height: 30,alignment: Alignment.centerLeft,
-              color: Colors.grey.shade700,),
+            child: Image.asset(
+              "assets/logo1.png",
+              height: 30,
+              alignment: Alignment.centerLeft,
+              color: Colors.grey.shade700,
+            ),
           ),
         ),
         body: Container(
@@ -193,24 +190,31 @@ class _SubscriptionState extends State<Subscription> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Unlock all \npremium features",
+                Text(
+                  "Unlock all \npremium features",
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 23),
                 ),
-                Row(mainAxisAlignment: MainAxisAlignment.end,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                         alignment: Alignment.centerRight,
                         onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) {
-                            return FAQ(
-                              section: "subcription_plans",
-                            );
-                          }),
-                        ), icon: Icon(Icons.help_outline_rounded, size: 30,)),
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return FAQ(
+                                  section: "subcription_plans",
+                                );
+                              }),
+                            ),
+                        icon: Icon(
+                          Icons.help_outline_rounded,
+                          size: 30,
+                        )),
                   ],
                 ),
-                Text("Choose the subscription among the top one and enjoy all the premium features",
+                Text(
+                  "Choose the subscription among the top one and enjoy all the premium features",
                   maxLines: 2,
                   style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
                 ),
@@ -243,23 +247,26 @@ class _SubscriptionState extends State<Subscription> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               isLoading
-                                  ? Center(child: CircularProgressIndicator(
-                                color: Color(ColorT.themeColor),
-                              ))
+                                  ? Center(
+                                      child: CircularProgressIndicator(
+                                      color: Color(ColorT.themeColor),
+                                    ))
                                   : Text(
-                                subDetailList == null || subDetailList!.isEmpty
-                                    ? 'Loading...'
-                                    : "${subDetailList![0]["head"]} Plan",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                                      subDetailList == null ||
+                                              subDetailList!.isEmpty
+                                          ? 'Loading...'
+                                          : "${subDetailList![0]["head"]} Plan",
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                               Text(
                                 subDetailList == null || subDetailList!.isEmpty
                                     ? 'Loading...'
-                                    : "Expires on ${subDetailList![0]["to_date"]}".toString(),
+                                    : "Expires on ${subDetailList![0]["to_date"]}"
+                                        .toString(),
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 15,
@@ -287,21 +294,21 @@ class _SubscriptionState extends State<Subscription> {
                   flex: 3,
                   child: isLoading
                       ? Center(
-                        child: CircularProgressIndicator(
-                    color: Color(ColorT.themeColor),
-                  ),
-                      )
-                      :
-                  ListView.builder(
-                    physics: ScrollPhysics(),
-                    shrinkWrap: true,
-                    addSemanticIndexes: true,
-                    itemCount: subscriptionList == null
-                        ? 0
-                        : subscriptionList?.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) => getSubscription(index),
-                  ),
+                          child: CircularProgressIndicator(
+                            color: Color(ColorT.themeColor),
+                          ),
+                        )
+                      : ListView.builder(
+                          physics: ScrollPhysics(),
+                          shrinkWrap: true,
+                          addSemanticIndexes: true,
+                          itemCount: subscriptionList == null
+                              ? 0
+                              : subscriptionList?.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) =>
+                              getSubscription(index),
+                        ),
                 ),
               ],
             ),
@@ -312,23 +319,25 @@ class _SubscriptionState extends State<Subscription> {
   }
 
   Widget getSubscription(int index1) {
-
-
     if (subscriptionList == null) {
       return Container();
     }
-    final bool isPlanActivated =
-        subDetailList != null &&
-            subDetailList!.isNotEmpty &&
-            subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString();
-
+    final bool isPlanActivated = subDetailList != null &&
+        subDetailList!.isNotEmpty &&
+        subDetailList![0]["planID"].toString() ==
+            subscriptionList![index1]["id"].toString();
 
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: Colors.grey.shade500,blurRadius: 3,),],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade500,
+              blurRadius: 3,
+            ),
+          ],
           // border: Border.all(color: Colors.grey.shade800, width: 1),
         ),
         // height: 600,
@@ -361,7 +370,8 @@ class _SubscriptionState extends State<Subscription> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(top: 10, bottom: 5),
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 5),
                               child: Text(
                                 subscriptionList![index1]["head"].toString(),
                                 style: TextStyle(
@@ -370,11 +380,14 @@ class _SubscriptionState extends State<Subscription> {
                               ),
                             ),
                             Text(
-                              subscriptionList![index1]["description"].toString(),
-                              style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                              subscriptionList![index1]["description"]
+                                  .toString(),
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.grey.shade700),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(top: 10, bottom: 10),
+                              padding:
+                                  const EdgeInsets.only(top: 10, bottom: 10),
                               child: Text(
                                 "Features",
                                 style: TextStyle(
@@ -383,29 +396,34 @@ class _SubscriptionState extends State<Subscription> {
                               ),
                             ),
                             Text(
-                              "✔️ No of Orders - ${subscriptionList![index1]["no_of_orders"] ??" "}",
-                              style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                              "✔️ No of Orders - ${subscriptionList![index1]["no_of_orders"] ?? " "}",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.grey.shade700),
                             ),
                             SizedBox(
                               height: 5,
                             ),
                             Text(
                               "✔️ Duration - ${subscriptionList![index1]["plan_duration"] ?? " "}Month",
-                              style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.grey.shade700),
                             ),
                             SizedBox(
                               height: 5,
                             ),
                             Text(
-                              "✔️ CashBack - ${subscriptionList![index1]["cashback_percentage"] ??" "}%",
-                              style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+                              "✔️ CashBack - ${subscriptionList![index1]["cashback_percentage"] ?? " "}%",
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.grey.shade700),
                             ),
                             SizedBox(
                               height: 5,
                             ),
                             Text(
                               "Rs.${subscriptionList![index1]["amount"] ?? ""}",
-                              style: TextStyle(fontSize: 18,),
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
                             ),
                           ],
                         ),
@@ -417,7 +435,8 @@ class _SubscriptionState extends State<Subscription> {
                     width: 300,
                     decoration: BoxDecoration(
                       color: isPlanActivated &&
-                          subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString()
+                              subDetailList![0]["planID"].toString() ==
+                                  subscriptionList![index1]["id"].toString()
                           ? Colors.grey.shade900 // Disabled color
                           : Colors.grey.shade700,
                       borderRadius: BorderRadius.only(
@@ -427,17 +446,19 @@ class _SubscriptionState extends State<Subscription> {
                     ),
                     child: TextButton(
                       onPressed: isPlanActivated &&
-                          subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString()
+                              subDetailList![0]["planID"].toString() ==
+                                  subscriptionList![index1]["id"].toString()
                           ? null // Disable the button if plan is activated
                           : () {
-                        _showPlanConfirmationDialog(
-                          context,
-                          subscriptionList![index1]["id"].toString(),
-                        );
-                      },
+                              _showPlanConfirmationDialog(
+                                context,
+                                subscriptionList![index1]["id"].toString(),
+                              );
+                            },
                       child: Text(
                         isPlanActivated &&
-                            subDetailList![0]["planID"].toString() == subscriptionList![index1]["id"].toString()
+                                subDetailList![0]["planID"].toString() ==
+                                    subscriptionList![index1]["id"].toString()
                             ? "Plan Activated"
                             : "Choose Plan",
                         style: TextStyle(fontSize: 15, color: Colors.white),

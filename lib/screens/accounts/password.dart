@@ -6,7 +6,6 @@ import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
 import 'faq_page.dart';
 
-
 class ChangePassword extends StatefulWidget {
   const ChangePassword({Key? key}) : super(key: key);
 
@@ -15,8 +14,6 @@ class ChangePassword extends StatefulWidget {
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
-
-
   final passwordController = TextEditingController();
   final newPassController = TextEditingController();
   String? uID;
@@ -67,18 +64,20 @@ class _ChangePasswordState extends State<ChangePassword> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppText(text:
-          "Change Password",
+        title: AppText(
+          text: "Change Password",
         ),
         actions: [
-          IconButton(onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return FAQ(
-                section: "change_password",
-              );
-            }),
-          ), icon: Icon(Icons.help_outline_rounded))
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return FAQ(
+                        section: "change_password",
+                      );
+                    }),
+                  ),
+              icon: Icon(Icons.help_outline_rounded))
         ],
       ),
       body: Container(
@@ -87,16 +86,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset("assets/logo_short.png",height: 100,),
+            Image.asset(
+              "assets/logo_short.png",
+              height: 100,
+            ),
             Padding(
               padding: const EdgeInsets.only(
                   left: 35, right: 35, top: 20, bottom: 20),
@@ -168,8 +170,7 @@ class _ChangePasswordState extends State<ChangePassword> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(
-                  left: 35, right: 35),
+              padding: const EdgeInsets.only(left: 35, right: 35),
               child: SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -178,8 +179,9 @@ class _ChangePasswordState extends State<ChangePassword> {
                     changePassword();
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(ColorT.themeColor),
-                      shadowColor: Colors.teal[300],),
+                    backgroundColor: Color(ColorT.themeColor),
+                    shadowColor: Colors.teal[300],
+                  ),
                   child: Text("Change Password"),
                 ),
               ),

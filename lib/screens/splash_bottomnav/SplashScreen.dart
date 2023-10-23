@@ -26,10 +26,11 @@ class _SplashScreenState extends State {
     return Scaffold(
       backgroundColor: Color(ColorT.themeColor),
       body: Center(
-              child: Image.asset("assets/logo1.png",height: 80,color: Colors.white,
-                // fit: BoxFit.cover,
-              ),
-            ),
+        child: Image.asset(
+          "assets/logo1.png", height: 80, color: Colors.white,
+          // fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 }

@@ -87,12 +87,13 @@ class WishlistTile extends StatelessWidget {
                         ),
                         Row(
                           children: [
-                            Text(actualPrice, style: TextStyle(
-                                decoration: TextDecoration.lineThrough,
-                                decorationStyle: TextDecorationStyle.solid,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16)),
+                            Text(actualPrice,
+                                style: TextStyle(
+                                    decoration: TextDecoration.lineThrough,
+                                    decorationStyle: TextDecorationStyle.solid,
+                                    color: Colors.grey.shade600,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16)),
                             SizedBox(
                               width: 5,
                             ),

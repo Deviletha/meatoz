@@ -60,7 +60,8 @@ class _ChangeProfileState extends State<ChangeProfile> {
   }
 
   void selectImage() async {
-    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedImage =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       print('Image picked: ${pickedImage.path}');
       setState(() {
@@ -73,7 +74,7 @@ class _ChangeProfileState extends State<ChangeProfile> {
   void convertImageToBase64() async {
     if (_pickedImage != null) {
       final bytes = await _pickedImage!.readAsBytes();
-      final String base64Image ="data:image/;base64,${base64Encode(bytes)}";
+      final String base64Image = "data:image/;base64,${base64Encode(bytes)}";
       print('Base64 Image: $base64Image');
       setState(() {
         base64Images.add(base64Image);

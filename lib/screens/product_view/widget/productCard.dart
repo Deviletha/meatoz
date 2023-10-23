@@ -14,19 +14,18 @@ class ProductViewTile extends StatelessWidget {
   final String price;
   final String actualPrice;
   final String imagePath;
-  // final color;
   final void Function()? onPressed;
 
   const ProductViewTile(
       {Key? key,
       required this.itemName,
       required this.imagePath,
-      // this.color,
       required this.onPressed,
       required this.price,
       required this.description,
-       this.noOfPiece,
-       this.servingCapacity, required this.actualPrice})
+      this.noOfPiece,
+      this.servingCapacity,
+      required this.actualPrice})
       : super(key: key);
 
   @override
@@ -83,31 +82,35 @@ class ProductViewTile extends StatelessWidget {
             SizedBox(
               height: 5,
             ),
-            TextDescription(text:description,
+            TextDescription(
+              text: description,
             ),
             SizedBox(
               height: 5,
             ),
             Visibility(
-              visible: noOfPiece != "null",
+                visible: noOfPiece != "null",
                 child: TextConst(text: "No of Piece: $noOfPiece")),
             SizedBox(
               height: 5,
             ),
             Visibility(
-              visible: servingCapacity != "null",
+                visible: servingCapacity != "null",
                 child: TextConst(text: "Serving Capacity: $servingCapacity")),
             SizedBox(
               height: 5,
             ),
             Row(
               children: [
-                Text(actualPrice, style: TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                    decorationStyle: TextDecorationStyle.solid,
-                    color: Colors.grey.shade600,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18),),
+                Text(
+                  actualPrice,
+                  style: TextStyle(
+                      decoration: TextDecoration.lineThrough,
+                      decorationStyle: TextDecorationStyle.solid,
+                      color: Colors.grey.shade600,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                ),
                 SizedBox(
                   width: 10,
                 ),
@@ -120,7 +123,6 @@ class ProductViewTile extends StatelessWidget {
                 ),
               ],
             ),
-
           ],
         ),
       ),

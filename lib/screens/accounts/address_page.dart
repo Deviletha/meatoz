@@ -9,8 +9,6 @@ import '../../theme/colors.dart';
 import 'add_address.dart';
 import 'faq_page.dart';
 
-
-
 class AddressBook extends StatefulWidget {
   const AddressBook({Key? key}) : super(key: key);
 
@@ -26,7 +24,6 @@ class _AddressBookState extends State<AddressBook> {
   int index = 0;
   Map? address;
   List? addressList;
-
 
   @override
   void initState() {
@@ -73,59 +70,59 @@ class _AddressBookState extends State<AddressBook> {
         actions: [
           IconButton(
               onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return FAQ(
-                    section: "edit_address",
-                  );
-                }),
-              ),
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return FAQ(
+                        section: "edit_address",
+                      );
+                    }),
+                  ),
               icon: Icon(Icons.help_outline_rounded))
         ],
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(color: Colors.teal[900]),
-      )
+              child: CircularProgressIndicator(color: Colors.teal[900]),
+            )
           : Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
-        child: Center(
-          child: ListView(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                   Padding(
-                     padding: const EdgeInsets.all(8.0),
-                     child: ListView.builder(
-                       physics: ScrollPhysics(),
-                       shrinkWrap: true,
-                       itemCount: addressList == null ? 0 : addressList!.length,
-                       itemBuilder: (context, index) =>
-                           getAddressRow(index),
-                     ),
-                   ),
-                ],
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ])),
+              child: Center(
+                child: ListView(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ListView.builder(
+                            physics: ScrollPhysics(),
+                            shrinkWrap: true,
+                            itemCount:
+                                addressList == null ? 0 : addressList!.length,
+                            itemBuilder: (context, index) =>
+                                getAddressRow(index),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar:  Padding(
+            ),
+      bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) {
@@ -137,7 +134,8 @@ class _AddressBookState extends State<AddressBook> {
             backgroundColor: Color(ColorT.themeColor),
             shadowColor: Colors.teal[300],
             minimumSize: Size.fromHeight(50),
-          ),child: Text("Add New Address"),
+          ),
+          child: Text("Add New Address"),
         ),
       ),
     );
@@ -153,25 +151,26 @@ class _AddressBookState extends State<AddressBook> {
           children: [
             addressList == null
                 ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Container(
-                width: double.infinity,
-                height: 20,
-                color: Colors.white,
-              ),
-            )
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Container(
+                      width: double.infinity,
+                      height: 20,
+                      color: Colors.white,
+                    ),
+                  )
                 : Text(
-              addressList![index]["address"].toString(),
-              style: const TextStyle(color: Colors.red),
-            ),
+                    addressList![index]["address"].toString(),
+                    style: const TextStyle(color: Colors.red),
+                  ),
             SizedBox(
               height: 5,
             ),
             Text(
               addressList![index]["phone"].toString(),
-              style:
-              const TextStyle(fontWeight: FontWeight.bold,),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(
               height: 5,

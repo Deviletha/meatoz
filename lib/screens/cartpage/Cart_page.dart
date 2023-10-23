@@ -79,7 +79,8 @@ class _CartPageState extends State<CartPage> {
         if (responseData.containsKey('discountAmount')) {
           Map<String, dynamic> discountAmount = responseData['discountAmount'];
 
-          if (discountAmount['status'] != null && discountAmount['status'] == false) {
+          if (discountAmount['status'] != null &&
+              discountAmount['status'] == false) {
             Fluttertoast.showToast(
               msg: "Offer is not available for you",
               toastLength: Toast.LENGTH_SHORT,
@@ -96,7 +97,6 @@ class _CartPageState extends State<CartPage> {
       debugPrint('discount api failed:');
     }
   }
-
 
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
@@ -147,7 +147,6 @@ class _CartPageState extends State<CartPage> {
         }
         // print(discountId);
         // print(productId);
-
       });
     } else {
       debugPrint('api failed:');
@@ -217,15 +216,15 @@ class _CartPageState extends State<CartPage> {
       appBar: AppBar(
         title: isLoading
             ? Center(
-          child: CircularProgressIndicator(
-            color: Color(ColorT.themeColor),
-          ),
-        )
+                child: CircularProgressIndicator(
+                  color: Color(ColorT.themeColor),
+                ),
+              )
             : AppText(
-          text: "My Cart (${cartList?.length ?? 0})",
-        ),
+                text: "My Cart (${cartList?.length ?? 0})",
+              ),
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) {
@@ -233,10 +232,9 @@ class _CartPageState extends State<CartPage> {
               }),
             );
           },
-          icon: Icon(Iconsax.arrow_left),  // Corrected typo here
+          icon: Icon(Iconsax.arrow_left), // Corrected typo here
         ),
       ),
-
       body: Container(
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -252,7 +250,9 @@ class _CartPageState extends State<CartPage> {
         child: isLoggedIn
             ? isLoading
                 ? Center(
-                    child: CircularProgressIndicator(color:Color(ColorT.themeColor),),
+                    child: CircularProgressIndicator(
+                      color: Color(ColorT.themeColor),
+                    ),
                   )
                 : cartList == null || cartList!.isEmpty
                     ? Center(
@@ -270,23 +270,25 @@ class _CartPageState extends State<CartPage> {
                           ListView.builder(
                             physics: ScrollPhysics(),
                             shrinkWrap: true,
-                            itemCount: cartList == null ? 0 : cartList?.length ?? 0,
+                            itemCount:
+                                cartList == null ? 0 : cartList?.length ?? 0,
                             itemBuilder: (context, index) => getCartList(index),
                           ),
-
                           if (cartDiscountList != null &&
                               cartDiscountList!.isNotEmpty &&
                               cartDiscountList![0]["discountAvailable"] == 1)
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: OfferCard(
-                                title: cartDiscountList![index]["title"] ?? ""
-                                    .toString(),
-                                description: "${cartDiscountList![index]
-                                ["discount_value"]}${discountType!} Discount",
+                                title: cartDiscountList![index]["title"] ??
+                                    "".toString(),
+                                description:
+                                    "${cartDiscountList![index]["discount_value"]}${discountType!} Discount",
                                 image: "assets/offeratcart.png",
-                                onPressed: _isApplied ? null : _onApplyButtonPressed,
-                                isApplied: _isApplied, // Pass the isApplied value to OfferCard
+                                onPressed:
+                                    _isApplied ? null : _onApplyButtonPressed,
+                                isApplied:
+                                    _isApplied, // Pass the isApplied value to OfferCard
                               ),
                             ),
                         ],
@@ -319,26 +321,28 @@ class _CartPageState extends State<CartPage> {
                 ),
               ),
       ),
-      bottomNavigationBar:  isLoading
+      bottomNavigationBar: isLoading
           ? Center(
-        child: CircularProgressIndicator(color: Color(ColorT.themeColor),),
-      )
+              child: CircularProgressIndicator(
+                color: Color(ColorT.themeColor),
+              ),
+            )
           : Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) {
-                    return SetectAddress();
-                  }),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(ColorT.themeColor),
-                  shadowColor: Colors.teal[300],
-                  minimumSize: Size.fromHeight(50),
-                ),
-                child: Text("Place Order")),
-          ),
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                  onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          return SetectAddress();
+                        }),
+                      ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(ColorT.themeColor),
+                    shadowColor: Colors.teal[300],
+                    minimumSize: Size.fromHeight(50),
+                  ),
+                  child: Text("Place Order")),
+            ),
     );
   }
 

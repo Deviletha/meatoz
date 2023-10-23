@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +5,6 @@ import 'package:meatoz/theme/colors.dart';
 import '../../Components/appbar_text.dart';
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
-
 
 class OrderDetails extends StatefulWidget {
   final String id;
@@ -25,7 +23,6 @@ class _OrderDetailsState extends State<OrderDetails> {
 
   bool isLoading = true;
 
-
   @override
   void initState() {
     getMyOrders();
@@ -34,7 +31,7 @@ class _OrderDetailsState extends State<OrderDetails> {
 
   getMyOrders() async {
     var response =
-    await ApiHelper().post(endpoint: "common/getOrderDetails", body: {
+        await ApiHelper().post(endpoint: "common/getOrderDetails", body: {
       "orderid": widget.id,
       "offset": "0",
       "pageLimit": "10",
@@ -50,11 +47,9 @@ class _OrderDetailsState extends State<OrderDetails> {
         order = jsonDecode(response);
         order1 = order!["data"];
         orderList = order1!["pageData"];
-
       });
     } else {
       debugPrint('api failed:');
-
     }
   }
 
@@ -62,35 +57,33 @@ class _OrderDetailsState extends State<OrderDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppText(text:
-          "Order History",
+        title: AppText(
+          text: "Order History",
         ),
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(color: Colors.teal[900]),
-      )
-          :
-      Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
-        child: ListView.builder(
-          physics: ScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: orderList == null ? 0 : orderList?.length,
-          itemBuilder: (context, index) => getOrderList(index),
-        ),
-      ),
+              child: CircularProgressIndicator(color: Colors.teal[900]),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomLeft,
+                      end: Alignment.topRight,
+                      colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ])),
+              child: ListView.builder(
+                physics: ScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: orderList == null ? 0 : orderList?.length,
+                itemBuilder: (context, index) => getOrderList(index),
+              ),
+            ),
     );
   }
 
@@ -106,7 +99,7 @@ class _OrderDetailsState extends State<OrderDetails> {
             children: [
               Container(
                 clipBehavior: Clip.antiAlias,
-                width:150,
+                width: 150,
                 height: 100,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -115,16 +108,14 @@ class _OrderDetailsState extends State<OrderDetails> {
                 // Image border// Image radius
                 child: CachedNetworkImage(
                   imageUrl: image,
-                  placeholder: (context, url) =>
-                      Container(
-                        color: Colors.grey[300],
-                      ),
-                  errorWidget: (context, url, error) =>
-                      Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/noItem.png"))),
-                      ),
+                  placeholder: (context, url) => Container(
+                    color: Colors.grey[300],
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/noItem.png"))),
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -138,11 +129,10 @@ class _OrderDetailsState extends State<OrderDetails> {
                   orderList == null
                       ? Text("null data")
                       : Text(
-                    price,
-                    style:  TextStyle(
-                        fontSize: 15,
-                        color: Color(ColorT.themeColor)),
-                  ),
+                          price,
+                          style: TextStyle(
+                              fontSize: 15, color: Color(ColorT.themeColor)),
+                        ),
                   SizedBox(
                     height: 10,
                   ),

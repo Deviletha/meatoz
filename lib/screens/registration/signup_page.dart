@@ -20,7 +20,6 @@ class _SignupPageState extends State<SignupPage> {
   String? uID;
   Map? signupList;
 
-
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     uID = prefs.getString("UID");
@@ -39,10 +38,9 @@ class _SignupPageState extends State<SignupPage> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _postalController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   // final TextEditingController _latitudeController = TextEditingController();
   // final TextEditingController _longitudeController = TextEditingController();
-
-
 
   apiForSignup() async {
     try {
@@ -106,8 +104,8 @@ class _SignupPageState extends State<SignupPage> {
           signupList = jsonResponse;
           print(response);
           print(signupList);
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => LoginPage()));
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => LoginPage()));
 
           Fluttertoast.showToast(
             msg: "Signup success",
@@ -126,30 +124,29 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: AppText(text: "Sign Up",),
+          title: AppText(
+            text: "Sign Up",
+          ),
         ),
         body: Container(
           width: double.infinity,
-          height: MediaQuery.of(context).size.height/1,
+          height: MediaQuery.of(context).size.height / 1,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-                begin: Alignment.bottomLeft,
-                end: Alignment.topRight,
-                colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
+              gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                  colors: [
+                Colors.grey.shade400,
+                Colors.grey.shade200,
+                Colors.grey.shade50,
+                Colors.grey.shade200,
+                Colors.grey.shade400,
+              ])),
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(15),
@@ -157,12 +154,14 @@ class _SignupPageState extends State<SignupPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                    padding:
+                        const EdgeInsets.only(left: 20, right: 20, top: 20),
                     child: TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Name",),
+                        isDense: true,
+                        labelText: "Name",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -182,9 +181,9 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Email ID",
-                          ),
+                        isDense: true,
+                        labelText: "Email ID",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty || !value.contains('@')) {
@@ -196,13 +195,17 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20, top: 15,),
+                    padding: const EdgeInsets.only(
+                      left: 20,
+                      right: 20,
+                      top: 15,
+                    ),
                     child: TextFormField(
                       controller: _contactController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Mobile",
-                        ),
+                        isDense: true,
+                        labelText: "Mobile",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -214,14 +217,14 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, right: 20, bottom: 15,top: 15),
+                    padding: const EdgeInsets.only(
+                        left: 20, right: 20, bottom: 15, top: 15),
                     child: TextFormField(
                       controller: _addressController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Address",
-                        ),
+                        isDense: true,
+                        labelText: "Address",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -238,9 +241,9 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _stateController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "State",
-                         ),
+                        isDense: true,
+                        labelText: "State",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -257,9 +260,9 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _locationController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "location",
-                        ),
+                        isDense: true,
+                        labelText: "location",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -276,9 +279,9 @@ class _SignupPageState extends State<SignupPage> {
                     child: TextFormField(
                       controller: _postalController,
                       decoration: InputDecoration(
-                          isDense: true,
-                          labelText: "Postal code",
-                         ),
+                        isDense: true,
+                        labelText: "Postal code",
+                      ),
                       textInputAction: TextInputAction.next,
                       validator: (value) {
                         if (value!.isEmpty) {
@@ -297,24 +300,24 @@ class _SignupPageState extends State<SignupPage> {
                       obscureText: showPass,
                       obscuringCharacter: "*",
                       decoration: InputDecoration(
-                          isDense: true,
-                          suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (showPass) {
-                                    showPass = false;
-                                  } else {
-                                    showPass = true;
-                                  }
-                                });
-                              },
-                              icon: Icon(
-                                showPass == true
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              )),
-                          labelText: "Password",
-                       ),
+                        isDense: true,
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if (showPass) {
+                                  showPass = false;
+                                } else {
+                                  showPass = true;
+                                }
+                              });
+                            },
+                            icon: Icon(
+                              showPass == true
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            )),
+                        labelText: "Password",
+                      ),
                       textInputAction: TextInputAction.done,
                       validator: (password) {
                         if (password!.isEmpty || password.length < 6) {
@@ -331,10 +334,11 @@ class _SignupPageState extends State<SignupPage> {
                     child: ElevatedButton(
                       onPressed: () {
                         apiForSignup();
-                        },
+                      },
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(ColorT.themeColor),
-                          shadowColor: Colors.teal[300],),
+                        backgroundColor: Color(ColorT.themeColor),
+                        shadowColor: Colors.teal[300],
+                      ),
                       child: Text("Sign Up"),
                     ),
                   ),

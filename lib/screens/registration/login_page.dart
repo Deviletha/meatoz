@@ -28,15 +28,14 @@ class _LoginPageState extends State<LoginPage> {
   checkUser() async {
     final prefs = await SharedPreferences.getInstance();
     uID = prefs.getString("UID");
-
   }
 
   apiForLogin() async {
     String username = usernameController.text.toString();
     String password = passwordController.text.toString();
     if (username.isNotEmpty && password.isNotEmpty) {
-      var response = await ApiHelper()
-          .post(endpoint: "common/authenticate", body: {
+      var response =
+          await ApiHelper().post(endpoint: "common/authenticate", body: {
         'username': username,
         'password': password,
       }).catchError((err) {});
@@ -106,8 +105,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -123,22 +120,27 @@ class _LoginPageState extends State<LoginPage> {
                   begin: Alignment.bottomLeft,
                   end: Alignment.topRight,
                   colors: [
-                    Colors.grey.shade400,
-                    Colors.grey.shade200,
-                    Colors.grey.shade50,
-                    Colors.grey.shade200,
-                    Colors.grey.shade400,
-                  ])
-          ),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center,
+                Colors.grey.shade400,
+                Colors.grey.shade200,
+                Colors.grey.shade50,
+                Colors.grey.shade200,
+                Colors.grey.shade400,
+              ])),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset("assets/logo_short.png",height: 100,),
+              Image.asset(
+                "assets/logo_short.png",
+                height: 100,
+              ),
               Padding(
                 padding: const EdgeInsets.only(
                     left: 35, right: 35, top: 80, bottom: 20),
-                child: TextFormField(cursorColor: Colors.teal[900],
+                child: TextFormField(
+                  cursorColor: Colors.teal[900],
                   controller: usernameController,
-                  decoration: InputDecoration(fillColor: Colors.teal[100],
+                  decoration: InputDecoration(
+                    fillColor: Colors.teal[100],
                     labelText: 'Phone Number',
                   ),
                   textInputAction: TextInputAction.next,
@@ -154,7 +156,8 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                 padding: const EdgeInsets.only(
                     left: 35, right: 35, top: 10, bottom: 20),
-                child: TextFormField(cursorColor: Colors.teal[900],
+                child: TextFormField(
+                  cursorColor: Colors.teal[900],
                   controller: passwordController,
                   obscureText: showPass,
                   obscuringCharacter: "*",
@@ -197,8 +200,9 @@ class _LoginPageState extends State<LoginPage> {
                     apiForLogin();
                   },
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(ColorT.themeColor),
-                      shadowColor: Colors.teal[300],),
+                    backgroundColor: Color(ColorT.themeColor),
+                    shadowColor: Colors.teal[300],
+                  ),
                   child: Text("Login"),
                 ),
               ),

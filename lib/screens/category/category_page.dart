@@ -1,10 +1,7 @@
-import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:shimmer/shimmer.dart';
-
 import '../../Config/api_helper.dart';
 import '../../Config/image_url_const.dart';
 import '../category_view/category_view.dart';
@@ -54,15 +51,15 @@ class _CategoryPageState extends State<CategoryPage> {
         appBar: AppBar(
           title: Text("Category"),
           leading: IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) {
                   return BottomNav();
                 }),
               );
-            }, icon: Icon(Iconsax.arrow_left
-          ),
+            },
+            icon: Icon(Iconsax.arrow_left),
           ),
         ),
         body: isLoading
@@ -90,18 +87,18 @@ class _CategoryPageState extends State<CategoryPage> {
                 ),
               )
             : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                physics: ScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  childAspectRatio: .95,
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  physics: ScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4,
+                    childAspectRatio: .95,
+                  ),
+                  itemCount: categoryList == null ? 0 : categoryList?.length,
+                  itemBuilder: (context, index) => getCategoryRow(index),
                 ),
-                itemCount: categoryList == null ? 0 : categoryList?.length,
-                itemBuilder: (context, index) => getCategoryRow(index),
-              ),
-            ));
+              ));
   }
 
   Widget getCategoryRow(int index) {

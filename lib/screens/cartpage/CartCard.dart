@@ -91,7 +91,6 @@ class CartTile extends StatelessWidget {
                     SizedBox(
                       height: 5,
                     ),
-
                     Text(
                       "₹$totalPrice",
                       style: TextStyle(
@@ -110,8 +109,7 @@ class CartTile extends StatelessWidget {
                         Container(
                           height: 30,
                           decoration: BoxDecoration(
-                            border:  Border.all(color: Colors.grey)
-                          ),
+                              border: Border.all(color: Colors.grey)),
                           child: Row(
                             children: [
                               Container(
@@ -119,7 +117,8 @@ class CartTile extends StatelessWidget {
                                 child: IconButton(
                                     onPressed: onPressedLess,
                                     icon: Icon(
-                                      Iconsax.minus,size: 15,
+                                      Iconsax.minus,
+                                      size: 15,
                                     )),
                               ),
                               SizedBox(
@@ -136,7 +135,8 @@ class CartTile extends StatelessWidget {
                                 child: IconButton(
                                     onPressed: onPressedAdd,
                                     icon: Icon(
-                                      Iconsax.add,size: 15,
+                                      Iconsax.add,
+                                      size: 15,
                                     )),
                               )
                             ],

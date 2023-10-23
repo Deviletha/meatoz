@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meatoz/Components/text_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
 import '../../../theme/colors.dart';
 
 class RelatedItemTile extends StatelessWidget {
@@ -68,7 +67,10 @@ class RelatedItemTile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10,),
+              padding: const EdgeInsets.only(
+                left: 10,
+                right: 10,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [

@@ -6,11 +6,11 @@ class TopPicksCard extends StatelessWidget {
 
   final void Function()? onTap;
 
-  const TopPicksCard({Key? key,
+  const TopPicksCard({
+    Key? key,
     required this.imagePath,
-
-    required this.onTap,})
-      : super(key: key);
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +27,13 @@ class TopPicksCard extends StatelessWidget {
         // Image border// Image radius
         child: CachedNetworkImage(
           imageUrl: imagePath,
-          placeholder: (context, url) =>
-              Container(
-                color: Colors.grey[300],
-              ),
-          errorWidget: (context, url, error) =>
-              Container(
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/noItem.png"))),
-              ),
+          placeholder: (context, url) => Container(
+            color: Colors.grey[300],
+          ),
+          errorWidget: (context, url, error) => Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage("assets/noItem.png"))),
+          ),
           fit: BoxFit.cover,
         ),
       ),

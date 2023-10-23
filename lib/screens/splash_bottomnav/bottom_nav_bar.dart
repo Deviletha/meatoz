@@ -19,7 +19,7 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   int selectIndex = 0;
 
-  List body = <Widget>[ HomePage(), CategoryPage(),  Accounts(),CartPage()];
+  List body = <Widget>[HomePage(), CategoryPage(), Accounts(), CartPage()];
 
   void onItemTapped(int index) {
     setState(() {
@@ -29,23 +29,25 @@ class _BottomNavState extends State<BottomNav> {
 
   Future<bool> _onWillPop() async {
     return (await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title:  Text('Are you sure?'),
-        content:  Text('Do you want to exit App'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child:  AlertText(text: 'No'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to exit App'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: AlertText(text: 'No'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: AlertText(text: 'Yes'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child:  AlertText(text: 'Yes'),
-          ),
-        ],
-      ),
-    )) ?? false;
+        )) ??
+        false;
   }
+
   final iconList = <IconData>[
     Iconsax.home_15,
     Iconsax.box4,
@@ -53,12 +55,7 @@ class _BottomNavState extends State<BottomNav> {
     Iconsax.shopping_bag5,
   ];
 
-  List bottomLabels = [
-    "MEATOZ",
-    "CATEGORIES",
-    "PROFILE",
-    "MY CART"
-  ];
+  List bottomLabels = ["MEATOZ", "CATEGORIES", "PROFILE", "MY CART"];
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +72,13 @@ class _BottomNavState extends State<BottomNav> {
             child: Image.asset("assets/logo_short.png"),
           ),
           onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return Subscription();
-            }),
-          );
-        },
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return Subscription();
+              }),
+            );
+          },
           //params
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -89,8 +86,10 @@ class _BottomNavState extends State<BottomNav> {
           height: 70,
           itemCount: iconList.length,
           tabBuilder: (int index, bool isActive) {
-            final color = isActive ? Color(ColorT.themeColor) : Colors.grey.shade500;
-            final color1 = isActive ? Colors.grey.shade800 : Colors.grey.shade800;
+            final color =
+                isActive ? Color(ColorT.themeColor) : Colors.grey.shade500;
+            final color1 =
+                isActive ? Colors.grey.shade800 : Colors.grey.shade800;
 
             // final color = isActive ? colors.activeNavigationBarColor : colors.notActiveNavigationBarColor;
             return Column(
@@ -104,13 +103,11 @@ class _BottomNavState extends State<BottomNav> {
                 ),
                 const SizedBox(height: 4),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-            bottomLabels[index],
-                    style: TextStyle(fontSize: 10, color: color1
-                  ),
-                )
-                )
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Text(
+                      bottomLabels[index],
+                      style: TextStyle(fontSize: 10, color: color1),
+                    ))
               ],
             );
           },
@@ -119,7 +116,6 @@ class _BottomNavState extends State<BottomNav> {
           gapLocation: GapLocation.center,
           onTap: (index) => setState(() => selectIndex = index),
         ),
-
         body: body.elementAt(selectIndex),
       ),
     );

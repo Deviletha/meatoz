@@ -101,7 +101,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
   late double subtotalFromFirstPurchase;
 
-
   Map? plan;
   List? planList;
   double subscriptionPlanAmount = 0;
@@ -154,7 +153,6 @@ class _PlaceOrderState extends State<PlaceOrder> {
         pinCode = json.decode(response);
         pinCodeList = pinCode!["orderData"];
         // print(pinCodeList);
-
 
         int pinCodeAvailability = pinCodeList![0]["pincode_availability"];
         if (pinCodeAvailability == 0) {
@@ -306,7 +304,8 @@ class _PlaceOrderState extends State<PlaceOrder> {
 
           if (finalCartList != null && finalCartList!.isNotEmpty) {
             for (int i = 0; i < finalCartList!.length; i++) {
-              int price = finalCartList![i]["price"] * finalCartList![i]["quantity"];
+              int price =
+                  finalCartList![i]["price"] * finalCartList![i]["quantity"];
               subtotal1 = subtotal1 + price;
             }
           }

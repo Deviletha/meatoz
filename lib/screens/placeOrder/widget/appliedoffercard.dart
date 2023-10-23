@@ -23,7 +23,12 @@ class AppliedOfferCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white),
-        boxShadow: [BoxShadow(color: Colors.grey.shade500,blurRadius: 3,),],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade500,
+            blurRadius: 3,
+          ),
+        ],
         color: Colors.green[50],
       ),
       child: Row(

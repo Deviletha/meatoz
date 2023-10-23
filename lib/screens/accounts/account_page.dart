@@ -158,15 +158,15 @@ class _AccountsState extends State<Accounts> {
           text: "Account",
         ),
         leading: IconButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) {
                 return BottomNav();
               }),
             );
-          }, icon: Icon(Iconsax.arrow_left
-        ),
+          },
+          icon: Icon(Iconsax.arrow_left),
         ),
       ),
       body: Container(
@@ -193,8 +193,8 @@ class _AccountsState extends State<Accounts> {
                         InkWell(
                           onTap: () => Navigator.push(context,
                               MaterialPageRoute(builder: (context) {
-                                return ChangeProfile();
-                              })),
+                            return ChangeProfile();
+                          })),
                           child: Container(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
@@ -240,16 +240,17 @@ class _AccountsState extends State<Accounts> {
                                         // Image border// Image radius
                                         child: CachedNetworkImage(
                                           imageUrl: image,
-                                          placeholder: (context, url) =>
-                                              Center(
-                                                child: CircularProgressIndicator(
-                                                  color: Color(ColorT.themeColor),
-                                                ),
-                                              ),
+                                          placeholder: (context, url) => Center(
+                                            child: CircularProgressIndicator(
+                                              color: Color(ColorT.themeColor),
+                                            ),
+                                          ),
                                           errorWidget: (context, url, error) =>
                                               Container(
                                             decoration: BoxDecoration(
-                                              border: Border.all(color: Colors.white,width: 2),
+                                                border: Border.all(
+                                                    color: Colors.white,
+                                                    width: 2),
                                                 image: DecorationImage(
                                                     image: AssetImage(
                                                         "assets/noItem.png"))),
@@ -272,7 +273,9 @@ class _AccountsState extends State<Accounts> {
                                         padding: const EdgeInsets.only(top: 8),
                                         child: Text(
                                           dataList![index]["email"].toString(),
-                                          style: TextStyle(fontSize: 12,color: Colors.white),
+                                          style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.white),
                                         ),
                                       ),
                                     ),
@@ -370,12 +373,10 @@ class _AccountsState extends State<Accounts> {
                         AccountCustomTile(
                           title: "Add Address",
                           icon: Iconsax.buildings,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return AddressBook();
-                            })
-                          ),
+                          onTap: () => Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return AddressBook();
+                          })),
                         ),
                         SizedBox(
                           height: 10,
@@ -423,7 +424,8 @@ class _AccountsState extends State<Accounts> {
                               ),
                               color: Colors.white),
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 10, top: 10, bottom: 10),
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 10, top: 10, bottom: 10),
                             child: InkWell(
                               onTap: () {
                                 Share.share(

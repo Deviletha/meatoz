@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:meatoz/screens/placeOrder/place_order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
@@ -11,7 +10,6 @@ import '../../Config/api_helper.dart';
 import '../../theme/colors.dart';
 import '../accounts/add_address.dart';
 import '../accounts/faq_page.dart';
-
 
 class SetectAddress extends StatefulWidget {
   const SetectAddress({Key? key}) : super(key: key);
@@ -48,7 +46,6 @@ class _SetectAddressState extends State<SetectAddress> {
   String? subTotalForApi;
   int? firstPurchaseAmount;
 
-
   apiForCart() async {
     if (uID != null) {
       var response = await ApiHelper().post(endpoint: "cart/get", body: {
@@ -67,17 +64,16 @@ class _SetectAddressState extends State<SetectAddress> {
           cartDiscountAppliedList = cartList!["cartAppliedDiscounts"];
           print(response);
 
-
           if (finalCartList != null && finalCartList!.isNotEmpty) {
             for (int i = 0; i < finalCartList!.length; i++) {
-              int price = finalCartList![i]["price"] * finalCartList![i]["quantity"];
+              int price =
+                  finalCartList![i]["price"] * finalCartList![i]["quantity"];
               subtotal1 = subtotal1 + price;
             }
           }
           print(subtotal1);
           subTotalForApi = subtotal1.toString();
           firstPurchaseOffer();
-
         });
       } else {
         debugPrint('api failed:');
@@ -98,7 +94,6 @@ class _SetectAddressState extends State<SetectAddress> {
     });
     getUserAddress();
     apiForCart();
-
   }
 
   firstPurchaseOffer() async {
@@ -123,13 +118,11 @@ class _SetectAddressState extends State<SetectAddress> {
 
         firstPurchaseAmount = finalOfferList?["discountAmount"] ?? 0;
         print(firstPurchaseAmount!);
-
       });
     } else {
       debugPrint('api failed:');
     }
   }
-
 
   void showCustomSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -162,7 +155,6 @@ class _SetectAddressState extends State<SetectAddress> {
     );
   }
 
-
   getUserAddress() async {
     var response = await ApiHelper().post(endpoint: "user/getAddress", body: {
       "userid": uID,
@@ -182,27 +174,26 @@ class _SetectAddressState extends State<SetectAddress> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: AppText(text:
-        "Select your Address",
+        title: AppText(
+          text: "Select your Address",
         ),
         actions: [
           IconButton(
               onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) {
-                  return FAQ(
-                    section: "edit_address",
-                  );
-                }),
-              ),
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return FAQ(
+                        section: "edit_address",
+                      );
+                    }),
+                  ),
               icon: Icon(Icons.help_outline_rounded))
         ],
       ),
-
-      bottomNavigationBar:  Padding(
+      bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ElevatedButton(
-          onPressed: (){
+          onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) {
@@ -214,7 +205,8 @@ class _SetectAddressState extends State<SetectAddress> {
             backgroundColor: Color(ColorT.themeColor),
             shadowColor: Colors.teal[300],
             minimumSize: Size.fromHeight(50),
-          ),child: Text("Add New Address"),
+          ),
+          child: Text("Add New Address"),
         ),
       ),
       body: Container(
@@ -223,13 +215,12 @@ class _SetectAddressState extends State<SetectAddress> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
         child: ListView(
           children: [
             SizedBox(
@@ -237,50 +228,51 @@ class _SetectAddressState extends State<SetectAddress> {
             ),
             (addressList == null && isLoading)
                 ? Shimmer.fromColors(
-              baseColor: Colors.grey[300]!,
-              highlightColor: Colors.grey[100]!,
-              child: Column(
-                children: [
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    height: 100,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    height: 100,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    height: 100,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 10),
-                  Container(
-                    width: double.infinity,
-                    height: 100,
-                    color: Colors.white,
-                  ),
-                ],
-              ),
-            )
+                    baseColor: Colors.grey[300]!,
+                    highlightColor: Colors.grey[100]!,
+                    child: Column(
+                      children: [
+                        SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          color: Colors.white,
+                        ),
+                        SizedBox(height: 10),
+                        Container(
+                          width: double.infinity,
+                          height: 100,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  )
                 : Column(
-              children: [
-                TextConst(text:
-                "Your Order will be shipped to this address",
-                ),
-                ListView.builder(
-                  physics: ScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: addressList == null ? 0 : addressList?.length,
-                  itemBuilder: (context, index) => getAddressRow(index),
-                ),
-              ],
-            ),
+                    children: [
+                      TextConst(
+                        text: "Your Order will be shipped to this address",
+                      ),
+                      ListView.builder(
+                        physics: ScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount:
+                            addressList == null ? 0 : addressList?.length,
+                        itemBuilder: (context, index) => getAddressRow(index),
+                      ),
+                    ],
+                  ),
           ],
         ),
       ),
@@ -366,5 +358,4 @@ class _SetectAddressState extends State<SetectAddress> {
       ),
     );
   }
-
 }

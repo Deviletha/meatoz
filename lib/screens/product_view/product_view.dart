@@ -252,7 +252,7 @@ class _ProductViewState extends State<ProductView> {
         child: Column(
           children: [
             ProductViewTile(
-              actualPrice: widget.actualPrice,
+                actualPrice: widget.actualPrice,
                 noOfPiece: widget.noOfPiece,
                 servingCapacity: widget.serveCapacity,
                 itemName: widget.productName.toString(),
@@ -262,14 +262,13 @@ class _ProductViewState extends State<ProductView> {
                 },
                 price: widget.amount,
                 description: widget.description.toString()),
-
             Heading(
               text: "Related Products",
             ),
             isLoading
                 ? CircularProgressIndicator(
-              color: Color(ColorT.themeColor),
-            )
+                    color: Color(ColorT.themeColor),
+                  )
                 : CarouselSlider.builder(
                     itemCount: relatedProductList == null
                         ? 0

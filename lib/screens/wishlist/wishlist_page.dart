@@ -55,7 +55,6 @@ class _WishlistState extends State<Wishlist> {
   Map? prList1;
   List? finalPrList;
 
-
   Future<void> wishListGet() async {
     var response = await ApiHelper().post(endpoint: "wishList/get", body: {
       "userid": uID,
@@ -78,9 +77,8 @@ class _WishlistState extends State<Wishlist> {
   }
 
   Future<void> removeFromWishList(String id) async {
-    var response = await ApiHelper().post(endpoint: "wishList/remove", body: {
-      "id": id
-    }).catchError((err) {});
+    var response = await ApiHelper().post(
+        endpoint: "wishList/remove", body: {"id": id}).catchError((err) {});
     if (response != null) {
       setState(() {
         debugPrint('Remove api successful:');
@@ -94,17 +92,18 @@ class _WishlistState extends State<Wishlist> {
           textColor: Colors.white,
           fontSize: 16.0,
         );
-
       });
     } else {
       debugPrint('api failed:');
     }
   }
+
   String? productId;
   String? productName;
   String? price1;
   String? pSize;
   String? combinationId;
+
   addToCart(String prID, String prName, String prPrice, String pSize,
       String combID) async {
     var response = await ApiHelper().post(endpoint: "cart/add", body: {
@@ -140,8 +139,7 @@ class _WishlistState extends State<Wishlist> {
   }
 
   void _showBottomSheet(BuildContext context, int index1) {
-    var image =
-        UrlConstants.base + finalPrList![index1]["image"].toString();
+    var image = UrlConstants.base + finalPrList![index1]["image"].toString();
 
     var stock = finalPrList![index1]["stock"].toString();
     bool isStockAvailable = int.parse(stock) > 0;
@@ -186,17 +184,13 @@ class _WishlistState extends State<Wishlist> {
                     ElevatedButton(
                       onPressed: () {
                         if (isStockAvailable) {
-                          productId =
-                              finalPrList![index1]["id"].toString();
-                          productName =
-                              finalPrList![index1]["name"].toString();
-                          price1 = finalPrList![index1]["offerPrice"]
-                              .toString();
-                          combinationId = finalPrList![index1]
-                          ["combinationId"]
-                              .toString();
-                          pSize = finalPrList![index1]
-                          ["size_attribute_name"]
+                          productId = finalPrList![index1]["id"].toString();
+                          productName = finalPrList![index1]["name"].toString();
+                          price1 =
+                              finalPrList![index1]["offerPrice"].toString();
+                          combinationId =
+                              finalPrList![index1]["combinationId"].toString();
+                          pSize = finalPrList![index1]["size_attribute_name"]
                               .toString();
                           addToCart(productId!, productName!, price1!, pSize!,
                               combinationId!);
@@ -248,8 +242,10 @@ class _WishlistState extends State<Wishlist> {
                   ),
                   Text(
                     "₹${finalPrList![index1]["offerPrice"].toString()}",
-                    style: TextStyle(color: Color(ColorT.themeColor),
-                        fontWeight: FontWeight.bold,fontSize: 15),
+                    style: TextStyle(
+                        color: Color(ColorT.themeColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15),
                   ),
                 ],
               ),
@@ -265,7 +261,9 @@ class _WishlistState extends State<Wishlist> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: AppText(text: "Wishlist",),
+        title: AppText(
+          text: "Wishlist",
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -273,53 +271,60 @@ class _WishlistState extends State<Wishlist> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
         child: isLoggedIn
             ? isLoading
-            ? Center(
-          child: CircularProgressIndicator(color: Colors.teal[900]),
-        )
-            : finalPrList == null || finalPrList!.isEmpty
-            ? Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset("assets/wishlist-empty-removebg-preview (1).png"),
-              Heading(text: "No Fav Items")
-            ],
-          ),
-        )
-            : ListView.builder(
-              itemCount: finalPrList == null ? 0 : finalPrList?.length ?? 0,
-              itemBuilder: (context, index) => getWishlist(index),
-            )
+                ? Center(
+                    child: CircularProgressIndicator(color: Colors.teal[900]),
+                  )
+                : finalPrList == null || finalPrList!.isEmpty
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                                "assets/wishlist-empty-removebg-preview (1).png"),
+                            Heading(text: "No Fav Items")
+                          ],
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount:
+                            finalPrList == null ? 0 : finalPrList?.length ?? 0,
+                        itemBuilder: (context, index) => getWishlist(index),
+                      )
             : Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset("assets/logo1.png", height: 80,),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage())
-                  );
-                }, style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal[900],
-                  shadowColor: Colors.teal[300],),
-                child: Text(
-                  "Please LogIn",
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      "assets/logo1.png",
+                      height: 80,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.teal[900],
+                        shadowColor: Colors.teal[300],
+                      ),
+                      child: Text(
+                        "Please LogIn",
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -329,18 +334,19 @@ class _WishlistState extends State<Wishlist> {
     var price = "₹${finalPrList![index]["offerPrice"]}";
     var actualPrice = "₹${finalPrList![index]["totalPrice"]}";
     return WishlistTile(
-      actualPrice: actualPrice,
+        actualPrice: actualPrice,
         itemName: finalPrList![index]["name"].toString(),
         imagePath: image,
         onPressed: () {
           removeFromWishList(finalPrList![index]["wishlistId"].toString());
-              if (kDebugMode) {
-                print(finalPrList![index]["wishlistId"].toString(),);
-              }
-            },
+          if (kDebugMode) {
+            print(
+              finalPrList![index]["wishlistId"].toString(),
+            );
+          }
+        },
         onTap: () {
           _showBottomSheet(context, index);
-
         },
         totalPrice: price,
         description: finalPrList![index]["description"].toString());

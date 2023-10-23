@@ -302,13 +302,13 @@ class _CategoryViewState extends State<CategoryView> {
         debugPrint('get products api successful:');
         categoryList = jsonDecode(response);
         finalCategoryList = categoryList!["products"];
-        showNoItemsMessage = finalCategoryList == null || finalCategoryList!.isEmpty;
+        showNoItemsMessage =
+            finalCategoryList == null || finalCategoryList!.isEmpty;
       });
     } else {
       debugPrint('api failed:');
     }
   }
-
 
   @override
   void initState() {
@@ -327,57 +327,56 @@ class _CategoryViewState extends State<CategoryView> {
       ),
       body: isLoading
           ? Center(
-        child: CircularProgressIndicator(
-          color: Color(ColorT.themeColor),
-        ),
-      )
-          : Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
-            colors: [
-              Colors.grey.shade400,
-              Colors.grey.shade200,
-              Colors.grey.shade50,
-              Colors.grey.shade200,
-              Colors.grey.shade400,
-            ],
-          ),
-        ),
-        child: Column(
-          children: [
-          SizedBox(
-          height: 15,
-        ),
-        Expanded(
-          child: finalCategoryList != null &&
-              finalCategoryList!.isNotEmpty
-              ? ListView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: finalCategoryList!.length,
-            itemBuilder: (context, index) => getCatView(index),
-          )
-              : Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: showNoItemsMessage
-                  ? Text(
-                "There are currently no items. Items will be available soon..!!",
-                style: TextStyle(fontSize: 18),
-              )
-                  : CircularProgressIndicator(
+              child: CircularProgressIndicator(
                 color: Color(ColorT.themeColor),
               ),
+            )
+          : Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomLeft,
+                  end: Alignment.topRight,
+                  colors: [
+                    Colors.grey.shade400,
+                    Colors.grey.shade200,
+                    Colors.grey.shade50,
+                    Colors.grey.shade200,
+                    Colors.grey.shade400,
+                  ],
+                ),
+              ),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Expanded(
+                    child: finalCategoryList != null &&
+                            finalCategoryList!.isNotEmpty
+                        ? ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            itemCount: finalCategoryList!.length,
+                            itemBuilder: (context, index) => getCatView(index),
+                          )
+                        : Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: showNoItemsMessage
+                                  ? Text(
+                                      "There are currently no items. Items will be available soon..!!",
+                                      style: TextStyle(fontSize: 18),
+                                    )
+                                  : CircularProgressIndicator(
+                                      color: Color(ColorT.themeColor),
+                                    ),
+                            ),
+                          ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ),
-          ],
-        ),
-      ),
     );
   }
-
 
   Widget getCatView(int index1) {
     var image =

@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../Components/appbar_text.dart';
@@ -27,7 +26,6 @@ class _FAQState extends State<FAQ> {
   }
 
   getFAQ() async {
-
     var response = await ApiHelper().post(
       endpoint: "faq/get",
       body: {
@@ -80,11 +78,12 @@ class _FAQState extends State<FAQ> {
                     padding: EdgeInsets.only(left: 15, right: 15, top: 20),
                     child: Container(
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10),
-                            topRight: Radius.circular(10),
-                          ),
-                          color: Color(ColorT.themeColor),),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        color: Color(ColorT.themeColor),
+                      ),
                       child: Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(faqList![index]["heading"].toString(),

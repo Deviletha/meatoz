@@ -4,5 +4,4 @@ class ColorT {
   static const int themeColor = 0xff0d694c;
   static const int subscriptionCard = 0xffcb7cc8;
   static const int subscriptionCard1 = 0xfffdab60;
-
 }

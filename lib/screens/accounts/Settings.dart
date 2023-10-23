@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:meatoz/Components/alertbox_text.dart';
 import 'package:meatoz/screens/accounts/widgets/AccountsCustomCard.dart';
 import 'package:meatoz/screens/accounts/password.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +17,6 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
   Future<void> _showLogoutConfirmationSnackBar() async {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -51,7 +49,6 @@ class _SettingsState extends State<Settings> {
       ),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {

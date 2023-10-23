@@ -25,8 +25,15 @@ class OfferCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.white),
-        boxShadow: [BoxShadow(color: Colors.grey.shade500,blurRadius: 3,),],
-        color: isApplied ? Colors.green[50] : Colors.white, // Change color based on isApplied
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade500,
+            blurRadius: 3,
+          ),
+        ],
+        color: isApplied
+            ? Colors.green[50]
+            : Colors.white, // Change color based on isApplied
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

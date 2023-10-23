@@ -280,7 +280,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-
   Future<void> addToWishList(String id, String combination, String amount,
       BuildContext context) async {
     if (uID == null) {
@@ -348,7 +347,6 @@ class _HomePageState extends State<HomePage> {
       debugPrint('Add to wishlist failed:');
     }
   }
-
 
   removeFromWishList(String id) async {
     var response =
@@ -790,11 +788,9 @@ class _HomePageState extends State<HomePage> {
                                     noOfPiece: finalProductList![index1]
                                             ["no_of_piece"]
                                         .toString(),
-                                    stock: finalProductList![index1]
-                                            ["stock"]
+                                    stock: finalProductList![index1]["stock"]
                                         .toString(),
-                                    recipe: finalProductList![index1]
-                                            ["hint"]
+                                    recipe: finalProductList![index1]["hint"]
                                         .toString(),
                                     position: index1,
                                     id: productId!,
@@ -836,8 +832,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 ItemName(
-                  text: finalProductList![index1]["combinationName"]
-                      .toString(),
+                  text: finalProductList![index1]["combinationName"].toString(),
                 ),
                 SizedBox(
                   height: 10,
@@ -957,11 +952,9 @@ class _HomePageState extends State<HomePage> {
                                     noOfPiece: finalPopularList![index1]
                                             ["no_of_piece"]
                                         .toString(),
-                                    stock: finalPopularList![index1]
-                                            ["stock"]
+                                    stock: finalPopularList![index1]["stock"]
                                         .toString(),
-                                    recipe: finalPopularList![index1]
-                                            ["hint"]
+                                    recipe: finalPopularList![index1]["hint"]
                                         .toString(),
                                     position: index1,
                                     id: productId!,
@@ -1003,8 +996,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 ItemName(
-                  text: finalPopularList![index1]["combinationName"]
-                      .toString(),
+                  text: finalPopularList![index1]["combinationName"].toString(),
                 ),
                 SizedBox(
                   height: 10,
@@ -1537,17 +1529,17 @@ class _HomePageState extends State<HomePage> {
                       ),
                     )
                   :
-              // ListView.builder(
-              //   physics: ScrollPhysics(),
-              //   shrinkWrap: true,
-              //   addSemanticIndexes: true,
-              //   itemCount: finalPopularList == null
-              //       ? 0
-              //       : finalPopularList?.length,
-              //   scrollDirection: Axis.horizontal,
-              //   itemBuilder: (context, index) => getPopularRow(index),
-              // ),
-              CarouselSlider.builder(
+                  // ListView.builder(
+                  //   physics: ScrollPhysics(),
+                  //   shrinkWrap: true,
+                  //   addSemanticIndexes: true,
+                  //   itemCount: finalPopularList == null
+                  //       ? 0
+                  //       : finalPopularList?.length,
+                  //   scrollDirection: Axis.horizontal,
+                  //   itemBuilder: (context, index) => getPopularRow(index),
+                  // ),
+                  CarouselSlider.builder(
                       itemCount: finalPopularList == null
                           ? 0
                           : finalPopularList?.length,
@@ -1833,7 +1825,9 @@ class _HomePageState extends State<HomePage> {
                           IconButton(
                             icon: Icon(
                               isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                              color: isInWishlist
+                                  ? Colors.grey.shade700
+                                  : Colors.black,
                               size: 25,
                             ),
                             onPressed: () {
@@ -1970,7 +1964,9 @@ class _HomePageState extends State<HomePage> {
                           IconButton(
                             icon: Icon(
                               isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                              color: isInWishlist
+                                  ? Colors.grey.shade700
+                                  : Colors.black,
                               size: 25,
                             ),
                             onPressed: () {
@@ -2108,7 +2104,9 @@ class _HomePageState extends State<HomePage> {
                           IconButton(
                             icon: Icon(
                               isInWishlist ? Iconsax.heart5 : Iconsax.heart,
-                              color: isInWishlist ? Colors.grey.shade700 : Colors.black,
+                              color: isInWishlist
+                                  ? Colors.grey.shade700
+                                  : Colors.black,
                               size: 25,
                             ),
                             onPressed: () {

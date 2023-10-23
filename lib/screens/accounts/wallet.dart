@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:meatoz/Components/appbar_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../Config/api_helper.dart';
 import 'faq_page.dart';
 
@@ -35,7 +33,6 @@ class _WalletPageState extends State<WalletPage> {
   }
 
   apiForWalletAmount() async {
-
     var responseWallet = await ApiHelper().post(endpoint: "wallet", body: {
       "userid": uID,
     }).catchError((err) {});
@@ -56,6 +53,7 @@ class _WalletPageState extends State<WalletPage> {
       debugPrint('wallet api failed:');
     }
   }
+
   @override
   void initState() {
     checkUser();
@@ -68,15 +66,15 @@ class _WalletPageState extends State<WalletPage> {
       appBar: AppBar(
         title: AppText(text: "Wallet"),
         actions: [
-          IconButton(onPressed:
-              () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) {
-              return FAQ(
-                section: "wallet",
-              );
-            }),
-          ),
+          IconButton(
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return FAQ(
+                        section: "wallet",
+                      );
+                    }),
+                  ),
               icon: Icon(Icons.help_outline_rounded))
         ],
       ),
@@ -86,22 +84,24 @@ class _WalletPageState extends State<WalletPage> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
-        child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset("assets/wallet.png"),
             SizedBox(
               height: 10,
             ),
-            Text("Your Wallet Amount Rs.$walletAmountL",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),)
+            Text(
+              "Your Wallet Amount Rs.$walletAmountL",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            )
           ],
         ),
       ),

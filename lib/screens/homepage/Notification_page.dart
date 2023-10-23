@@ -22,15 +22,17 @@ class _NotificationsState extends State<Notifications> {
                 begin: Alignment.bottomLeft,
                 end: Alignment.topRight,
                 colors: [
-                  Colors.grey.shade400,
-                  Colors.grey.shade200,
-                  Colors.grey.shade50,
-                  Colors.grey.shade200,
-                  Colors.grey.shade400,
-                ])
-        ),
+              Colors.grey.shade400,
+              Colors.grey.shade200,
+              Colors.grey.shade50,
+              Colors.grey.shade200,
+              Colors.grey.shade400,
+            ])),
         child: Center(
-          child: Text("No Notification",style: TextStyle(color: Colors.grey),),
+          child: Text(
+            "No Notification",
+            style: TextStyle(color: Colors.grey),
+          ),
         ),
       ),
     );
