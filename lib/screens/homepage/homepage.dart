@@ -1459,7 +1459,7 @@ class _HomePageState extends State<HomePage> {
                           return getOurProducts(index);
                         },
                         options: CarouselOptions(
-                          height: 250,
+                          height: 265,
                           aspectRatio: 15 / 6,
                           viewportFraction: .50,
                           initialPage: 0,
@@ -1483,7 +1483,7 @@ class _HomePageState extends State<HomePage> {
                         return getOurProducts(index);
                       },
                       options: CarouselOptions(
-                        height: 250,
+                        height: 265,
                         aspectRatio: 15 / 6,
                         viewportFraction: .50,
                         initialPage: 0,
@@ -2049,7 +2049,7 @@ class _HomePageState extends State<HomePage> {
                 width: 15,
               ),
               Expanded(
-                flex: 3,
+                flex: 4,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.start,

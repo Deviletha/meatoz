@@ -276,7 +276,8 @@ class _WishlistState extends State<Wishlist> {
               Colors.grey.shade50,
               Colors.grey.shade200,
               Colors.grey.shade400,
-            ])),
+            ]
+            )),
         child: isLoggedIn
             ? isLoading
                 ? Center(

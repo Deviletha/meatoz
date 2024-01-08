@@ -21,11 +21,11 @@ class _BottomNavState extends State<BottomNav> {
 
   List body = <Widget>[HomePage(), CategoryPage(), Accounts(), CartPage()];
 
-  void onItemTapped(int index) {
-    setState(() {
-      selectIndex = index;
-    });
-  }
+  // void onItemTapped(int index) {
+  //   setState(() {
+  //     selectIndex = index;
+  //   });
+  // }
 
   Future<bool> _onWillPop() async {
     return (await showDialog(
